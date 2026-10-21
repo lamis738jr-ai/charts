@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Beacon Studio (Demo)</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#0b0b0c;--card:#171719;--rule:#2a2a2e;--ink:#f2f2f4;--mut:#a4a4ac;--acc:#ff5a3c;--ok:#4cd16f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:#000;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif}
+body{display:flex;justify-content:center}
+button,input,select{font:inherit;color:inherit}
+#app{width:100%;max-width:460px;height:100%;background:var(--bg);display:flex;flex-direction:column;position:relative;overflow:hidden}
+.note{font-size:12px;color:#ffd479;border:1px solid #6b5521;border-radius:10px;padding:6px 10px;margin:0 0 12px;line-height:1.4}
+#open{width:100%;border:0;border-radius:12px;padding:13px;font-weight:700;background:var(--acc);color:#fff}
+header{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 0;flex:none}
+.brand{display:flex;align-items:center;gap:8px;font-size:21px;font-weight:700;letter-spacing:-.3px}
+#logo{width:34px;height:26px;border-radius:7px;background:var(--acc);display:grid;place-items:center;font-size:13px;font-weight:700;overflow:hidden;color:#fff}
+#logo img{width:100%;height:100%;object-fit:cover}
+.icons{display:flex;gap:6px;align-items:center}
+.ib{width:36px;height:36px;border:0;background:none;border-radius:50%;display:grid;place-items:center;font-size:20px}
+.ib:active{background:#222}
+#ch{width:32px;height:32px;border-radius:50%;background:#555;display:grid;place-items:center;font-size:13px;font-weight:700;overflow:hidden}
+#ch img{width:100%;height:100%;object-fit:cover}
+nav.tabs{display:flex;gap:22px;padding:12px 16px 0;border-bottom:1px solid var(--rule);flex:none;overflow:hidden}
+nav.tabs span{padding-bottom:10px;font-size:15px;font-weight:500;color:var(--mut);white-space:nowrap}
+nav.tabs span.on{color:var(--ink);font-weight:700;border-bottom:3px solid var(--ink)}
+main{flex:1;min-height:0;overflow:auto;padding:14px 0 90px}
+#car{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;padding:0 16px;scrollbar-width:none}
+#car::-webkit-scrollbar{display:none}
+.card{flex:0 0 88%;scroll-snap-align:center;background:var(--card);border-radius:18px;padding:16px;border:1px solid #202024}
+.card small{color:var(--mut);font-size:13px}
+.card b{display:block;font-size:21px;font-weight:500;margin:2px 0 6px;font-variant-numeric:tabular-nums}
+.chart{display:flex;gap:6px}
+.yl{display:flex;flex-direction:column;justify-content:space-between;font-size:10px;color:var(--mut);height:96px;padding:2px 0}
+.chart svg{flex:1;height:96px}
+.xl{display:flex;justify-content:space-between;font-size:11px;color:var(--mut);margin:6px 0 0 34px}
+.dots{display:flex;justify-content:center;gap:8px;padding:12px 0}
+.dots i{width:7px;height:7px;border-radius:50%;background:#444}.dots i.on{background:#fff}
+.sec{margin:0 16px 14px;background:var(--card);border-radius:18px;padding:16px;border:1px solid #202024}
+.sec h3{margin:0;font-size:17px}.sec p{margin:2px 0 12px;color:var(--mut);font-size:13px}
+.row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.th{width:58px;height:36px;border-radius:6px;flex:none;background-size:cover;background-position:center}
+.row span{flex:1;font-size:13.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row em{font-style:normal;font-size:13.5px;font-weight:500}
+.rt{display:flex;justify-content:space-between;align-items:flex-end}
+.rt b{font-size:21px;font-weight:500}
+#bars{display:flex;align-items:flex-end;gap:2px;height:46px;width:46%}
+#bars i{flex:1;background:#3b9eff;border-radius:1px}
+footer{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-around;background:#0f0f11;border-top:1px solid var(--rule);padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));font-size:11px;color:var(--mut)}
+footer div{text-align:center}footer div span{display:block;font-size:20px}footer .on{color:var(--ink)}
+#sheet{position:absolute;inset:0;background:#000a;display:none;align-items:flex-end;z-index:5}
+#sheet.open{display:flex}
+#panel{background:#1c1c1f;width:100%;max-height:88%;overflow:auto;border-radius:22px 22px 0 0;padding:16px 16px 28px}
+#panel h2{margin:0 0 4px;font-size:18px}
+#panel h4{margin:16px 0 6px;font-size:12px;letter-spacing:.6px;color:var(--mut);text-transform:uppercase}
+label{display:block;font-size:12px;color:var(--mut);margin:8px 0 3px}
+input,select{width:100%;background:#0f0f11;border:1px solid #333;border-radius:10px;padding:10px;font-size:15px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btns{display:flex;gap:8px;margin-top:16px}
+.btns button{flex:1;border:0;border-radius:12px;padding:12px;font-weight:700;background:#333}
+.btns .pri{background:var(--acc);color:#fff}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand"><div id="logo"></div><span id="bn"></span></div>
+    <div class="icons"><button class="ib">⊕</button><button class="ib">🔔</button><div id="ch"></div></div>
+  </header>
+  <nav class="tabs"><span class="on">Overview</span><span>Content</span><span>Audience</span><span>Revenue</span><span>Trends</span></nav>
+  <main>
+    <div id="car"></div>
+    <div class="dots" id="dots"></div>
+    <div class="sec"><h3>Top content</h3><p>Views · Last 28 days</p><div id="top"></div></div>
+    <div class="sec"><h3>Real time</h3><div class="rt"><div><b id="rtv"></b><p style="margin:2px 0 0">Views · 48 hours</p></div><div id="bars"></div></div></div>
+    <div class="sec"><h3>Demo settings</h3><p>Customize everything on this page.</p><div class="note">DEMO · fictional practice data. Beacon Studio is a made-up brand, not a real analytics product.</div><button id="open">✎ Edit dashboard</button></div>
+  </main>
+  <footer><div class="on"><span>▦</span>Dashboard</div><div><span>▶</span>Content</div><div><span>📊</span>Analytics</div><div><span>👥</span>Community</div><div><span>$</span>Earn</div></footer>
+  <div id="sheet"><div id="panel"></div></div>
+</div>
+<script>
+var KEY="beacon-demo-v2";
+var D={brand:"Beacon Studio",chName:"Beacon",chColor:"#6b5bd6",chImg:"",logoText:"B",logoColor:"#ff5a3c",logoImg:"",
+start:"17 Aug",end:"16 Sep",
+cards:[
+ {label:"Views",val:"729.4M",shape:"wavy",seed:3,yl:["","","",""],fmt:0},
+ {label:"Watch time (hours)",val:"507.2K",shape:"cliff",seed:5,yl:["30.0K","20.0K","10.0K",""]},
+ {label:"Subscribers",val:"+34.9K",shape:"decline",seed:8,yl:["3.0K","2.0K","1.0K",""]},
+ {label:"Est. revenue",val:"$34,933.69",shape:"flat",seed:11,yl:["$3.0K","$2.0K","$1.0K",""]}],
+top:[["Why Medieval Castles Were Built Backwards",0,"9.8M","#4f6b8f",""],["How One Typo Accidentally Started a War",0,"6.8M","#8f4f4f",""],["The Strange True Story of the Lost Fleet",0,"3.4M","#6b8f4f",""]],
+rt:"13,444,433"};
+try{var s=localStorage.getItem(KEY);if(s)D=JSON.parse(s)}catch(e){}
+if(D.brand==null)D.brand="Beacon Studio";
+function save(){try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}}
+function rnd(seed){var x=seed*9301+49297;return function(){x=(x*9301+49297)%233280;return x/233280}}
+function series(shape,seed){var r=rnd(seed),n=32,a=[],v=.5;
+ for(var i=0;i<n;i++){var t=i/(n-1),b;
+  if(shape=="flat")b=.45+(r()-.5)*.18;
+  else if(shape=="wavy")b=.45+Math.sin(t*9+seed)*.22+(r()-.5)*.3;
+  else if(shape=="decline")b=.7-t*.35+(r()-.5)*.15+(t>.55?-.12:0);
+  else if(shape=="rise")b=.2+t*.55+(r()-.5)*.14;
+  else if(shape=="cliff")b=t>.93?.5-(t-.93)*7:.58+(r()-.5)*.06+Math.sin(t*5)*.04;
+  else b=.5+(r()-.5)*.5;
+  a.push(Math.max(.03,Math.min(.97,b)))}
+ return a}
+function chart(c){var a=series(c.shape,c.seed),w=300,h=96,
+ pts=a.map(function(v,i){return (i/(a.length-1)*w).toFixed(1)+","+((1-v)*h).toFixed(1)}).join(" ");
+ var grid="";[0,1,2,3].forEach(function(i){var y=4+i*(h-8)/3;grid+='<line x1="0" x2="'+w+'" y1="'+y+'" y2="'+y+'" stroke="#2f2f34" stroke-width="1"/>'});
+ var yl=c.yl.map(function(t){return "<span>"+esc(t)+"</span>"}).join("");
+ return '<div class="chart"><div class="yl">'+yl+'</div><svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none">'+grid+'<polyline points="'+pts+'" fill="none" stroke="#bfe6ff" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg></div>'}
+function thumb(c){var f='<rect x="{x}" y="10" width="14" height="24" rx="4"/><circle cx="{c}" cy="8" r="5"/>';var g="";[8,27,46].forEach(function(x,i){g+='<g fill="'+(i==1?"#f4f4f4":c)+'"><rect x="'+x+'" y="16" width="12" height="20" rx="4"/><circle cx="'+(x+6)+'" cy="11" r="5" fill="#e3b99a"/></g>'});
+ return "data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 66 36"><rect width="66" height="36" fill="#ece6da"/>'+g+'</svg>')}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]})}
+function render(){
+ document.getElementById("bn").textContent=D.brand;document.title=D.brand+" (Demo)";
+ var lg=document.getElementById("logo");lg.style.background=D.logoColor;
+ lg.innerHTML=D.logoImg?'<img src="'+D.logoImg+'">':esc(D.logoText);
+ var ch=document.getElementById("ch");ch.style.background=D.chColor;
+ ch.innerHTML=D.chImg?'<img src="'+D.chImg+'">':esc((D.chName||"?").charAt(0).toUpperCase());
+ var car=document.getElementById("car"),p=car.scrollLeft;
+ car.innerHTML=D.cards.map(function(c){return '<div class="card"><small>'+esc(c.label)+'</small><b>'+esc(c.val)+'</b>'+chart(c)+'<div class="xl"><span>'+esc(D.start)+'</span><span>'+esc(D.end)+'</span></div></div>'}).join("");
+ car.scrollLeft=p;dots();
+ document.getElementById("top").innerHTML=D.top.map(function(t){return '<div class="row"><div class="th" style="background-image:url(\''+(t[4]||thumb(t[3]))+'\')"></div><span>'+esc(t[0])+'</span><em>'+esc(t[2])+'</em></div>'}).join("");
+ document.getElementById("rtv").textContent=D.rt;
+ var r=rnd(7),b="";for(var i=0;i<48;i++)b+='<i style="height:'+(25+r()*75)+'%"></i>';document.getElementById("bars").innerHTML=b}
+function dots(){var car=document.getElementById("car"),w=car.firstChild?car.firstChild.offsetWidth+10:1,i=Math.round(car.scrollLeft/w);
+ document.getElementById("dots").innerHTML=D.cards.map(function(_,k){return '<i class="'+(k==i?"on":"")+'"></i>'}).join("")}
+document.getElementById("car").addEventListener("scroll",dots);
+function f(id,l,v){return '<label>'+l+'</label><input id="'+id+'" value="'+esc(v)+'">'}
+function openSheet(){
+ var h='<h2>Edit demo data</h2><div style="font-size:12px;color:#ffd479">Fictional practice data. The DEMO label always stays on screen.</div>';
+ h+='<h4>Branding</h4><div class="two">'+f("brand","App name (top left)",D.brand)+f("chName","Channel name (avatar letter)",D.chName)+f("chColor","Avatar color",D.chColor)+f("logoText","Logo letters",D.logoText)+f("logoColor","Logo color",D.logoColor)+'</div>';
+ h+='<label>Logo image (optional)</label><input type="file" id="logoF" accept="image/*"><label>Avatar image (optional)</label><input type="file" id="chF" accept="image/*">';
+ h+='<h4>Date range</h4><div class="two">'+f("start","Start",D.start)+f("end","End",D.end)+'</div>';
+ h+='<h4>Cards</h4>';
+ D.cards.forEach(function(c,i){h+='<div class="two">'+f("cl"+i,"Label",c.label)+f("cv"+i,"Value",c.val)+'</div><div class="two"><div><label>Graph shape</label><select id="cs'+i+'">'+["wavy","flat","rise","decline","cliff","random"].map(function(o){return '<option'+(o==c.shape?" selected":"")+'>'+o+'</option>'}).join("")+'</select></div>'+f("cy"+i,"Y labels (comma)",c.yl.join(","))+'</div>'});
+ h+='<h4>Top content</h4>';
+ D.top.forEach(function(t,i){h+='<div class="two">'+f("tt"+i,"Video "+(i+1)+" title",t[0])+f("tv"+i,"Views",t[2])+'</div><div class="two">'+f("tc"+i,"Default thumbnail color",t[3])+'<div><label>Thumbnail image</label><input type="file" accept="image/*" id="tf'+i+'"></div></div>'});
+ h+='<h4>Real time</h4>'+f("rt","Views · 48 hours",D.rt);
+ h+='<div class="btns"><button id="rnd">Reshuffle graphs</button><button id="cancel">Cancel</button><button class="pri" id="apply">Apply</button></div>';
+ var pn=document.getElementById("panel");pn.innerHTML=h;document.getElementById("sheet").classList.add("open");
+ function img(id,key){document.getElementById(id).onchange=function(e){var fl=e.target.files[0];if(!fl)return;var r=new FileReader();r.onload=function(){D[key]=r.result;render();save()};r.readAsDataURL(fl)}}
+ img("logoF","logoImg");img("chF","chImg");
+ D.top.forEach(function(t,i){document.getElementById("tf"+i).onchange=function(e){var fl=e.target.files[0];if(!fl)return;var r=new FileReader();r.onload=function(){t[4]=r.result;render();save()};r.readAsDataURL(fl)}});
+ document.getElementById("cancel").onclick=close;
+ document.getElementById("rnd").onclick=function(){D.cards.forEach(function(c){c.seed=Math.floor(Math.random()*900)+1});apply(true)};
+ document.getElementById("apply").onclick=function(){apply(false)}}
+function close(){document.getElementById("sheet").classList.remove("open")}
+function g(id){return document.getElementById(id).value}
+function apply(keep){
+ D.brand=g("brand");D.chName=g("chName");D.chColor=g("chColor");D.logoText=g("logoText");D.logoColor=g("logoColor");D.start=g("start");D.end=g("end");
+ D.cards.forEach(function(c,i){c.label=g("cl"+i);c.val=g("cv"+i);c.shape=g("cs"+i);c.yl=g("cy"+i).split(",").map(function(s){return s.trim()});while(c.yl.length<4)c.yl.push("")});
+ D.top.forEach(function(t,i){t[0]=g("tt"+i);t[2]=g("tv"+i);t[3]=g("tc"+i)});D.rt=g("rt");
+ render();save();if(!keep)close()}
+document.getElementById("open").onclick=openSheet;
+render();
+</script>
+</body>
+</html>
