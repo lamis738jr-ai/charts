@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<title>Nova · bank app concept</title>
+<style>
+:root{--c1:#2140ff;--c2:#0a0f6b;--glass:rgba(105,105,205,.42);--card:rgba(255,255,255,.09);--line:rgba(255,255,255,.12);--mut:rgba(255,255,255,.64);color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#000;color:#fff;font:400 15px/1.3 "Inter",-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+body{display:flex;justify-content:center}
+button,input{font:inherit;color:inherit}
+#app{position:relative;height:100%;width:100%;max-width:480px;background:linear-gradient(180deg,var(--c1) 0,var(--c2) 52%,#050816 80%);overflow:hidden}
+@media (min-aspect-ratio:9/16){#app{width:calc((100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))*9/16)}}
+header{position:absolute;top:0;left:0;right:0;display:flex;gap:10px;padding:12px 16px;z-index:5;align-items:center}
+.av{width:46px;height:46px;border-radius:50%;background:#f08a4b;border:0;font-weight:500;position:relative;flex:none}
+.av:after{content:"";position:absolute;top:0;right:0;width:10px;height:10px;border-radius:50%;background:#ff4d4d}
+.srch{flex:1;height:46px;border-radius:999px;background:var(--glass);border:0;display:flex;align-items:center;gap:10px;padding:0 16px;font-weight:500;font-size:17px;color:#fff;text-align:left}
+.ib{width:46px;height:46px;border-radius:50%;background:var(--glass);border:0;display:grid;place-items:center;flex:none}
+svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#view{position:absolute;inset:70px 0 80px;overflow-y:auto;padding:0 16px 24px;scrollbar-width:none}
+#view::-webkit-scrollbar{display:none}
+.car{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:0 -16px}
+.car::-webkit-scrollbar{display:none}
+.acc{flex:0 0 100%;scroll-snap-align:center;text-align:center;padding:84px 16px 4px}
+.lab{color:rgba(255,255,255,.92);font-size:16px}
+.amt{font-size:48px;font-weight:700;letter-spacing:-.3px;margin-top:6px;cursor:pointer}
+.amt small{font-size:27px;font-weight:700}
+.pill{margin-top:14px;background:var(--glass);font-size:16px;border:0;border-radius:999px;padding:10px 22px;font-weight:500}
+.dots{display:flex;justify-content:center;gap:7px;margin:20px 0}
+.dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.35)}.dots i.on{background:#fff}
+.acts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.act{display:flex;flex-direction:column;align-items:center;gap:8px;background:none;border:0;font-weight:500;font-size:14px;line-height:1.15;text-align:center}
+.act b{width:54px;height:54px;border-radius:50%;background:var(--glass);display:grid;place-items:center}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:14px 16px;margin-top:18px;backdrop-filter:blur(8px)}
+.hd{font-weight:600;font-size:16px;margin-bottom:4px}
+.row{display:flex;align-items:center;gap:12px;padding:10px 0}
+.row>div:nth-child(2){flex:1;min-width:0}
+.ic{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center;font-size:20px;flex:none}
+.sub{color:var(--mut);font-size:14px}.act svg{stroke-width:2.6}.pos{color:#7dffb0}
+.mini{background:rgba(255,255,255,.2);border:0;border-radius:999px;padding:9px 16px;font-weight:500}
+nav{position:absolute;bottom:0;left:0;right:0;height:80px;display:flex;padding:8px 8px 14px;background:linear-gradient(rgba(5,8,22,0),rgba(5,8,22,.94) 45%);z-index:5}
+nav button{flex:1;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:500;color:var(--mut)}
+nav button.on{color:#fff}
+.lg{width:24px;height:24px;display:grid;place-items:center;font-weight:800;font-size:25px;line-height:1;font-family:-apple-system,'Helvetica Neue',Arial,sans-serif}
+.lg span{color:inherit}
+h2{margin:18px 0 0;font-size:24px;font-weight:600}
+#scrim{position:absolute;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .28s;z-index:19}#scrim.on{opacity:1;pointer-events:auto}
+#sh{position:absolute;left:0;right:0;bottom:0;background:#14182e;border-radius:26px 26px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .28s;z-index:20;max-height:86%;overflow:auto}#sh.on{transform:none}
+#sh h3{margin:0 0 12px;font-size:19px;font-weight:600}
+.in{width:100%;background:rgba(255,255,255,.08);border:1px solid var(--line);border-radius:14px;padding:14px;font-weight:500;font-size:17px;margin:6px 0 12px;outline:0}
+.in:focus{border-color:#8fa0ff}
+.btn{width:100%;border:0;border-radius:999px;padding:15px;font-weight:600;font-size:16px;background:#fff;color:#0a0f6b}
+.chips{display:flex;gap:8px;margin:0 0 12px;flex-wrap:wrap}
+.chip{background:rgba(255,255,255,.12);border:1px solid transparent;border-radius:999px;padding:9px 16px;font-weight:500}.chip.on{border-color:#fff}
+.bcard{border-radius:20px;padding:20px;height:190px;background:linear-gradient(135deg,var(--c1),var(--c2));border:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between;margin-bottom:12px}
+.sw{width:34px;height:34px;border-radius:50%;border:2px solid transparent;padding:0}.sw.on{border-color:#fff}
+#toast{position:absolute;top:84px;left:50%;transform:translate(-50%,-20px);background:#fff;color:#0a0f6b;font-weight:600;padding:11px 18px;border-radius:999px;opacity:0;transition:.25s;z-index:30;pointer-events:none;white-space:nowrap}#toast.on{opacity:1;transform:translate(-50%,0)}
+button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+#ptr{position:absolute;top:84px;left:50%;width:40px;height:40px;border-radius:50%;background:var(--glass);backdrop-filter:blur(6px);display:grid;place-items:center;opacity:0;pointer-events:none;z-index:4;transform:translate(-50%,-40px)}
+#ptr svg{width:22px;height:22px;stroke-width:2.4}
+#ptr.spin svg{animation:spin .8s linear infinite}
+#app{-webkit-user-select:none;user-select:none}
+.ic{overflow:hidden}.ic img{width:100%;height:100%;object-fit:cover;display:block}.in{-webkit-user-select:text;user-select:text}
+@keyframes spin{to{transform:rotate(360deg)}}
+.nm{font-weight:500;font-size:16px}[data-e]{cursor:pointer}
+</style></head>
+<body><div id="app">
+<header><button class="av" id="av" data-a="set" aria-label="Profile">NV</button><button class="srch" data-a="srch"><svg viewBox="0 0 24 24" style="stroke-width:2.6"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg><span id="sl">Search</span></button><button class="ib" data-a="stats" aria-label="Analytics"><svg viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><rect x="4" y="11" width="4.2" height="9" rx="1.2"/><rect x="9.9" y="4" width="4.2" height="16" rx="1.2"/><rect x="15.8" y="8" width="4.2" height="12" rx="1.2"/></svg></button><button class="ib" data-a="card" aria-label="Cards"><svg viewBox="0 0 24 24" style="stroke:none"><rect x="2.5" y="5.5" width="19" height="13" rx="3" fill="currentColor"/><rect x="2.5" y="9" width="19" height="2.4" fill="#3d43a8"/></svg></button></header>
+<main id="view"></main><div id="ptr" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 4v5h-5"/></svg></div><nav id="nav"></nav>
+<div id="scrim" data-a="close"></div><div id="sh" role="dialog"></div><div id="toast"></div>
+</div>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var TH={blue:['#2140ff','#0a0f6b'],purple:['#7a3cff','#2a0a6b'],green:['#0fb374','#053a2b'],red:['#ff3b5c','#4a0a1c'],black:['#3b4052','#07080c']};
+var S={bank:'Nova',ini:'NV',theme:'blue',cur:0,tab:'home',
+ acc:[{n:'Personal',c:'EUR',s:'€',b:7855.64},{n:'Savings',c:'EUR',s:'€',b:1200},{n:'Travel',c:'USD',s:'$',b:410.2}],
+ tx:[{a:0,i:'🛍️',n:'Shopify',s:'Today, 09:12 · Sales payout',v:1240.5,pin:1},{a:0,i:'📈',n:'TopstepX',s:'Today, 08:40 · Payout',v:3000,pin:2},{a:0,i:'🏆',n:'FTMO',s:'Yesterday · Payout',v:1850,pin:3},{a:0,i:'💹',n:'Trading',s:'Yesterday · Profit',v:420.75,pin:4},{a:0,i:'🛒',n:'Market Fresh',s:'Today, 09:41 · Groceries',v:-23.8},{a:0,i:'☕',n:'Blue Door Café',s:'Today, 08:15 · Restaurants',v:-4.6},{a:0,i:'💼',n:'Studio Payroll',s:'Yesterday · Salary',v:2150},{a:0,i:'🎬',n:'StreamBox',s:'Yesterday · Entertainment',v:-12.99},{a:0,i:'🚇',n:'City Transit',s:'Mon · Transport',v:-2.4},{a:0,i:'🍕',n:'Pizza Corner',s:'Sun · Restaurants',v:-18.5},{a:1,i:'🐷',n:'Round-up savings',s:'Today · Auto-save',v:3.2},{a:1,i:'⬆️',n:'Top-up',s:'Last week',v:500},{a:2,i:'✈️',n:'SkyWays',s:'Last week · Travel',v:-189.9},{a:2,i:'🏨',n:'Harbor Hotel',s:'Last week · Travel',v:-96.4}]};
+var LISTS={invest:[['🍎','Apple','+1.2%'],['🚗','Electra Motors','−0.6%'],['🔍','Searchly','+0.9%'],['📈','World Index Fund','+0.4%']],pay:[['👤','Alex M.','Sent · yesterday'],['👤','Maya R.','Received · Mon'],['🏠','Rent','Scheduled · 1st'],['📱','Phone plan','Scheduled · 5th']],crypto:[['₿','Bitcoin','+2.4%'],['Ξ','Ethereum','−0.8%'],['◎','Solana','+5.1%']],pts:[['⭐','Level 1','120 pts'],['🎁','Free coffee','80 pts'],['🌍','Travel perk','300 pts']]};
+var TABS=[['home','Home',null],['invest','Invest','<path d="M4 18l5-6 4 3 7-9"/>'],['pay','Payments','<path d="M7 8h12l-3-3M17 16H5l3 3"/>'],['crypto','Crypto','<circle cx="12" cy="12" r="8"/><path d="M10 8v8M10 8h3a2 2 0 010 4h-3m3 0a2 2 0 010 4h-3"/>'],['pts','Rewards','<path d="M12 3l8 5v8l-8 5-8-5V8z"/>']];
+var IC={add:'<path d="M12 5v14M5 12h14"/>',move:'<path d="M3 17h3.2c4.6 0 4.6-10 9.2-10H20m0 0l-3-3m3 3l-3 3M3 7h3.2c1.3 0 2.3.5 3.2 1.4M14 15.6c.4.8 1.2 1.4 2.4 1.4H20m0 0l-3-3m3 3l-3 3"/>',det:'<path d="M3 10l9-6 9 6M5 10v8M9 10v8M15 10v8M19 10v8M3 20h18"/>',more:'<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>'};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]});}
+function fm(v){var p=Math.abs(v).toFixed(2).split('.');return [p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'\u202f'),p[1]];}
+function money(v,s){var f=fm(v);return (v<0?'−':'+')+f[0]+','+f[1]+'\u00a0'+s;}
+function toast(t){var e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove('on');},1900);}
+function theme(){var t=TH[S.theme],r=document.documentElement.style;r.setProperty('--c1',t[0]);r.setProperty('--c2',t[1]);$('av').textContent=S.ini;document.title=S.bank+' · bank app concept';$('sl').textContent=S.lang==='fr'?'Rechercher':'Search';}
+function nav(){$('nav').innerHTML=TABS.map(function(t){return '<button class="'+(S.tab===t[0]?'on':'')+'" data-t="'+t[0]+'">'+(t[0]==='home'||t[0]==='crypto'?'<b class="lg"><span>'+esc(t[0]==='home'?(S.hl||S.bank.charAt(0).toUpperCase()):(S.cl||'B'))+'</span></b>':'<svg viewBox="0 0 24 24">'+t[2]+'</svg>')+t[1]+'</button>';}).join('');}
+var FR={'Search':'Rechercher','Accounts':'Comptes','Add money':"Ajouter de l'argent",'Move':'Transférer','Details':'Informations','More':'Plus','+ Add':'+ Ajouter','Products for you ›':'Produits pour vous ›','Savings and funds':'Épargne et fonds','Earn interest on your money.':'Gagnez du rendement sur votre argent.','Open':'Ouvrir','Home':'Accueil','Invest':'Investir','Payments':'Paiements','Crypto':'Cryptos','Rewards':'NovaPoints','Save':'Enregistrer','Delete':'Supprimer','Send':'Envoyer','Edit account':'Modifier le compte','Account name':'Nom du compte','Currency code':'Code de la devise','Currency symbol':'Symbole de la devise','Balance':'Solde','Delete account':'Supprimer le compte','Add account':'Ajouter un compte','Edit transaction':'Modifier la transaction','New transaction':'Nouvelle transaction','Icon':'Icône','Name':'Nom','Date and category':'Date et catégorie','Amount (use − for money out)':'Montant (− pour une dépense)','Account details':'Informations du compte','Bank':'Banque','Card last 4 digits':'4 derniers chiffres de la carte','Your card':'Votre carte','Freeze card':'Bloquer la carte','Customize your bank':'Personnaliser votre banque','Bank name':'Nom de la banque','Home tab letter':'Lettre onglet Accueil','Crypto tab letter':'Lettre onglet Cryptos','Your initials':'Vos initiales','Color':'Couleur','Language':'Langue','Reset sample data':'Réinitialiser les données','Statements':'Relevés','Limits':'Plafonds','Security':'Sécurité','Help':'Aide','Money in':'Entrées','Money out':'Sorties','No transactions yet.':'Aucune transaction.','Customize app':"Personnaliser l'app",'Edit item':'Modifier','Text or number':'Texte ou nombre','Search transactions':'Rechercher des transactions','Recipient name':'Nom du bénéficiaire','📌 Pin to top':'📌 Épingler en haut','Logo':'Logo','Upload logo':'Importer un logo','Remove':'Retirer','Refresh adds a new transaction':'Actualiser ajoute une transaction','On':'Activé','Off':'Désactivé'};
+var FRP={'Add money to ':"Ajouter de l'argent à ",'Send from ':'Envoyer depuis ','Analytics · ':'Analyses · '};
+var FRN={Personal:'Personnel',Savings:'Épargne',Travel:'Voyage'};
+var FRT={"Today":"Aujourd'hui","Yesterday":"Hier","Last week":"Semaine dernière","Just now":"À l'instant","Mon":"Lun","Sun":"Dim","Groceries":"Courses","Salary":"Salaire","Entertainment":"Loisirs","Transport":"Transports","Auto-save":"Épargne auto","Travel":"Voyages","Top-up":"Recharge","Transfer":"Virement","Round-up savings":"Épargne arrondie","Restaurants":"Restaurants","Sales payout":"Versement ventes","Payout":"Versement","Profit":"Gain"};
+function LT(s){s=String(s);if(S.lang!=='fr')return s;for(var k in FRT)s=s.replace(new RegExp('\\b'+k+'\\b','g'),FRT[k]);return s;}
+function L(n){return S.lang==='fr'&&FRN[n]?FRN[n]:n;}
+function loc(root){if(S.lang!=='fr')return;var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),n,l=[];while((n=w.nextNode()))l.push(n);
+ l.forEach(function(n){var t=n.nodeValue.trim();if(FR[t]){n.nodeValue=n.nodeValue.replace(t,FR[t]);}else{for(var k in FRP){if(t.indexOf(k)===0){n.nodeValue=n.nodeValue.replace(k,FRP[k]);break;}}}});
+ root.querySelectorAll('input[placeholder]').forEach(function(i){if(FR[i.placeholder])i.placeholder=FR[i.placeholder];});}
+var ED=null;
+function num(v){var n=parseFloat(String(v).replace(/[\s\u202f\u00a0]/g,'').replace(',','.').replace('−','-'));return isNaN(n)?0:n;}
+function dec(v){return v.toFixed(2).replace('.',',');}
+function rowHtml(i,n,s,v,sym,e,lg){return '<div class="row" data-e="'+e+'"><div class="ic">'+(lg?'<img src="'+lg+'" alt="">':esc(i))+'</div><div><div class="nm">'+esc(LT(n))+'</div><div class="sub">'+esc(LT(s))+'</div></div>'+(v!=null?'<div class="'+(v>0?'pos':'')+'">'+money(v,sym)+'</div>':'')+'</div>';}
+function rows(l){return l.map(function(x){return rowHtml(x.i,x.n,x.s,x.v,S.acc[x.a].s,'tx:'+S.tx.indexOf(x),x.logo);}).join('');}
+function txl(){var l=S.tx.filter(function(t){return t.a===S.cur;}).sort(function(x,y){return (x.pin||99)-(y.pin||99);});$('txl').innerHTML=rows(l)||'<div class="sub" style="padding:10px 0">No transactions yet.</div>';}
+function bal(v){var p=Math.abs(v).toFixed(2).split('.'),i=p[0];if(i.length>4)i=i.replace(/\B(?=(\d{3})+(?!\d))/g,'\u202f');return (v<0?'−':'')+i+','+p[1];}
+function home(){
+ $('view').innerHTML='<div class="car" id="car">'+S.acc.map(function(a){var f=fm(a.b);return '<div class="acc"><div class="lab">'+esc(L(a.n))+' · '+esc(a.c)+'</div><div class="amt" data-a="editbal">'+bal(a.b)+'\u00a0<small>'+esc(a.s)+'</small></div><button class="pill" data-a="accs">Accounts</button></div>';}).join('')+'</div>'
+ +'<div class="dots" id="dots">'+S.acc.map(function(_,i){return '<i class="'+(i===S.cur?'on':'')+'"></i>';}).join('')+'</div>'
+ +'<div class="acts">'+[['add','Add money'],['move','Move'],['det','Details'],['more','More']].map(function(a){return '<button class="act" data-a="'+a[0]+'"><b><svg viewBox="0 0 24 24">'+IC[a[0]]+'</svg></b>'+a[1]+'</button>';}).join('')+'</div>'
+ +'<div class="card"><div class="hd" style="display:flex;justify-content:space-between;align-items:center">Transactions<button class="mini" data-a="newtx">+ Add</button></div><div id="txl"></div></div>'
+ +'<div class="card"><div class="hd" style="font-weight:500;color:var(--mut)">Products for you ›</div><div class="row"><div class="ic" style="border-radius:14px;background:rgba(255,255,255,.12)"><svg viewBox="0 0 24 24" style="stroke-width:2.4"><rect x="4" y="5" width="16" height="14" rx="3"/><circle cx="12" cy="12" r="2.6"/></svg></div><div><div class="nm">Savings and funds</div><div class="sub">Earn interest on your money.</div></div><button class="mini" data-a="accs">Open</button></div></div>';
+ txl();var car=$('car');car.scrollLeft=S.cur*car.clientWidth;
+ car.onscroll=function(){var i=Math.round(car.scrollLeft/car.clientWidth);if(i!==S.cur&&i>=0&&i<S.acc.length){S.cur=i;[].forEach.call($('dots').children,function(d,k){d.className=k===i?'on':'';});txl();}};}
+function render(){nav();if(S.tab==='home')home();else{var t=TABS.filter(function(x){return x[0]===S.tab;})[0];$('view').innerHTML='<h2 style="padding-top:20px">'+t[1]+'</h2><div class="card">'+S.lists[S.tab].map(function(x,i){return rowHtml(x[0],x[1],x[2],null,'','l:'+S.tab+':'+i);}).join('')+'</div>';}persist();loc($('view'));loc($('nav'));}
+function txForm(t,ex){return '<div class="sub">Icon</div><input class="in" id="ei" maxlength="4" value="'+esc(t.i)+'"><div class="sub">Name</div><input class="in" id="en" value="'+esc(t.n)+'"><div class="sub">Date and category</div><input class="in" id="es" value="'+esc(t.s)+'"><div class="sub">Amount (use − for money out)</div><input class="in" id="ev" inputmode="decimal" value="'+dec(t.v)+'"><div class="sub">Logo</div><div style="display:flex;align-items:center;gap:12px;margin:6px 0 12px"><div class="ic" id="lgp">'+(t.logo?'<img src="'+t.logo+'" alt="">':esc(t.i))+'</div><label class="mini" style="cursor:pointer">Upload logo<input id="lgf" type="file" accept="image/*" hidden></label><button class="mini" type="button" data-a="rmlogo">Remove</button></div><div class="chips"><button class="chip'+(t.pin?' on':'')+'" data-a="pintoggle">📌 Pin to top</button></div><button class="btn" data-a="savetx">Save</button>'+(ex?'<button class="btn" data-a="deltx" style="margin-top:10px;background:rgba(255,255,255,.12);color:#fff">Delete</button>':'');}
+function editor(k){var p=k.split(':');
+ if(p[0]==='tx'){ED={idx:+p[1],isNew:false,pin:!!S.tx[+p[1]].pin,logo:S.tx[+p[1]].logo||''};sheet('Edit transaction',txForm(S.tx[+p[1]],true));}
+ else{var x=S.lists[p[1]][+p[2]];sheet('Edit item','<div class="sub">Icon</div><input class="in" id="ei" maxlength="4" value="'+esc(x[0])+'"><div class="sub">Name</div><input class="in" id="en" value="'+esc(x[1])+'"><div class="sub">Text or number</div><input class="in" id="es" value="'+esc(x[2])+'"><button class="btn" data-a="savel" data-k="'+k+'">Save</button>');}}
+function sheet(t,h,fn){$('sh').innerHTML='<h3>'+t+'</h3>'+h;loc($('sh'));$('sh').classList.add('on');$('scrim').classList.add('on');if(fn)fn();}
+function close(){$('sh').classList.remove('on');$('scrim').classList.remove('on');}
+function chips(l){return '<div class="chips">'+l.map(function(v){return '<button class="chip" data-v="'+v+'">'+v+'</button>';}).join('')+'</div>';}
+var A=function(){return S.acc[S.cur];};
+var ACT={
+ close:close,
+ add:function(){sheet('Add money to '+L(A().n),'<input class="in" id="am" type="number" inputmode="decimal" placeholder="0,00">'+chips([50,100,250,500])+'<button class="btn" data-a="doadd">Add money</button>');},
+ doadd:function(){var v=+$('am').value;if(!(v>0))return toast('Enter an amount');A().b+=v;S.tx.unshift({a:S.cur,i:'⬆️',n:'Top-up',s:'Just now · Top-up',v:v});close();render();toast('Added '+money(v,A().s).slice(1));},
+ move:function(){sheet('Send from '+L(A().n),'<input class="in" id="to" placeholder="Recipient name"><input class="in" id="am" type="number" inputmode="decimal" placeholder="0,00">'+chips([10,25,50,100])+'<button class="btn" data-a="domove">Send</button>');},
+ domove:function(){var v=+$('am').value,to=$('to').value.trim();if(!to)return toast('Add a recipient');if(!(v>0))return toast('Enter an amount');if(v>A().b)return toast('Not enough balance');A().b-=v;S.tx.unshift({a:S.cur,i:'👤',n:to,s:'Just now · Transfer',v:-v});close();render();toast('Sent');},
+ det:function(){sheet('Account details','<div class="sub">Bank</div><div style="padding:6px 0 12px">'+esc(S.bank)+'</div><div class="sub">IBAN</div><input class="in" id="di" value="'+esc(S.det.iban)+'"><div class="sub">BIC</div><input class="in" id="db" value="'+esc(S.det.bic)+'"><div class="sub">Card last 4 digits</div><input class="in" id="dc" maxlength="4" inputmode="numeric" value="'+esc(S.det.card)+'"><button class="btn" data-a="savedet">Save</button>');},
+ savedet:function(){S.det.iban=$('di').value;S.det.bic=$('db').value;S.det.card=($('dc').value||'0000').slice(0,4);persist();close();toast('Saved');},
+ editbal:function(){var a=A();sheet('Edit account','<div class="sub">Account name</div><input class="in" id="an" value="'+esc(a.n)+'"><div class="sub">Currency code</div><input class="in" id="ac" maxlength="4" value="'+esc(a.c)+'"><div class="sub">Currency symbol</div><input class="in" id="as" maxlength="3" value="'+esc(a.s)+'"><div class="sub">Balance</div><input class="in" id="ab" inputmode="decimal" value="'+dec(a.b)+'"><button class="btn" data-a="savebal">Save</button>'+(S.acc.length>1?'<button class="btn" data-a="delacc" style="margin-top:10px;background:rgba(255,255,255,.12);color:#fff">Delete account</button>':''));},
+ savebal:function(){var a=A();a.n=$('an').value||'Account';a.c=($('ac').value||'EUR').toUpperCase();a.s=$('as').value||'€';a.b=num($('ab').value);close();render();},
+ delacc:function(){S.tx=S.tx.filter(function(t){return t.a!==S.cur;}).map(function(t){if(t.a>S.cur)t.a--;return t;});S.acc.splice(S.cur,1);S.cur=0;close();render();},
+ newacc:function(){S.acc.push({n:'New account',c:'EUR',s:'€',b:0});S.cur=S.acc.length-1;close();render();ACT.editbal();},
+ newtx:function(){ED={isNew:true,pin:false,logo:''};sheet('New transaction',txForm({i:'🛒',n:'',s:'Today',v:0},false));},
+ rmlogo:function(){ED.logo='';var p=$('lgp');if(p)p.textContent=$('ei').value||'💳';},
+ pintoggle:function(b){ED.pin=!ED.pin;b.classList.toggle('on',ED.pin);},
+ savetx:function(){var t=ED.isNew?{a:S.cur}:S.tx[ED.idx];t.i=$('ei').value||'💳';t.n=$('en').value||'Payment';t.s=$('es').value;t.v=num($('ev').value);t.logo=ED.logo||'';if(ED.pin){if(!t.pin)t.pin=Math.max.apply(null,S.tx.map(function(x){return x.pin||0;}).concat(0))+1;}else t.pin=0;if(ED.isNew)S.tx.unshift(t);close();render();},
+ deltx:function(){S.tx.splice(ED.idx,1);close();render();},
+ savel:function(b){var p=b.dataset.k.split(':'),x=S.lists[p[1]][+p[2]];x[0]=$('ei').value||'•';x[1]=$('en').value;x[2]=$('es').value;close();render();},
+ reset:function(){try{localStorage.removeItem('nova-state');}catch(e){}location.reload();},
+ accs:function(){sheet('Accounts',S.acc.map(function(a,i){var f=fm(a.b);return '<button class="row" data-pick="'+i+'" style="width:100%;background:none;border:0;text-align:left"><div class="ic">'+esc(a.s)+'</div><div><div class="nm">'+esc(L(a.n))+'</div><div class="sub">'+esc(a.c)+'</div></div><div>'+f[0]+','+f[1]+'</div></button>';}).join('')+'<button class="btn" data-a="newacc" style="margin-top:10px">Add account</button>');},
+ more:function(){sheet('More',[['📄','Statements'],['🎚️','Limits'],['🔒','Security'],['💬','Help']].map(function(x){return '<div class="row"><div class="ic">'+x[0]+'</div><div>'+x[1]+'</div></div>';}).join('')+'<button class="btn" data-a="set" style="margin-top:8px">Customize app</button>');},
+
+ set:function(){sheet('Customize your bank','<div class="sub">Bank name</div><input class="in" id="sb" maxlength="14" value="'+esc(S.bank)+'"><div class="sub">Your initials</div><input class="in" id="si" maxlength="2" value="'+esc(S.ini)+'"><div class="sub">Home tab letter</div><input class="in" id="shl" maxlength="2" value="'+esc(S.hl||S.bank.charAt(0).toUpperCase())+'"><div class="chips" style="margin-top:8px;flex-wrap:wrap"><button type="button" class="chip" data-pk="shl">N</button><button type="button" class="chip" data-pk="shl">R</button><button type="button" class="chip" data-pk="shl">A</button><button type="button" class="chip" data-pk="shl">B</button><button type="button" class="chip" data-pk="shl">C</button><button type="button" class="chip" data-pk="shl">D</button><button type="button" class="chip" data-pk="shl">K</button><button type="button" class="chip" data-pk="shl">M</button><button type="button" class="chip" data-pk="shl">S</button><button type="button" class="chip" data-pk="shl">V</button><button type="button" class="chip" data-pk="shl">X</button><button type="button" class="chip" data-pk="shl">Z</button></div><div class="sub">Crypto tab letter</div><input class="in" id="scl" maxlength="2" value="'+esc(S.cl||'B')+'"><div class="chips" style="margin-top:8px;flex-wrap:wrap"><button type="button" class="chip" data-pk="scl">B</button><button type="button" class="chip" data-pk="scl">₿</button><button type="button" class="chip" data-pk="scl">Ξ</button><button type="button" class="chip" data-pk="scl">◎</button><button type="button" class="chip" data-pk="scl">Ł</button><button type="button" class="chip" data-pk="scl">Ð</button><button type="button" class="chip" data-pk="scl">Ƀ</button><button type="button" class="chip" data-pk="scl">Ⓑ</button></div><div class="sub">Refresh adds a new transaction</div><div class="chips" style="margin-top:8px"><button class="chip'+(S.autoTx!==false?' on':'')+'" data-auto="1">On</button><button class="chip'+(S.autoTx===false?' on':'')+'" data-auto="0">Off</button></div><div class="sub">Language</div><div class="chips" style="margin-top:8px"><button class="chip'+(S.lang==='fr'?' on':'')+'" data-lang="fr">Français</button><button class="chip'+(S.lang==='en'?' on':'')+'" data-lang="en">English</button></div><div class="sub">Color</div><div class="chips" style="margin-top:8px">'+Object.keys(TH).map(function(k){return '<button class="sw'+(k===S.theme?' on':'')+'" data-th="'+k+'" aria-label="'+k+'" style="background:linear-gradient(135deg,'+TH[k][0]+','+TH[k][1]+')"></button>';}).join('')+'</div><button class="btn" data-a="save">Save</button><button class="btn" data-a="reset" style="margin-top:10px;background:rgba(255,255,255,.12);color:#fff">Reset sample data</button>');},
+ save:function(){S.bank=($('sb').value.trim()||'Nova');S.ini=($('si').value.trim().toUpperCase()||'NV').slice(0,2);S.hl=$('shl').value.trim().slice(0,2);S.cl=$('scl').value.trim().slice(0,2);try{persist();}catch(e){}theme();close();render();toast('Saved');},
+ srch:function(){sheet('Search','<input class="in" id="q" placeholder="Search transactions"><div id="qr"></div>',function(){$('q').oninput=function(){var q=this.value.toLowerCase();$('qr').innerHTML=q?rows(S.tx.filter(function(t){return t.n.toLowerCase().indexOf(q)>-1;})):'';};});},
+ stats:function(){var l=S.tx.filter(function(t){return t.a===S.cur;}),o=0,i=0;l.forEach(function(t){if(t.v<0)o-=t.v;else i+=t.v;});sheet('Analytics · '+L(A().n),'<div class="card" style="margin:0"><div class="row"><div>Money in</div><div class="pos" style="flex:none">'+money(i,A().s)+'</div></div><div class="row"><div>Money out</div><div style="flex:none">−'+fm(o)[0]+','+fm(o)[1]+'\u00a0'+A().s+'</div></div></div>');},
+ card:function(){sheet('Your card','<div class="bcard"><div style="font-weight:600;font-size:20px">'+esc(S.bank)+'</div><div><div style="letter-spacing:3px;font-size:18px">•••• •••• •••• '+esc(S.det.card)+'</div><div class="sub" style="margin-top:6px">Debit · 12/29</div></div></div><button class="btn" data-a="close">Freeze card</button>');}
+};
+document.addEventListener('click',function(e){
+ var b=e.target.closest('[data-a],[data-e],[data-t],[data-v],[data-pick],[data-th],[data-lang],[data-auto]');if(!b)return;var d=b.dataset;
+ if(d.a&&ACT[d.a])ACT[d.a](b);
+ else if(d.e){editor(d.e);}
+ else if(d.t){S.tab=d.t;render();}
+ else if(d.v){$('am').value=d.v;[].forEach.call(b.parentNode.children,function(c){c.classList.toggle('on',c===b);});}
+ else if(d.pick){S.cur=+d.pick;close();S.tab='home';render();}
+ else if(d.auto!==undefined){S.autoTx=d.auto==='1';[].forEach.call(b.parentNode.children,function(c){c.classList.toggle('on',c===b);});}
+ else if(d.lang){S.lang=d.lang;[].forEach.call(b.parentNode.children,function(c){c.classList.toggle('on',c===b);});}
+ else if(d.th){S.theme=d.th;theme();[].forEach.call(b.parentNode.children,function(c){c.classList.toggle('on',c===b);});}
+});
+document.addEventListener('click',function(e){var b=e.target.closest('[data-pk]');if(!b)return;$(b.dataset.pk).value=b.textContent;var cs=b.parentNode.querySelectorAll('.chip');for(var i=0;i<cs.length;i++)cs[i].classList.remove('on');b.classList.add('on');});
+var sv=null;try{sv=JSON.parse(localStorage.getItem('nova-state')||'null');}catch(e){}
+S.lists=JSON.parse(JSON.stringify(LISTS));S.det={iban:'NV00 0000 0000 0000 00',bic:'NOVAXX00',card:'4821'};S.lang='fr';
+if(sv)['bank','ini','theme','acc','tx','lists','det','lang','autoTx','hl','cl'].forEach(function(k){if(sv[k]!=null)S[k]=sv[k];});
+if(S.acc[0]&&S.acc[0].b===3284.5)S.acc[0].b=7855.64;
+[{a:0,i:'🛍️',n:'Shopify',s:'Today, 09:12 · Sales payout',v:1240.5},{a:0,i:'📈',n:'TopstepX',s:'Today, 08:40 · Payout',v:3000},{a:0,i:'🏆',n:'FTMO',s:'Yesterday · Payout',v:1850},{a:0,i:'💹',n:'Trading',s:'Yesterday · Profit',v:420.75}].forEach(function(d,k){var e=S.tx.filter(function(t){return t.n===d.n;})[0];if(e){if(!e.pin)e.pin=k+1;}else{d.pin=k+1;S.tx.push(d);}});
+if(!TH[S.theme])S.theme='blue';
+function persist(){try{localStorage.setItem('nova-state',JSON.stringify({bank:S.bank,ini:S.ini,theme:S.theme,acc:S.acc,tx:S.tx,lists:S.lists,det:S.det,lang:S.lang,autoTx:S.autoTx,hl:S.hl,cl:S.cl}));}catch(e){}}
+document.addEventListener('change',function(e){if(e.target.id!=='lgf'||!e.target.files[0])return;var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var c=document.createElement('canvas'),z=112,m=Math.min(im.width,im.height);c.width=c.height=z;c.getContext('2d').drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,z,z);ED.logo=c.toDataURL('image/png');$('lgp').innerHTML='<img src="'+ED.logo+'" alt="">';};im.src=r.result;};r.readAsDataURL(e.target.files[0]);});
+var POOL=[['🛒','Market Fresh','Groceries',-6,-48],['☕','Blue Door Café','Restaurants',-3,-9],['🚇','City Transit','Transport',-2,-4],['🍕','Pizza Corner','Restaurants',-10,-28],['🎬','StreamBox','Entertainment',-8,-15],['⛽','Fuel Stop','Transport',-35,-70],['📦','ParcelGo','Shopping',-9,-60]];
+function addTx(){var q=POOL[Math.floor(Math.random()*POOL.length)],d=new Date(),hm=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);S.tx.unshift({a:S.cur,i:q[0],n:q[1],s:'Today, '+hm+' · '+q[2],v:Math.round((q[3]+Math.random()*(q[4]-q[3]))*100)/100});}
+(function(){var v=$('view'),pt=$('ptr'),y0=null,x0=0,d=0,on=false,busy=false,pulled=false;
+function set(dd){d=dd;v.style.transition='none';v.style.transform='translateY('+dd+'px)';pt.style.transition='none';pt.style.opacity=Math.min(1,dd/45);pt.style.transform='translate(-50%,'+(Math.min(dd,80)-40)+'px)';pt.firstChild.style.transform='rotate('+(dd*5)+'deg)';}
+function rest(){v.style.transition='transform .25s ease';v.style.transform='translateY(0)';pt.style.transition='all .25s ease';pt.style.opacity=0;pt.style.transform='translate(-50%,-40px)';pt.classList.remove('spin');pt.firstChild.style.transform='';}
+function refresh(){busy=true;v.style.transition='transform .25s ease';v.style.transform='translateY(56px)';pt.style.transition='all .25s ease';pt.style.opacity=1;pt.style.transform='translate(-50%,20px)';pt.firstChild.style.transform='';pt.classList.add('spin');
+ setTimeout(function(){if(S.tab==='home'&&S.autoTx!==false)addTx();render();rest();busy=false;toast(S.lang==='fr'?'Actualisé':'Updated');},1000);}
+function start(x,y){if(busy||v.scrollTop>0)return;y0=y;x0=x;on=false;}
+function move(x,y,e){if(y0===null)return;var dy=y-y0,dx=x-x0;
+ if(!on){if(dy>8&&dy>Math.abs(dx)&&v.scrollTop<=0)on=true;else if(dy<-4||(Math.abs(dx)>8&&Math.abs(dx)>Math.abs(dy))){y0=null;return;}}
+ if(on){if(e.cancelable)e.preventDefault();set(Math.min(90,dy*.5));}}
+function end(){if(y0===null)return;y0=null;if(!on)return;on=false;pulled=true;setTimeout(function(){pulled=false;},120);if(d>=55)refresh();else rest();}
+v.addEventListener('touchstart',function(e){start(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
+v.addEventListener('touchmove',function(e){move(e.touches[0].clientX,e.touches[0].clientY,e);},{passive:false});
+v.addEventListener('touchend',end);v.addEventListener('touchcancel',end);
+v.addEventListener('mousedown',function(e){start(e.clientX,e.clientY);});
+window.addEventListener('mousemove',function(e){move(e.clientX,e.clientY,e);});
+window.addEventListener('mouseup',end);
+v.addEventListener('click',function(e){if(pulled){e.stopPropagation();e.preventDefault();}},true);
+})();
+theme();render();
+})();
+</script></body></html>
