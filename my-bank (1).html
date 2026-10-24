@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>My Bank</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#0b0b0d;font-family:-apple-system,"Inter","Segoe UI",system-ui,sans-serif;color:#12281A}
+button,input,select{font-family:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+#app{position:relative;margin:0 auto;width:100%;max-width:430px;height:100dvh;max-height:900px;background:#fff;overflow:hidden;display:flex;flex-direction:column}
+@media(min-width:500px){#app{margin-top:calc((100dvh - min(100dvh,900px))/2);border-radius:38px}}
+.nosb{scrollbar-width:none}.nosb::-webkit-scrollbar{display:none}
+#top{flex:none;display:flex;align-items:center;justify-content:space-between;padding:calc(18px + env(safe-area-inset-top,0px)) 20px 12px;min-height:76px}
+#scr{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding-bottom:22px}
+#tabs{flex:none;display:flex;border-top:1px solid #E3E7DF;background:#fff;padding:9px 0 calc(14px + env(safe-area-inset-bottom,0px))}
+#tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:12.5px;font-weight:500;color:#5A665D}
+#tabs button.on{font-weight:700;color:#12281A}
+.av{position:relative;width:44px;height:44px;border-radius:50%;border:1.5px solid #D9DED5;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px}
+.av i{position:absolute;right:-2px;bottom:-2px;width:15px;height:15px;border-radius:50%;background:#D93A3A;border:2px solid #fff}
+.pill{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:15px;padding:12px 20px;border-radius:999px;background:var(--ac);color:#12281A;white-space:nowrap}
+.pill.soft{background:#E4F3D2}
+.circ{width:44px;height:44px;border-radius:50%;background:#EEF1EA;display:flex;align-items:center;justify-content:center}
+h1{margin:0;font-size:38px;font-weight:600;letter-spacing:-1px;line-height:1.1;padding:26px 20px 0}
+h2{margin:0;font-size:22px;font-weight:600;letter-spacing:-.3px}
+.muted{color:#4F5D52}
+.row{display:flex;align-items:center;gap:14px;padding:14px 0}
+.ic{flex:none;width:50px;height:50px;border-radius:50%;border:1px solid #D9DED5;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:17px}
+.car{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:16px 20px 6px}
+.acc{flex:none;width:290px;height:240px;scroll-snap-align:start;background:#F1F3EE;border-radius:26px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;text-align:left}
+.lbl{padding:24px 20px 4px;font-size:13px;font-weight:600;color:#4F5D52;letter-spacing:.5px}
+#sheetBg{position:absolute;inset:0;background:rgba(10,20,12,.45);opacity:0;pointer-events:none;z-index:20}
+#sheetBg.on{opacity:1;pointer-events:auto}
+#sheet{position:absolute;left:0;right:0;bottom:0;z-index:21;max-height:88%;overflow-y:auto;background:#fff;border-radius:26px 26px 0 0;padding:20px 20px calc(24px + env(safe-area-inset-bottom,0px));transform:translateY(105%);box-shadow:0 -10px 40px #0004}
+#sheet.on{transform:none}
+#sheet h3{margin:0 0 14px;font-size:22px;font-weight:600}
+.f{margin:0 0 12px}.f label{display:block;font-size:13px;color:#4F5D52;margin-bottom:5px;font-weight:600}
+.f input,.f select{width:100%;font-size:17px;padding:13px 14px;border:1.5px solid #D9DED5;border-radius:14px;background:#fff}
+.btn{display:block;width:100%;text-align:center;background:var(--ac);font-weight:600;font-size:17px;padding:15px;border-radius:999px;margin-top:6px}
+.btn.dark{background:#12281A;color:#fff}.btn.ghost{background:#EEF1EA}
+.sw{display:flex;gap:10px;margin:2px 0 12px}.sw button{width:36px;height:36px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1.5px #D9DED5}.sw button.on{box-shadow:0 0 0 2.5px #12281A}
+#ptr{position:absolute;left:50%;margin-left:-20px;width:40px;height:40px;border-radius:50%;background:#fff;box-shadow:0 2px 12px #0003;display:flex;align-items:center;justify-content:center;z-index:6;opacity:0;pointer-events:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin .7s linear infinite}
+#toast{position:absolute;left:20px;right:20px;top:calc(14px + env(safe-area-inset-top,0px));z-index:30;background:#12281A;color:#fff;border-radius:18px;padding:14px 16px;font-weight:600;font-size:15px;transform:translateY(-140%)}
+#toast.on{transform:none}
+.card{flex:none;width:306px;height:194px;scroll-snap-align:center;border-radius:22px;position:relative;overflow:hidden;padding:22px}
+</style>
+</head>
+<body>
+<div id="app" style="--ac:#A8E063">
+  <div id="top"></div>
+  <div id="scr" class="nosb"></div>
+  <div id="tabs"></div>
+  <div id="ptr"><svg id="ptrI" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12281A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.5-5.8M20 4v4.5h-4.5"/></svg></div>
+  <div id="sheetBg"></div>
+  <div id="sheet"></div>
+  <div id="toast"></div>
+</div>
+<script>
+(function(){
+var KEY="mybank5",$=function(i){return document.getElementById(i);};
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+var DEF={bank:"my bank",name:"My Name",accent:"#A8E063",hide:false,tab:"home",filter:"all",q:"",
+ accounts:[{code:"EUR",sym:"\u20AC",tail:"2 6523",amt:18.83,tint:"#1F5C3A"},{code:"USD",sym:"$",tail:"7305",amt:0,tint:"#2B4C7E"},{code:"GBP",sym:"\u00A3",tail:"15750",amt:0,tint:"#7A2E4D"},{code:"CHF",sym:"Fr",tail:"157 50",amt:0,tint:"#8C2A2A"},{code:"JPY",sym:"\u00A5",tail:"971 49",amt:0,tint:"#5A5A5A"}],
+ rates:{EUR:1,USD:1.09,GBP:0.86,CHF:0.94,JPY:163},next:10,
+ txns:[],
+ recips:[{name:"Ana Markovic",cur:"EUR",tail:"4410",tint:"#CFEFA8"},{name:"Luka Petrovic",cur:"EUR",tail:"2287",tint:"#BFE3F2"},{name:"Sara Knezevic",cur:"GBP",tail:"9013",tint:"#F6D9A8"},{name:"Dario Radovic",cur:"USD",tail:"6650",tint:"#D8CCF6"}],
+ cards:[{type:"Physical card",tail:"3590",pin:"4821",frozen:false,g:"linear-gradient(135deg,#B6EC7C,#8FD65A)"},{type:"Virtual card",tail:"7714",pin:"1937",frozen:false,g:"linear-gradient(135deg,#BFE3F2,#9CCBE6)"}],
+ ci:0,showNum:false};
+var S;
+try{S=JSON.parse(localStorage.getItem(KEY)||"null");}catch(e){S=null;}
+if(!S||!S.accounts)S=JSON.parse(JSON.stringify(DEF));
+for(var k in DEF)if(S[k]===undefined)S[k]=DEF[k];
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+var SC={home:0,cards:0,rec:0,pay:0};
+
+function n2(v){return Number(v).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fc(v,c){return c==="JPY"?Math.round(v).toLocaleString("en-US"):n2(v);}
+var FID=0;
+function flag(c){var id="f"+(FID++),b='<svg width="46" height="46" viewBox="0 0 40 40"><defs><clipPath id="'+id+'"><circle cx="20" cy="20" r="20"/></clipPath></defs><g clip-path="url(#'+id+')">',e="</g></svg>",m="";
+ if(c==="EUR"){var d="";for(var i=0;i<12;i++){var a=i/12*6.2832;d+='<circle cx="'+(20+10*Math.sin(a)).toFixed(1)+'" cy="'+(20-10*Math.cos(a)).toFixed(1)+'" r="1.5" fill="#F4C95D"/>';}m='<rect width="40" height="40" fill="#1F3E9C"/>'+d;}
+ else if(c==="USD"){m='<rect width="40" height="40" fill="#fff"/>';for(var j=0;j<7;j++)m+='<rect y="'+(j*40/7*2).toFixed(1)+'" width="40" height="'+(40/7).toFixed(1)+'" fill="#C8333B"/>';m+='<rect width="20" height="22" fill="#2B3C7A"/>';}
+ else if(c==="GBP"){m='<rect width="40" height="40" fill="#2B3C7A"/><path d="M0 0L40 40M40 0L0 40" stroke="#fff" stroke-width="7"/><path d="M0 0L40 40M40 0L0 40" stroke="#C8333B" stroke-width="2.5"/><path d="M20 0V40M0 20H40" stroke="#fff" stroke-width="11"/><path d="M20 0V40M0 20H40" stroke="#C8333B" stroke-width="6"/>';}
+ else if(c==="CHF"){m='<rect width="40" height="40" fill="#C8333B"/><path d="M20 9V31M9 20H31" stroke="#fff" stroke-width="7"/>';}
+ else if(c==="JPY"){m='<rect width="40" height="40" fill="#fff"/><circle cx="20" cy="20" r="9" fill="#C8333B"/>';}
+ else m='<rect width="40" height="40" fill="#8A948C"/>';
+ return b+m+e;}
+function sym(c){var a=S.accounts.filter(function(x){return x.code===c;})[0];return a?a.sym:"";}
+function toEur(v,c){return v/(S.rates[c]||1);}
+function total(){var t=0;S.accounts.forEach(function(a){t+=toEur(a.amt,a.code);});return t;}
+function mask(s){return S.hide?"****":s;}
+function ini(s){var w=s.trim().split(/\s+/);return((w[0]||"?")[0]+((w[1]||w[0]||"?")[1]||"")).toUpperCase();}
+function dfmt(t){return new Date(t).toLocaleDateString("en-US",{month:"short",day:"numeric"});}
+function acc(c){return S.accounts.filter(function(x){return x.code===c;})[0];}
+
+var I={
+ home:'<svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11L12 3.5 20.5 11V19a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19z"/></svg>',
+ cards:'<svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h16v4a2 2 0 0 0 0 4v3H4v-4a2 2 0 0 0 0-4z"/></svg>',
+ rec:'<svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.5" r="3.5"/><path d="M2.8 20a6.2 6.2 0 0 1 12.4 0M16 5.5a3.5 3.5 0 0 1 0 6.5M18.5 14.5A6.2 6.2 0 0 1 21.5 20"/></svg>',
+ pay:'<svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19L19 5M19 5h-7M19 5v7M5 19h7M5 19v-7"/></svg>',
+ eye:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+ eyeoff:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 10c2.2 3 5.2 4.5 9 4.5s6.8-1.5 9-4.5"/><path d="M6 13.5l-1.6 2.4M10 15l-.7 2.8M14 15l.7 2.8M18 13.5l1.6 2.4"/></svg>',
+ bars:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 19V13M12 19V6M18 19V10M4 19h16"/></svg>',
+ bank:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-5 9 5M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg>',
+ trend:'<svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg>',
+ bag:'<svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 11.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8zM9 8V6.5a3 3 0 0 1 6 0V8"/></svg>',
+ chev:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#4F5D52" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>'
+};
+
+/* ---------- history generator: many small transactions that add up to the balance ---------- */
+var PIN=[{k:"topstepx",t:"Card \u00B7 TopstepX",a:40,b:60},{k:"of",t:"Card \u00B7 OnlyFans",a:6.5,b:9},{k:"shopify",t:"Card \u00B7 Shopify",a:25,b:40},{k:"ftmo",t:"Card \u00B7 FTMO",a:150,b:200}];
+var MERCH=["Lidl","Bolt","Netflix","Spotify","Uber Eats","Amazon","Shell","Zara","Starbucks","Apple","Wolt","IKEA","Booking.com","Steam","Decathlon","Pharmacy","Bakery","Taxi","Cinema","Gym","TradingView","Uber Eats","Uber Eats"],
+ INC=["From Studio Nord","From Marko J.","Freelance payout","Salary","Refund","Top up","Client invoice","From Ana M.","From Luka P.","Cashback"];
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function splitU(total,k){
+  if(total<k)k=Math.max(1,total);var w=[],sw=0,i;
+  for(i=0;i<k;i++){var v=Math.max(.4,Math.exp((Math.random()+Math.random()+Math.random()-1.5)*1.6));w.push(v);sw+=v;}
+  var out=[],acc=0;for(i=0;i<k;i++){var x=i<k-1?Math.max(1,Math.round(total*w[i]/sw)):total-acc;if(i<k-1&&acc+x>total-(k-1-i))x=Math.max(1,total-acc-(k-1-i));out.push(x);acc+=x;}
+  return out;
+}
+function addGen(a,target){
+  var amt=target===undefined?a.amt:target;if(!(amt>0))return;
+  var jp=a.code==="JPY",u=jp?1:100,AU=Math.round(amt*u),f=.3+Math.random()*.3,IU=Math.round(AU/(1-f)),OU=IU-AU;
+  var eur=amt/(S.rates[a.code]||1),k=Math.max(5,Math.min(120,Math.round(4+Math.sqrt(eur)/1.2))),k1=Math.max(2,Math.round(k*.4)),k2=Math.max(2,k-k1);
+  function make(list,kind){list.forEach(function(x){var ts=Date.now()-600000-Math.floor(Math.random()*40*864e5);
+    var t={g:1,kind:kind,amt:x/u,cur:a.code,ts:ts};
+    if(kind==="recv"){t.title=pick(INC);t.sub="Received";}
+    else if(Math.random()<.65){t.kind="card";t.title="Card \u00B7 "+pick(MERCH);t.sub="Card payment";}
+    else{t.kind="sent";t.title="To "+(S.recips.length?pick(S.recips).name:"Ana Markovic");t.sub="Sent";}
+    t.id=S.next++;S.txns.push(t);});}
+  var need=PIN.filter(function(p){return !S.txns.some(function(t){return t.pin===p.k;});});
+  if(need.length){var PU=0;
+    need.forEach(function(p){var e=p.a+Math.random()*(p.b-p.a),x=Math.max(1,Math.round(e*(S.rates[a.code]||1)*u));PU+=x;S.txns.push({g:1,pin:p.k,kind:"card",title:p.t,sub:"Card payment",amt:x/u,cur:a.code,ts:Date.now(),id:S.next++});});
+    if(OU<PU+u){var ex=PU+u-OU;OU+=ex;IU+=ex;}OU-=PU;}
+  make(splitU(IU,k1),"recv");if(OU>0)make(splitU(OU,k2),"out");
+}
+function sortTx(){
+  var base=Date.now();
+  PIN.forEach(function(p,i){S.txns.forEach(function(t){if(t.pin===p.k)t.ts=base-(i+1)*60000;});});
+  S.txns.sort(function(x,y){return y.ts-x.ts;});
+}
+function genAll(){S.txns=[];S.accounts.forEach(function(a){addGen(a);});sortTx();S.gen=1;}
+function regen(a){
+  var net=0;S.txns=S.txns.filter(function(t){if(t.g&&t.cur===a.code)return false;if(t.cur===a.code){net+=t.kind==="recv"?t.amt:-t.amt;}return true;});
+  var target=Math.round((a.amt-net)*100)/100;if(target>0)addGen(a,target);sortTx();
+}
+
+/* ---------- sheet + toast ---------- */
+var tt=null;
+function toast(m){var t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(tt);tt=setTimeout(function(){t.classList.remove("on");},2200);}
+function openSheet(html,mount){$("sheet").innerHTML=html;$("sheet").classList.add("on");$("sheetBg").classList.add("on");$("sheet").scrollTop=0;if(mount)mount($("sheet"));}
+function closeSheet(){$("sheet").classList.remove("on");$("sheetBg").classList.remove("on");}
+$("sheetBg").onclick=closeSheet;
+
+/* ---------- screens ---------- */
+function txnRow(t){
+  var main=(t.kind==="recv"?"+":(t.kind==="sent"||t.kind==="card"?"\u2212":""))+fc(t.amt,t.cur)+" "+t.cur,alt=t.kind==="conv"?fc(t.alt,t.altCur)+" "+t.altCur:"";
+  return '<div class="row"><div class="ic" style="'+(t.kind==="recv"?"background:#E4F3D2;border-color:#E4F3D2":"")+'">'+(t.kind==="conv"?I.trend:(t.kind==="card"?I.bag:(t.kind==="recv"?"\u2193":esc(ini(t.title.replace(/^(To|From) /,""))))))+'</div><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:500">'+esc(t.title)+'</div><div class="muted" style="font-size:14.5px;margin-top:2px">'+esc(t.sub)+' \u00B7 '+dfmt(t.ts)+'</div></div><div style="text-align:right"><div style="font-size:16px;font-weight:500;'+(t.kind==="recv"?"color:#1F6B2E":"")+'">'+mask(main)+'</div>'+(alt?'<div class="muted" style="font-size:14.5px;margin-top:2px">'+mask(alt)+'</div>':"")+'</div></div>';
+}
+function head(){
+  var t=S.tab,h="";
+  if(t==="home")h='<button class="av" data-a="edit" aria-label="Edit app">'+esc(ini(S.name))+'<i></i></button><div style="display:flex;gap:10px;align-items:center"><button class="pill" data-a="earn">Earn \u20AC150</button><button class="circ" data-a="hide" aria-label="Hide balances">'+(S.hide?I.eye:I.eyeoff)+'</button></div>';
+  if(t==="cards")h='<span></span><button class="pill" data-a="ordercard">Order a card</button>';
+  if(t==="rec")h='<span></span><button class="pill" data-a="addrec">Add recipient</button>';
+  if(t==="pay")h='<span></span><button class="pill" data-a="newpay">New payment</button>';
+  $("top").innerHTML=h;
+}
+function viewHome(){
+  var h='<div style="padding:4px 20px 0"><div class="muted" style="font-size:15px;font-weight:500">Total balance</div><div style="display:flex;align-items:center;gap:12px"><div style="font-size:26px;font-weight:600;letter-spacing:-.3px;line-height:1.25">'+mask(n2(total())+" EUR")+'</div><button class="circ" style="width:36px;height:36px" data-a="goPay" aria-label="Insights">'+I.bars+'</button></div></div>';
+  h+='<div class="car nosb" style="padding:16px 20px 4px;gap:10px;scroll-snap-type:none"><button class="pill" data-a="send" style="font-size:16px;padding:14px 24px">Send</button><button class="pill soft" data-a="add" style="font-size:16px;padding:14px 24px">Add money</button><button class="pill soft" data-a="request" style="font-size:16px;padding:14px 24px">Request</button><button class="pill soft" data-a="scan" style="font-size:16px;padding:14px 22px">Scan</button></div>';
+  h+='<div class="car nosb">';
+  S.accounts.forEach(function(a,i){h+='<button class="acc" data-a="acct" data-i="'+i+'"><div style="display:flex;align-items:center;gap:12px">'+flag(a.code)+'<div style="font-size:19px;font-weight:600">'+esc(a.code)+'</div></div><div><div class="muted" style="display:flex;gap:8px;align-items:center;font-size:15px;margin-bottom:4px">'+I.bank+'<span>\u00B7\u00B7 '+esc(a.tail)+'</span></div><div style="font-size:24px;font-weight:600;letter-spacing:-.2px">'+mask(fc(a.amt,a.code))+'</div></div></button>';});
+  h+='</div>';
+  h+='<div style="margin:12px 20px 0;background:#F1F3EE;border-radius:26px;padding:18px"><div style="display:flex;gap:14px;align-items:center"><div style="flex:none;width:56px;height:56px;border-radius:50%;background:#fff;border:1px solid #D9DED5;display:flex;align-items:center;justify-content:center">'+I.cards+'</div><div><div style="font-size:18px;font-weight:600;line-height:1.25">Try the everyday account</div><div class="muted" style="font-size:15.5px;line-height:1.4;margin-top:3px">Get early access to the new experience before it launches.</div></div></div><button class="btn" data-a="more">Find out more</button></div>';
+  h+='<div style="display:flex;justify-content:space-between;align-items:baseline;padding:28px 20px 4px"><h2>Transactions</h2><button data-a="goPay" style="font-size:16px;font-weight:600;text-decoration:underline">See all</button></div><div style="padding:0 20px">';
+  S.txns.slice(0,4).forEach(function(t){h+=txnRow(t);});
+  h+='</div><div style="padding:20px 20px 0"><h2>Transfer calculator</h2></div><div style="margin:12px 20px 0;border:1.5px solid #D9DED5;border-radius:22px;padding:14px 16px"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="flex:1"><div class="muted" style="font-size:13.5px">You send</div><input id="calcIn" inputmode="decimal" value="1,000.00" style="width:100%;border:0;outline:0;font-size:20px;font-weight:600;padding:0;background:none"></div><select id="calcFrom" style="border:0;background:#EEF1EA;border-radius:999px;padding:10px 12px;font-weight:600;font-size:15px">'+S.accounts.map(function(a){return '<option>'+esc(a.code)+'</option>';}).join("")+'</select></div><div style="height:1px;background:#E3E7DF;margin:12px 0"></div><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="flex:1"><div class="muted" style="font-size:13.5px">Recipient gets</div><div id="calcOut" style="font-size:20px;font-weight:600"></div></div><select id="calcTo" style="border:0;background:#EEF1EA;border-radius:999px;padding:10px 12px;font-weight:600;font-size:15px">'+S.accounts.map(function(a,i){return '<option'+(i===1?" selected":"")+'>'+esc(a.code)+'</option>';}).join("")+'</select></div></div>';
+  return h;
+}
+function viewCards(){
+  var h='<h1>Cards</h1><div class="car nosb" id="cardCar" style="padding-top:24px">';
+  S.cards.forEach(function(c,i){
+    var dark=i===0?"#12281A":"#12281A";
+    h+='<div class="card" data-i="'+i+'" style="background:'+c.g+';'+(c.frozen?"filter:grayscale(1);opacity:.55":"")+'"><div style="position:absolute;right:22px;top:20px;font-size:26px;font-weight:600;font-style:italic;letter-spacing:-1px;color:'+dark+'">'+esc(S.bank)+'</div><div style="position:absolute;left:22px;top:62px;display:flex;align-items:center;gap:10px"><svg width="48" height="36" viewBox="0 0 50 38"><rect x="1" y="1" width="48" height="36" rx="8" fill="#E8E8E2" stroke="#9A9A92"/><path d="M1 13h14M1 25h14M35 13h14M35 25h14M15 1v36M35 1v36" stroke="#9A9A92" fill="none"/><rect x="15" y="9" width="20" height="20" rx="8" fill="none" stroke="#9A9A92"/></svg><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#12281A" stroke-width="2" stroke-linecap="round"><path d="M8 8.5a5 5 0 0 1 0 7M11.5 6a8.5 8.5 0 0 1 0 12M15 3.5a12 12 0 0 1 0 17"/></svg></div><div style="position:absolute;left:22px;bottom:20px;font-size:15px;font-weight:600;letter-spacing:2px">'+(S.showNum?"5412 7500 8841 "+esc(c.tail):"\u2022\u2022\u2022\u2022 "+esc(c.tail))+'</div><div style="position:absolute;right:22px;bottom:18px;font-size:20px;font-weight:600;color:#fff;font-style:italic;letter-spacing:1px">DEBIT</div></div>';
+  });
+  var c=S.cards[S.ci]||S.cards[0];
+  h+='</div><div style="display:flex;justify-content:center;gap:14px;align-items:baseline;padding:12px 20px 0;font-size:18px"><span style="font-weight:600" id="cType">'+esc(c.type)+'</span><span class="muted" id="cTail" style="letter-spacing:1px">\u2022\u2022\u2022\u2022 '+esc(c.tail)+'</span></div>';
+  function act(a,label,svg,bg){return '<button data-a="'+a+'" style="display:flex;flex-direction:column;align-items:center;gap:9px;width:96px"><span style="width:68px;height:68px;border-radius:50%;background:'+bg+';display:flex;align-items:center;justify-content:center">'+svg+'</span><span style="font-size:16px;font-weight:600">'+label+'</span></button>';}
+  h+='<div style="display:flex;justify-content:space-between;padding:26px 34px 0">'+act("pin","Show PIN",'<svg width="28" height="28" viewBox="0 0 24 24" fill="#12281A"><circle cx="6" cy="5" r="1.7"/><circle cx="12" cy="5" r="1.7"/><circle cx="18" cy="5" r="1.7"/><circle cx="6" cy="10" r="1.7"/><circle cx="12" cy="10" r="1.7"/><circle cx="18" cy="10" r="1.7"/><circle cx="6" cy="15" r="1.7"/><circle cx="12" cy="15" r="1.7"/><circle cx="18" cy="15" r="1.7"/><circle cx="12" cy="20" r="1.7"/></svg>',"var(--ac)")+act("det",S.showNum?"Hide details":"Details",I.cards.replace('currentColor','#12281A').replace('currentColor','#12281A'),"var(--ac)")+act("freeze",c.frozen?"Unfreeze card":"Freeze card",'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#12281A" stroke-width="1.9" stroke-linecap="round"><path d="M12 2.5v19M3.8 7.3l16.4 9.4M3.8 16.7l16.4-9.4M9.5 4.2L12 6.5l2.5-2.3M9.5 19.8L12 17.5l2.5 2.3"/></svg>',c.frozen?"#C9CFC4":"#EEF1EA")+'</div>';
+  h+='<button data-a="wallet" style="display:flex;align-items:center;justify-content:center;gap:12px;margin:26px 20px 0;width:calc(100% - 40px);background:#12281A;color:#fff;border-radius:16px;padding:19px;font-size:20px;font-weight:600"><svg width="28" height="24" viewBox="0 0 30 26"><rect x="2" y="3" width="26" height="20" rx="4" fill="#fff"/><rect x="2" y="3" width="26" height="6" fill="#E85C4A"/><rect x="2" y="9" width="26" height="5" fill="#F4C95D"/><rect x="2" y="14" width="26" height="4" fill="#6BCB77"/><rect x="2" y="18" width="26" height="5" rx="3" fill="#4D8FE0"/></svg>Add to Wallet</button>';
+  h+='<div class="lbl" style="padding-top:34px;font-size:17px;font-weight:500;letter-spacing:0">Manage card</div><div style="margin:8px 20px 0;border-top:1.5px solid #E3E7DF"></div>';
+  [["\u20AC","Spending limits","Daily and monthly"],["\u22EF","Card settings","Contactless, online and ATM"],["!","Report a problem","Lost, stolen or damaged"]].forEach(function(m){h+='<button data-a="manage" data-t="'+m[1]+'" style="display:flex;align-items:center;gap:16px;padding:16px 20px;width:100%;text-align:left"><div class="ic" style="width:48px;height:48px">'+m[0]+'</div><div><div style="font-size:17px;font-weight:600">'+m[1]+'</div><div class="muted" style="font-size:14.5px;margin-top:2px">'+m[2]+'</div></div></button>';});
+  return h;
+}
+function viewRec(){
+  var q=S.q.toLowerCase(),list=S.recips.filter(function(r){return !q||r.name.toLowerCase().indexOf(q)>-1||r.tail.indexOf(q)>-1;});
+  var h='<h1>Recipients</h1><div style="margin:20px 20px 0;display:flex;align-items:center;gap:12px;background:#F1F3EE;border-radius:999px;padding:0 20px"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4F5D52" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="q" value="'+esc(S.q)+'" placeholder="Name or account number" style="flex:1;border:0;background:none;outline:0;font-size:17px;padding:15px 0"></div>';
+  h+='<div class="lbl">ALL RECIPIENTS</div><div style="padding:0 20px">';
+  list.forEach(function(r){var i=S.recips.indexOf(r);h+='<button data-a="rsend" data-i="'+i+'" class="row" style="width:100%;text-align:left;border-bottom:1px solid #EDF0E9"><span class="ic" style="border:0;background:'+r.tint+'">'+esc(ini(r.name))+'</span><div style="flex:1;min-width:0"><div style="font-size:17px;font-weight:600">'+esc(r.name)+'</div><div class="muted" style="font-size:14.5px;margin-top:2px">'+esc(r.cur)+' \u00B7 \u2022\u2022\u2022\u2022 '+esc(r.tail)+'</div></div>'+I.chev+'</button>';});
+  if(!list.length)h+='<div class="muted" style="padding:24px 0">No recipients found.</div>';
+  return h+'</div>';
+}
+function viewPay(){
+  var f=S.filter,list=S.txns.filter(function(t){return f==="all"||(f==="sent"&&(t.kind==="sent"||t.kind==="card"||t.kind==="conv"))||(f==="recv"&&t.kind==="recv");});
+  var m=new Date().getMonth(),sp=0;S.txns.forEach(function(t){if((t.kind==="sent"||t.kind==="card")&&new Date(t.ts).getMonth()===m)sp+=toEur(t.amt,t.cur);});
+  var h='<h1>Payments</h1><div style="display:flex;gap:10px;padding:20px 20px 0">';
+  [["all","All"],["sent","Sent"],["recv","Received"]].forEach(function(x){h+='<button data-a="flt" data-f="'+x[0]+'" style="font-weight:600;font-size:15.5px;padding:11px 19px;border-radius:999px;background:'+(f===x[0]?"#12281A":"#EEF1EA")+';color:'+(f===x[0]?"#fff":"#12281A")+'">'+x[1]+'</button>';});
+  h+='</div><div style="margin:20px 20px 0;background:#F1F3EE;border-radius:26px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between"><div><div class="muted" style="font-size:14.5px">Sent this month</div><div style="font-size:24px;font-weight:600;letter-spacing:-.3px">'+mask(n2(sp)+" EUR")+'</div></div><svg width="90" height="52" viewBox="0 0 96 56" fill="none"><path d="M2 44 L16 36 L30 40 L44 22 L58 28 L72 12 L94 18" stroke="#12281A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="94" cy="18" r="5" fill="var(--ac)" stroke="#12281A" stroke-width="2"/></svg></div><div class="lbl">ACTIVITY</div><div style="padding:0 20px">';
+  list.forEach(function(t){h+=txnRow(t);});
+  if(!list.length)h+='<div class="muted" style="padding:20px 0">Nothing here yet.</div>';
+  return h+'</div>';
+}
+
+function render(){
+  document.getElementById("app").style.setProperty("--ac",S.accent);
+  var sc=$("scr");SC[S.tab_prev||S.tab]=sc.scrollTop;
+  head();
+  var h=S.tab==="home"?viewHome():S.tab==="cards"?viewCards():S.tab==="rec"?viewRec():viewPay();
+  sc.innerHTML=h;sc.scrollTop=SC[S.tab]||0;S.tab_prev=S.tab;
+  var tabs=[["home","Home"],["cards","Cards"],["rec","Recipients"],["pay","Payments"]];
+  $("tabs").innerHTML=tabs.map(function(t){return '<button data-tab="'+t[0]+'" class="'+(S.tab===t[0]?"on":"")+'">'+I[t[0]]+t[1]+'</button>';}).join("");
+  if(S.tab==="home")calc();
+  if(S.tab==="cards"){var car=$("cardCar");car.scrollLeft=S.ci*(306+12);var rafId=0;car.onscroll=function(){cancelAnimationFrame(rafId);rafId=requestAnimationFrame(function(){var i=Math.round(car.scrollLeft/(306+12));i=Math.max(0,Math.min(S.cards.length-1,i));if(i!==S.ci){S.ci=i;var c=S.cards[i];$("cType").textContent=c.type;$("cTail").textContent="\u2022\u2022\u2022\u2022 "+c.tail;save();var b=document.querySelector('[data-a=freeze] span:last-child');if(b)b.textContent=c.frozen?"Unfreeze card":"Freeze card";}});};}
+  if(S.tab==="rec"){var q=$("q");q.oninput=function(){S.q=q.value;var p=q.selectionStart;render();var q2=$("q");q2.focus();q2.setSelectionRange(p,p);};}
+}
+function calc(){
+  var i=$("calcIn");if(!i)return;
+  function go(){var v=parseFloat(String(i.value).replace(/,/g,""))||0,a=$("calcFrom").value,b=$("calcTo").value;$("calcOut").textContent=fc(v/(S.rates[a]||1)*(S.rates[b]||1),b);}
+  i.oninput=go;$("calcFrom").onchange=go;$("calcTo").onchange=go;go();
+}
+
+/* ---------- actions ---------- */
+function addTxn(t){t.id=S.next++;t.ts=Date.now();S.txns.unshift(t);}
+function sendSheet(ri){
+  var r=S.recips[ri];
+  openSheet('<h3>Send to '+esc(r.name)+'</h3><div class="f"><label>Amount</label><input id="sAmt" inputmode="decimal" placeholder="0.00"></div><div class="f"><label>From account</label><select id="sFrom">'+S.accounts.map(function(a){return '<option value="'+a.code+'"'+(a.code===r.cur?" selected":"")+'>'+esc(a.code)+' \u2014 '+fc(a.amt,a.code)+'</option>';}).join("")+'</select></div><button class="btn" id="sGo">Send money</button><button class="btn ghost" id="sNo">Cancel</button>',function(){
+    $("sNo").onclick=closeSheet;
+    $("sGo").onclick=function(){var v=parseFloat($("sAmt").value.replace(",","."));var a=acc($("sFrom").value);
+      if(!(v>0)){toast("Enter an amount");return;}
+      if(v>a.amt){toast("Not enough "+a.code+" balance");return;}
+      a.amt=Math.round((a.amt-v)*100)/100;addTxn({kind:"sent",title:"To "+r.name,sub:"Sent",amt:v,cur:a.code});save();closeSheet();render();toast("Sent "+fc(v,a.code)+" "+a.code+" to "+r.name);};
+  });
+}
+function chooseRecipient(){
+  openSheet('<h3>Send to</h3>'+S.recips.map(function(r,i){return '<button data-a="pick" data-i="'+i+'" class="row" style="width:100%;text-align:left"><span class="ic" style="border:0;background:'+r.tint+'">'+esc(ini(r.name))+'</span><div style="flex:1"><div style="font-size:17px;font-weight:600">'+esc(r.name)+'</div><div class="muted" style="font-size:14.5px">'+esc(r.cur)+' \u00B7 \u2022\u2022\u2022\u2022 '+esc(r.tail)+'</div></div></button>';}).join("")+'<button class="btn ghost" id="cNo">Cancel</button>',function(){$("cNo").onclick=closeSheet;});
+}
+function addMoney(){
+  openSheet('<h3>Add money</h3><div class="f"><label>Account</label><select id="aAcc">'+S.accounts.map(function(a){return '<option value="'+a.code+'">'+esc(a.code)+'</option>';}).join("")+'</select></div><div class="f"><label>Amount</label><input id="aAmt" inputmode="decimal" placeholder="0.00"></div><button class="btn" id="aGo">Add</button><button class="btn ghost" id="aNo">Cancel</button>',function(){
+    $("aNo").onclick=closeSheet;
+    $("aGo").onclick=function(){var v=parseFloat($("aAmt").value.replace(",","."));if(!(v>0)){toast("Enter an amount");return;}var a=acc($("aAcc").value);a.amt=Math.round((a.amt+v)*100)/100;addTxn({kind:"recv",title:"Top up",sub:"Added",amt:v,cur:a.code});save();closeSheet();render();toast("Added "+fc(v,a.code)+" "+a.code);};
+  });
+}
+function addRecipient(){
+  openSheet('<h3>Add recipient</h3><div class="f"><label>Full name</label><input id="rN" placeholder="Name"></div><div class="f"><label>Currency</label><select id="rC">'+S.accounts.map(function(a){return '<option>'+esc(a.code)+'</option>';}).join("")+'</select></div><div class="f"><label>Last 4 digits of account</label><input id="rT" inputmode="numeric" maxlength="4" placeholder="0000"></div><button class="btn" id="rGo">Save recipient</button><button class="btn ghost" id="rNo">Cancel</button>',function(){
+    $("rNo").onclick=closeSheet;
+    $("rGo").onclick=function(){var n=$("rN").value.trim();if(!n){toast("Enter a name");return;}var tints=["#CFEFA8","#BFE3F2","#F6D9A8","#D8CCF6"];S.recips.unshift({name:n,cur:$("rC").value,tail:($("rT").value||"0000").slice(0,4),tint:tints[S.recips.length%4]});save();closeSheet();render();toast(n+" added");};
+  });
+}
+function editSheet(){
+  var sw=["#A8E063","#7FD6C2","#F4C95D","#B9A7F5","#F29B8B"];
+  openSheet('<h3>Edit your bank</h3><div class="f"><label>Bank name (shown on the card)</label><input id="eB" value="'+esc(S.bank)+'"></div><div class="f"><label>Your name</label><input id="eN" value="'+esc(S.name)+'"></div><div class="f"><label>Accent color</label></div><div class="sw" id="eSw">'+sw.map(function(c){return '<button data-c="'+c+'" class="'+(c===S.accent?"on":"")+'" style="background:'+c+'" aria-label="'+c+'"></button>';}).join("")+'</div>'+S.accounts.map(function(a,i){return '<div class="f"><label>'+esc(a.code)+' balance</label><input data-bal="'+i+'" inputmode="decimal" value="'+a.amt+'"></div>';}).join("")+'<button class="btn" id="eGo">Save</button><button class="btn ghost" id="eReset">Reset demo data</button>',function(){
+    var col=S.accent;
+    $("eSw").onclick=function(e){var b=e.target.closest("button");if(!b)return;col=b.getAttribute("data-c");Array.prototype.forEach.call(this.children,function(x){x.classList.toggle("on",x===b);});};
+    $("eGo").onclick=function(){S.bank=$("eB").value.trim()||"my bank";S.name=$("eN").value.trim()||"My Name";S.accent=col;Array.prototype.forEach.call(document.querySelectorAll("[data-bal]"),function(x){var v=parseFloat(String(x.value).replace(",","."));if(v>=0){var ac2=S.accounts[+x.getAttribute("data-bal")];if(Math.abs(ac2.amt-v)>0.004){ac2.amt=v;regen(ac2);}}});save();closeSheet();render();toast("Saved");};
+    $("eReset").onclick=function(){S=JSON.parse(JSON.stringify(DEF));genAll();save();closeSheet();render();toast("Demo data restored");};
+  });
+}
+
+document.addEventListener("click",function(e){
+  var tb=e.target.closest("[data-tab]");if(tb){S.tab=tb.getAttribute("data-tab");save();render();return;}
+  var b=e.target.closest("[data-a]");if(!b)return;
+  var a=b.getAttribute("data-a"),i=+b.getAttribute("data-i");
+  if(a==="edit")editSheet();
+  else if(a==="hide"){S.hide=!S.hide;save();render();}
+  else if(a==="goPay"){S.tab="pay";save();render();}
+  else if(a==="send"){S.tab="rec";save();render();toast("Pick a recipient to send to");}
+  else if(a==="add")addMoney();
+  else if(a==="request")toast("Request link copied");
+  else if(a==="scan")toast("Camera is not available in this preview");
+  else if(a==="more"||a==="earn")toast("Coming soon");
+  else if(a==="acct"){var ac=S.accounts[i];openSheet('<h3>'+esc(ac.code)+' account</h3><div class="muted" style="margin-bottom:12px">\u00B7\u00B7 '+esc(ac.tail)+'</div><div style="font-size:26px;font-weight:600;margin-bottom:14px">'+fc(ac.amt,ac.code)+' '+esc(ac.code)+'</div><button class="btn" id="aA">Add money</button><button class="btn ghost" id="aE">Edit balance</button>',function(){$("aA").onclick=function(){addMoney();};$("aE").onclick=editSheet;});}
+  else if(a==="rsend"){sendSheet(i);}
+  else if(a==="pick"){sendSheet(i);}
+  else if(a==="addrec"||a==="newpay"){if(a==="newpay")chooseRecipient();else addRecipient();}
+  else if(a==="flt"){S.filter=b.getAttribute("data-f");save();render();}
+  else if(a==="ordercard"){var n=S.cards.length+1;S.cards.push({type:"Virtual card",tail:String(1000+Math.floor(Math.random()*9000)),pin:String(1000+Math.floor(Math.random()*9000)),frozen:false,g:["linear-gradient(135deg,#F6D9A8,#EBBE6E)","linear-gradient(135deg,#D8CCF6,#B8A6EE)","linear-gradient(135deg,#BFE3F2,#9CCBE6)"][n%3]});S.ci=S.cards.length-1;save();render();toast("New virtual card created");}
+  else if(a==="pin"){var c=S.cards[S.ci];openSheet('<h3>Card PIN</h3><div style="font-size:36px;font-weight:600;letter-spacing:10px;margin:6px 0 16px">'+esc(c.pin)+'</div><button class="btn dark" id="pK">Done</button>',function(){$("pK").onclick=closeSheet;});}
+  else if(a==="det"){S.showNum=!S.showNum;save();render();}
+  else if(a==="freeze"){var c2=S.cards[S.ci];c2.frozen=!c2.frozen;save();render();toast(c2.frozen?"Card frozen":"Card unfrozen");}
+  else if(a==="wallet")toast("Added to Wallet");
+  else if(a==="manage")toast(b.getAttribute("data-t")+" \u2014 coming soon");
+});
+if(!S.gen){genAll();save();}
+/* pull to refresh */
+(function(){
+  var sc=$("scr"),pt=$("ptr"),ic=$("ptrI"),y0=null,d=0,busy=false;
+  function place(){pt.style.top=($("top").offsetHeight+4)+"px";}
+  function set(v,anim){d=v;sc.style.transition=anim?"transform .25s ease":"none";sc.style.transform=v?"translateY("+v+"px)":"";pt.style.transition=anim?"opacity .2s":"none";pt.style.opacity=Math.min(1,v/40);ic.style.transform="rotate("+(v*4)+"deg)";}
+  function start(y){if(busy||sc.scrollTop>0||$("sheet").classList.contains("on"))return;y0=y;place();}
+  function move(y,ev){if(y0===null)return;var dy=y-y0;if(dy<=0||sc.scrollTop>0){if(dy<=0)set(0);return;}if(ev&&ev.cancelable)ev.preventDefault();set(Math.min(90,dy*.5));}
+  function end(){if(y0===null)return;y0=null;if(d>=45){busy=true;set(52,true);pt.style.opacity=1;ic.style.transform="";ic.classList.add("spin");
+      setTimeout(function(){ic.classList.remove("spin");for(var c in S.rates)if(c!=="EUR")S.rates[c]=Math.round(S.rates[c]*(1+(Math.random()-.5)*.006)*10000)/10000;save();render();set(0,true);busy=false;toast("Up to date");},900);}
+    else set(0,true);}
+  sc.addEventListener("touchstart",function(e){start(e.touches[0].clientY);},{passive:true});
+  sc.addEventListener("touchmove",function(e){move(e.touches[0].clientY,e);},{passive:false});
+  sc.addEventListener("touchend",end);sc.addEventListener("touchcancel",end);
+  var md=false;
+  sc.addEventListener("mousedown",function(e){if(e.target.closest("input,select,textarea"))return;md=true;start(e.clientY);});
+  window.addEventListener("mousemove",function(e){if(md)move(e.clientY,e);});
+  window.addEventListener("mouseup",function(){if(md){md=false;end();}});
+})();
+render();
+})();
+</script>
+</body>
+</html>
