@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Budget Trip · Where can your budget take you?</title>
+<meta name="description" content="Pick a budget and see where it flies you. Get a full day-by-day trip plan in seconds. Free, no sign-up.">
+<meta property="og:title" content="Where can your budget take you?">
+<meta property="og:description" content="Pick a budget, watch it fly, get a day-by-day plan in seconds.">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#0b1220">
+<style>
+:root{--bg:#0a0f1c;--card:#121a2b;--card2:#18223a;--line:#1f2b45;--ink:#f1f5fb;--mut:#8a9bb5;--a:#2dd4bf;--a2:#5eead4;--ok:#4ade80;--bad:#f87171}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.4;overscroll-behavior:none}
+button{font-family:inherit}
+#home{max-width:430px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top,0px)) 16px calc(28px + env(safe-area-inset-bottom,0px));min-height:100%}
+.logo{display:flex;align-items:center;gap:6px;font-weight:700;font-size:14px;color:var(--mut)}
+.logo i{font-style:normal;color:var(--a)}
+.top{margin:16px 0 4px;padding:16px 14px 12px;border-radius:20px;background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line)}
+.lab{text-align:center;font-size:11px;color:var(--mut);font-weight:600;letter-spacing:.9px;text-transform:uppercase}
+.amt{text-align:center;font-weight:700;letter-spacing:-1.5px;line-height:1.05;font-size:clamp(40px,12vw,52px);margin:4px 0 0;font-variant-numeric:tabular-nums}
+.sub{text-align:center;color:var(--mut);font-size:12px;margin:2px 0 8px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:26px;background:transparent;margin:2px 0}
+input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:5px;background:linear-gradient(90deg,var(--a) var(--p,40%),#26334f var(--p,40%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;margin-top:-8.5px;box-shadow:0 2px 8px #0009}
+input[type=range]::-moz-range-track{height:5px;border-radius:5px;background:#26334f}
+input[type=range]::-moz-range-progress{height:5px;border-radius:5px;background:var(--a)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radius:50%;background:#fff}
+.chips{display:flex;gap:6px;justify-content:center;margin:6px 0 2px}
+.chip{border:1px solid var(--line);background:transparent;color:var(--mut);border-radius:14px;padding:5px 10px;font-weight:600;font-size:12px;white-space:nowrap}
+.chip.on{background:var(--a);color:#04201c;border-color:var(--a)}
+.seg{display:flex;gap:6px;justify-content:center;align-items:center;color:var(--mut);font-size:12px;margin-top:8px}
+.seg .chip{padding:4px 9px;font-size:11.5px}
+.seg .gap{width:8px}
+.h{display:flex;justify-content:space-between;align-items:baseline;margin:20px 2px 8px}
+.h b{font-size:15px;font-weight:700;letter-spacing:-.2px}.h span{color:var(--mut);font-size:11.5px}
+.sur{width:100%;border:1px solid var(--line);border-radius:14px;padding:10px;font-weight:600;font-size:13px;color:var(--ink);background:var(--card);margin:0 0 4px}
+.c{display:grid;grid-template-columns:40px 1fr auto;gap:11px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:16px;padding:9px 12px;margin:7px 0;color:var(--ink)}
+.c:active{background:var(--card2)}
+.c .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:21px}
+.c .n{font-weight:650;font-size:14.5px;letter-spacing:-.1px}.c .k{color:var(--mut);font-size:11.5px}
+.c .d{text-align:right}.c .d b{font-size:19px;letter-spacing:-.5px;line-height:1;display:block;font-variant-numeric:tabular-nums}.c .d small{color:var(--mut);font-size:10.5px}
+.c.low{opacity:.4}
+.foot{margin:16px 0 0;text-align:center;color:#5d6e8a;font-size:11px}
+#load{position:fixed;inset:0;z-index:40;background:rgba(10,15,28,.97);display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:30px}
+#load.on{display:flex}
+#load .big{font-size:18px;font-weight:700;letter-spacing:-.3px}
+.pbar{width:min(220px,60vw);height:5px;border-radius:5px;background:#26334f;overflow:hidden}.pbar i{display:block;height:100%;width:0;background:var(--a);border-radius:5px}
+#plan{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;background:var(--bg);transform:translateY(100%);transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+#plan.on{transform:none}
+.pt{display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px;max-width:430px;width:100%;margin:0 auto}
+.pt .bk{width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:18px;line-height:1;padding:0}
+.pt .ttl{flex:1;font-weight:700;font-size:16px;letter-spacing:-.2px}
+.stp{display:flex;align-items:center;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:2px}
+.stp button{width:28px;height:28px;border-radius:50%;border:0;background:var(--card2);color:var(--ink);font-size:16px;font-weight:700;padding:0}
+.stp b{min-width:54px;text-align:center;font-size:12.5px;font-weight:600}
+.pb{flex:1;overflow:auto;padding:2px 0 16px;-webkit-overflow-scrolling:touch}
+.pi{max-width:430px;margin:0 auto;padding:0 14px}
+.hero{border-radius:18px;padding:14px 16px;background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line)}
+.hero.bad{border-color:#7f2d2d;background:linear-gradient(180deg,#2a1820,var(--card))}
+.hero .l{color:var(--mut);font-size:10.5px;font-weight:600;letter-spacing:.8px;text-transform:uppercase}
+.hero .t{font-size:30px;font-weight:700;letter-spacing:-1px;line-height:1.1;font-variant-numeric:tabular-nums}
+.hero .t small{font-size:13px;letter-spacing:0;color:var(--mut);font-weight:500}
+.meter{height:6px;border-radius:5px;background:#26334f;overflow:hidden;margin:10px 0 7px}.meter i{display:block;height:100%;width:0;border-radius:5px;background:var(--a);transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.hero.bad .meter i{background:var(--bad)}
+.hero .r{display:flex;justify-content:space-between;font-size:12.5px;color:var(--mut);font-weight:500}.hero .r span:first-child{color:var(--ok);font-weight:600}.hero.bad .r span:first-child{color:var(--bad)}
+.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0 4px}
+.mini div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:7px 4px;text-align:center}.mini b{display:block;font-size:13px;font-weight:650}.mini small{color:var(--mut);font-size:10px}
+.day{background:var(--card);border:1px solid var(--line);border-radius:16px;margin:8px 0;overflow:hidden;opacity:0;transform:translateY(12px);animation:up .45s forwards}
+@keyframes up{to{opacity:1;transform:none}}
+.dh{display:flex;justify-content:space-between;padding:9px 12px;font-weight:700;font-size:13.5px;background:var(--card2)}.dh span{color:var(--a2);font-weight:600;font-size:12px}
+.a{display:grid;grid-template-columns:68px 1fr auto;gap:6px;padding:8px 12px;border-top:1px solid var(--line);align-items:center}
+.a .t{font-size:9.5px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.a .n{font-weight:600;line-height:1.25;font-size:13.5px}.a .m{font-size:11px;color:var(--mut)}
+.a .p{font-weight:700;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}.a .p.f{color:var(--ok)}
+.a .sw{margin-left:6px;border:1px solid var(--line);background:transparent;color:var(--mut);border-radius:8px;padding:1px 6px;font-size:11.5px}
+.tip{background:var(--card);border:1px dashed #2c3d5f;border-radius:12px;padding:8px 12px;margin:7px 0;font-size:12.5px;color:#b5c4da}
+.tt{margin:16px 2px 2px;font-size:16px;font-weight:700;letter-spacing:-.2px}.tt span{color:var(--mut);font-size:11.5px;font-weight:500}
+.bar{display:flex;gap:8px;padding:9px 14px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--bg)}
+.bar>div{display:flex;gap:8px;max-width:430px;width:100%;margin:0 auto}
+.bar button{flex:1;border-radius:13px;padding:11px;font-weight:650;font-size:13.5px;border:1px solid var(--line)}
+.bar .p1{color:#04201c;background:var(--a);border-color:var(--a)}.bar .p2{color:var(--ink);background:var(--card)}
+input[type=number],input[type=text]{-webkit-user-select:text;user-select:text}
+.est{font-size:11.5px;color:var(--mut);margin-top:8px;line-height:1.35}
+.trk{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;margin:6px 0 18px}
+.trk .r2{display:flex;justify-content:space-between;font-size:13px}.trk .r2 span{color:var(--ok);font-weight:600}.trk .r2 span.neg{color:var(--bad)}
+.trk .frm{display:flex;gap:6px;margin:8px 0}.trk input{min-width:0;border:1px solid var(--line);background:var(--card2);color:var(--ink);border-radius:10px;padding:9px;font-size:16px}.trk input:first-child{width:104px;flex:none}.trk input+input{flex:1}
+.trk .frm button{border:0;background:var(--a);color:#04201c;font-weight:700;border-radius:10px;padding:0 14px}
+.trk .li{display:flex;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:13px}.trk .li span{flex:1}.trk .li button{border:0;background:transparent;color:var(--mut);font-size:14px}
+.trk .clr{border:1px solid var(--line);background:transparent;color:var(--mut);border-radius:10px;padding:6px 10px;margin-top:6px;font-size:12px}.trk .mut{color:var(--mut);font-size:11.5px}
+.eat{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px;font-size:11.5px;color:var(--mut)}.eat label{display:flex;gap:4px;align-items:center}.eat select{background:var(--card2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:4px 6px;font-size:12px;max-width:112px}
+.eatp{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;margin:8px 0}.eatp table{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:8px}.eatp td,.eatp th{padding:3px 2px;text-align:right}.eatp th:first-child,.eatp td:first-child{text-align:left}.eatp th{color:var(--mut);font-weight:600}
+#wiz{position:fixed;inset:0;z-index:20;background:var(--bg);overflow:auto;display:none}#wiz.on{display:block}
+.wz{max-width:430px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 40px}
+.wt{display:flex;align-items:center;gap:10px}.dots{flex:1;display:flex;gap:4px}.dots i{flex:1;height:4px;border-radius:3px;background:#26334f}.dots i.on{background:var(--a)}
+.wbtn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:7px 12px;font-size:13px}
+.wz h2{font-size:24px;letter-spacing:-.5px;margin:22px 2px 6px}.wsum{color:var(--mut);font-size:12px;margin:0 2px 12px}
+.wopt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:16px;padding:15px;font-size:15px;font-weight:600;margin:8px 0}.wopt.on{border-color:var(--a);background:#10303a}
+.wo.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.wo.g2 .wopt{margin:0;text-align:center}
+.acts{display:flex;gap:6px;margin:8px 0}.acts button,.acts .bl{flex:1;text-align:center;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:9px 4px;font-size:12.5px;font-weight:600;text-decoration:none}
+.mp,.rt{color:var(--a2);font-size:11.5px;text-decoration:none;-webkit-user-select:text;user-select:text}
+@media print{#home,#wiz,#load,.bar,.pt button,.acts{display:none!important}html,body{height:auto;background:#fff;color:#000}#plan{position:static!important;transform:none!important;display:block!important;background:#fff}#pb{overflow:visible!important}.day,.hero,.tip,.eatp,.trk{break-inside:avoid;background:#fff!important;border-color:#bbb!important;opacity:1!important;transform:none!important}*{color:#000!important}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.day{opacity:1;transform:none}}
+
+#land{position:fixed;inset:0;z-index:50;overflow:auto;background:radial-gradient(120% 70% at 50% 0%,#12304a 0%,var(--bg) 62%);transition:opacity .45s,visibility .45s}
+#land.off{opacity:0;visibility:hidden;pointer-events:none}
+.lw{max-width:460px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));text-align:center;min-height:100%;display:flex;flex-direction:column}
+.lw .logo{justify-content:center}
+.lw h1{font-size:clamp(28px,8.4vw,38px);line-height:1.05;letter-spacing:-1.2px;margin:12px 0 6px}
+.lw h1 em{font-style:normal;color:var(--a)}
+.ls{color:var(--mut);margin:0 auto;max-width:320px;font-size:13.5px}
+.gl{width:min(90vw,36vh,400px);aspect-ratio:1;margin:6px auto 0;position:relative}
+.gl:before{content:"";position:absolute;inset:-6%;background:radial-gradient(circle,#2dd4bf2e 45%,transparent 70%);filter:blur(12px)}
+.gl canvas{position:relative;width:100%;height:100%;display:block}
+.lcard{min-height:58px;display:flex;align-items:center;gap:11px;text-align:left;border:1px solid var(--line);background:rgba(18,26,43,.85);border-radius:16px;padding:9px 12px;margin:2px 0 10px;color:var(--mut);font-size:13px}
+.lcard .lf{font-size:28px}.lcard .lt{flex:1;min-width:0}.lcard .lt b{display:block;color:var(--ink);font-size:16px;letter-spacing:-.2px}.lcard .lt span{font-size:12px}
+.lcard button{border:0;background:var(--a);color:#04201c;font-weight:700;font-size:12.5px;border-radius:11px;padding:9px 12px}
+.lb{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:20px;padding:12px 14px 8px}
+.lamt{font-weight:700;letter-spacing:-1.5px;font-size:clamp(38px,11vw,48px);line-height:1.05;font-variant-numeric:tabular-nums}
+.lcta{width:100%;margin-top:12px;border:0;border-radius:16px;padding:16px;font-size:17px;font-weight:700;background:var(--a);color:#04201c;animation:lp 2.4s ease-in-out infinite}
+@keyframes lp{0%,100%{box-shadow:0 8px 28px #2dd4bf44}50%{box-shadow:0 8px 42px #2dd4bf99}}
+.llinks{display:flex;gap:8px;margin-top:8px}
+.llinks button{flex:1;border:1px solid var(--line);background:transparent;color:var(--mut);border-radius:13px;padding:10px;font-size:13px;font-weight:600}
+.lfine{color:#5d6e8a;font-size:11px;margin-top:10px}
+.hb{margin-left:auto;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:5px 10px;font-size:12px;font-weight:600}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);max-width:88vw;background:#e8f1ff;color:#0a0f1c;font-weight:600;font-size:13px;padding:10px 14px;border-radius:14px;opacity:0;pointer-events:none;transition:.25s;z-index:99;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.fx{margin-top:6px;font-size:11.5px;color:var(--mut)}
+.frm2{display:flex;gap:8px;align-items:center;margin:2px 0 6px;color:var(--mut);font-size:12px}.frm2 input{flex:1;min-width:0;border:1px solid var(--line);background:var(--card2);color:var(--ink);border-radius:10px;padding:8px 10px;font-size:16px}
+</style>
+</head>
+<body>
+<div id="home">
+  <div class="logo"><i>✈</i> Budget Trip<button class="hb" data-lhome="1">🌍 Home</button></div>
+  <div class="top">
+    <div class="lab">My travel budget</div>
+    <div class="amt" id="amt">€500</div>
+    <div class="sub" id="sub">for everything: stay, food, transport and fun</div>
+    <input type="range" id="rng" min="0" max="100" step="0.5" aria-label="Budget">
+    <div class="chips" id="quick"></div>
+    <div class="seg"><span>Travellers</span><span id="paxc"></span><span class="gap"></span><span id="styc"></span></div>
+    <div class="eat" id="eatc"></div>
+  </div>
+
+  <div class="h"><b id="hh">Your money goes furthest in…</b><span id="hs"></span></div>
+  <button class="sur" id="wizb" style="margin-bottom:8px">🧭 Plan step by step</button>
+  <div id="mine"></div>
+  <button class="sur" id="sur">🎲 Surprise me</button>
+  <div id="list"></div>
+  <p class="foot">Estimates for planning only. Prices change, so always check before you book.</p>
+</div>
+
+<div id="wiz" class="on"></div>
+<div id="load"><div class="big" id="lt">Finding the best deals…</div><div class="pbar"><i id="lp"></i></div><div style="color:#9db0c8" id="ls">Checking stays, food and local transport</div></div>
+
+<div id="plan">
+  <div class="pt"><button class="bk" id="back" aria-label="Back">‹</button><div class="ttl" id="pttl"></div><button class="bk" data-lhome="1" aria-label="Home">🌍</button><div class="stp" id="stp"><button id="dm" aria-label="fewer days">−</button><b id="dn"></b><button id="dp" aria-label="more days">+</button></div></div>
+  <div class="pb" id="pb"></div>
+  <div class="bar"><div><button class="p2" id="regen">Different ideas</button><button class="p1" id="copy">Copy plan</button></div></div>
+</div>
+
+<div id="land"><div class="lw">
+<div class="logo"><i>✈</i> Budget Trip</div>
+<h1>Where can your <em>budget</em> take you?</h1>
+<p class="ls">Pick an amount. Watch it fly. Get a full day-by-day plan in seconds.</p>
+<div class="gl"><canvas id="gcv" aria-label="Rotating globe with a plane flying to destinations you can afford"></canvas></div>
+<div class="lcard" id="lcard"></div>
+<div class="lb"><div class="lab">My travel budget</div><div class="lamt" id="lamt">€500</div>
+<input type="range" id="lrng" min="0" max="100" step="0.5" aria-label="Budget"><div class="chips" id="lq"></div></div>
+<button class="lcta" id="lgo">Plan my trip →</button>
+<div class="llinks"><button id="lbr">Browse all destinations</button><button id="lsh">Share</button></div>
+<div class="lfine">Free · no sign-up · estimates for planning</div>
+</div></div>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+function esc(t){return String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function eur(n){n=Math.round(n);return "€"+n.toLocaleString("en-GB");}
+var D={
+paris:{n:"Paris",c:"France",r:"EU",bed:[42,115,180],food:[20,38,70],tr:9,
+ acts:[["Seine riverside walk",0,2,"relax nat"],["Montmartre and Sacré-Cœur",0,3,"cul nat"],["Louvre Museum",22,3,"cul"],["Musée d’Orsay",16,2,"cul"],["Eiffel Tower, 2nd floor by stairs",13,2,"adv cul"],["Latin Quarter and Luxembourg Gardens",0,3,"relax nat"],["Sainte-Chapelle",13,1,"cul"],["Versailles day trip",30,6,"cul"],["Seine evening cruise",16,1,"relax night"],["Marais street-food crawl",15,2,"food"],["Père Lachaise Cemetery walk",0,2,"cul"],["Wine bar night in Oberkampf",25,3,"night food"]],
+ tips:["Buy a carnet of metro tickets or a weekly pass if staying 5+ days.","Picnic with bakery food by the Seine to save a lot on lunch.","Some national museums have free entry on certain days; check the official sites."]},
+rome:{n:"Rome",c:"Italy",r:"EU",bed:[35,100,160],food:[18,34,60],tr:6,
+ acts:[["Colosseum and Roman Forum",18,3,"cul adv"],["Vatican Museums and Sistine Chapel",22,3,"cul"],["St Peter’s Basilica",0,1.5,"cul"],["Pantheon",5,1,"cul"],["Trevi Fountain and piazza walk",0,2,"relax cul"],["Trastevere evening stroll",0,3,"night food relax"],["Villa Borghese park",0,2,"nat relax"],["Appian Way bike ride",15,4,"adv nat"],["Testaccio market lunch",12,2,"food"],["Castel Sant’Angelo",16,2,"cul"],["Aventine Keyhole and Orange Garden",0,1,"nat relax"],["Gelato and aperitivo night",15,2,"food night"]],
+ tips:["Free water fountains (nasoni) are everywhere, so bring a bottle.","Aperitivo hour often includes snacks that can replace dinner.","Book the Vatican and Colosseum early to avoid expensive last-minute tours."]},
+barcelona:{n:"Barcelona",c:"Spain",r:"EU",bed:[38,105,165],food:[17,32,58],tr:6,
+ acts:[["Sagrada Família",28,2,"cul"],["Park Güell",10,2,"cul nat"],["Gothic Quarter walk",0,3,"cul relax"],["La Boqueria market lunch",12,1.5,"food"],["Barceloneta beach day",0,4,"relax nat"],["Bunkers del Carmel sunset",0,2,"nat relax"],["Casa Batlló",35,1.5,"cul"],["Magic Fountain of Montjuïc evening",0,1.5,"night relax"],["Picasso Museum",14,2,"cul"],["Tapas crawl",25,3,"food night"],["Montserrat day trip",35,6,"adv nat"],["Cycling the seafront",8,2,"adv nat"]],
+ tips:["Lunch menus (menú del día) are far cheaper than dinner.","A multi-ride transit card beats single tickets.","Beaches and the Gothic Quarter are free all day."]},
+lisbon:{n:"Lisbon",c:"Portugal",r:"EU",bed:[28,80,130],food:[14,26,48],tr:6,
+ acts:[["Alfama walk and viewpoints",0,3,"cul nat"],["Belém Tower",8,1,"cul"],["Jerónimos Monastery",12,1.5,"cul"],["Tram 28 ride",3,1,"cul relax"],["Pastéis de Belém stop",5,1,"food"],["LX Factory",0,2,"cul food"],["Sintra day trip",25,7,"adv cul nat"],["Time Out Market dinner",15,2,"food"],["Live fado evening",20,2,"night cul"],["Cascais and beach day trip",6,6,"relax nat"],["Oceanário",25,2.5,"nat"],["Baixa and Rua Augusta walk",0,2,"relax"]],
+ tips:["Lisbon is one of Europe’s cheaper capitals for food.","Daily or weekly transit passes pay off quickly.","Sunset at a free viewpoint (miradouro) beats paid rooftops."]},
+prague:{n:"Prague",c:"Czechia",r:"EU",bed:[22,70,120],food:[12,22,40],tr:4,
+ acts:[["Old Town Square and Astronomical Clock",0,2,"cul"],["Charles Bridge at sunrise",0,1,"relax nat"],["Prague Castle",14,3,"cul"],["Vyšehrad fortress and park",0,2,"nat relax"],["Jewish Quarter",20,2,"cul"],["Petřín Hill and lookout tower",8,2,"nat adv"],["Traditional beer hall dinner",15,2,"food night"],["Vltava river boat",15,1,"relax"],["Český Krumlov day trip",25,9,"adv cul"],["Letná beer garden",6,2,"relax night"],["Lennon Wall and Kampa Island",0,1.5,"cul relax"]],
+ tips:["Eat where locals eat: lunch menus are very cheap.","Avoid money-exchange kiosks in the centre; use ATMs or cards.","Most of the best sights are free to walk past."]},
+budapest:{n:"Budapest",c:"Hungary",r:"EU",bed:[20,65,115],food:[12,22,40],tr:4,
+ acts:[["Széchenyi thermal baths",25,3,"relax"],["Danube promenade and Parliament exterior",0,2,"cul relax"],["Buda Castle and Fisherman’s Bastion",6,3,"cul nat"],["Great Market Hall",10,1.5,"food"],["Ruin bars evening",15,3,"night"],["Gellért Hill sunset views",0,2,"nat"],["Parliament guided tour",17,1,"cul"],["Margaret Island",0,3,"nat relax"],["Danube night cruise",15,1.5,"night relax"],["Great Synagogue",14,1.5,"cul"],["Street-food langos lunch",5,1,"food"]],
+ tips:["Thermal baths are cheaper on weekday mornings.","Public transport is inexpensive; walk the rest.","Cards are widely accepted; avoid street exchange."]},
+istanbul:{n:"Istanbul",c:"Türkiye",r:"TR",bed:[18,60,110],food:[10,20,38],tr:4,
+ acts:[["Hagia Sophia",25,1.5,"cul"],["Blue Mosque visit",0,1,"cul"],["Topkapı Palace",20,2.5,"cul"],["Grand Bazaar",0,2,"cul food"],["Bosphorus public ferry",2,2,"relax nat"],["Galata Tower and neighbourhood",18,2,"cul"],["Spice Bazaar and street snacks",5,2,"food"],["Basilica Cistern",22,1,"cul"],["Kadıköy food crawl",12,3,"food night"],["Traditional hamam",40,2,"relax"],["Balat colourful streets",0,2,"cul relax"]],
+ tips:["Public ferries are the cheapest scenic cruise.","An Istanbulkart saves money on every ride.","Set prices before taxis or at bazaars."]},
+marrakech:{n:"Marrakech",c:"Morocco",r:"AF",bed:[14,45,90],food:[9,18,35],tr:3,
+ acts:[["Jemaa el-Fnaa square at dusk",0,2,"cul food night"],["Medina souks wander",0,3,"cul"],["Bahia Palace",5,1.5,"cul"],["Majorelle Garden",15,1.5,"nat relax"],["Saadian Tombs",5,1,"cul"],["Atlas Mountains day trip",25,8,"adv nat"],["Traditional hammam",20,2,"relax"],["Rooftop mint tea",4,1,"relax"],["Agafay desert sunset",40,5,"adv night"],["Moroccan cooking class",35,3,"food"]],
+ tips:["Agree on taxi prices before getting in, or use ride apps.","Bargain politely in the souks.","Hammams and mint tea are cheap, calm breaks."]},
+bangkok:{n:"Bangkok",c:"Thailand",r:"SE",bed:[10,35,70],food:[6,14,30],tr:3,
+ acts:[["Grand Palace",13,2.5,"cul"],["Wat Pho and reclining Buddha",6,1.5,"cul"],["Wat Arun by ferry",3,1.5,"cul nat"],["Chatuchak Weekend Market",0,3,"food relax"],["Yaowarat (Chinatown) street-food crawl",10,3,"food night"],["Chao Phraya river boat",1,1.5,"relax"],["Lumpini Park",0,2,"nat relax"],["Muay Thai evening",25,2,"adv night"],["Jim Thompson House",6,1.5,"cul"],["Floating market day trip",25,6,"adv cul"],["Rooftop bar sunset",15,2,"night"],["Thai massage",10,1.5,"relax"]],
+ tips:["Street food is delicious and costs a fraction of restaurants.","River boats and the BTS skytrain beat taxis in traffic.","Dress modestly for temples."]},
+bali:{n:"Bali (Ubud)",c:"Indonesia",r:"SE",bed:[10,35,75],food:[7,15,30],tr:6,
+ acts:[["Tegallalang rice terraces",2,2,"nat"],["Sacred Monkey Forest",7,2,"nat adv"],["Ubud market and palace",0,2,"cul food"],["Campuhan Ridge Walk",0,2,"nat relax"],["Tegenungan waterfall",2,2,"nat adv"],["Balinese cooking class",25,4,"food"],["Mount Batur sunrise trek",45,6,"adv nat"],["Tirta Empul water temple",4,2,"cul"],["Yoga class",10,1.5,"relax"],["Kecak fire dance",8,1.5,"night cul"],["Canggu beach club day",10,4,"relax night"],["Massage and spa",12,1.5,"relax"]],
+ tips:["Rent a scooter only with a licence and insurance; otherwise use ride apps.","Warungs (local eateries) are cheapest.","Sunrise treks save you from midday heat."]},
+tokyo:{n:"Tokyo",c:"Japan",r:"EA",bed:[28,80,150],food:[14,28,55],tr:9,
+ acts:[["Senso-ji and Asakusa",0,2,"cul"],["Shibuya Crossing and Hachikō",0,1,"cul night"],["Meiji Shrine and Yoyogi Park",0,2,"nat cul"],["Tsukiji Outer Market tasting",18,2,"food"],["Shinjuku Gyoen garden",4,2,"nat relax"],["teamLab digital art museum",30,2.5,"cul"],["Akihabara electronics and arcades",0,3,"adv night"],["Tokyo Skytree views",20,1.5,"nat"],["Izakaya night",30,3,"food night"],["Kamakura or Nikko day trip",20,8,"adv nat cul"],["Ghibli Museum (book early)",7,2,"cul"],["Harajuku and Omotesandō walk",0,2,"cul"]],
+ tips:["Konbini (convenience store) breakfasts and lunches are cheap and good.","A rechargeable IC card makes transit simple.","Many shrines, parks and neighbourhoods are free."]},
+kotor:{n:"Kotor",c:"Montenegro",r:"BK",bed:[18,55,100],food:[12,24,45],tr:3,
+ acts:[["Kotor Old Town walk",0,2,"cul relax"],["Fortress of St John climb",15,2.5,"adv nat cul"],["Perast waterfront and island boat",8,3,"cul nat"],["Bay of Kotor viewpoint drive or bus ride",3,2,"nat"],["Budva old town and beach day",0,4,"relax night"],["Lovćen National Park and mausoleum",15,6,"nat adv cul"],["Cetinje museums and old capital walk",8,3,"cul"],["Sunset on the Kotor waterfront",0,1.5,"relax night"]],
+ tips:["The euro is used in Montenegro. Local buses along the bay are far cheaper than taxis.","Climb the fortress early or late to avoid the heat and the cruise-ship crowds.","Lunch at a konoba away from the main square is cheaper."]},
+belgrade:{n:"Belgrade",c:"Serbia",r:"BK",bed:[14,50,95],food:[10,20,38],tr:3,
+ acts:[["Kalemegdan Fortress and park",0,2.5,"cul nat relax"],["Skadarlija bohemian street dinner",0,2,"food night cul"],["Temple of Saint Sava",0,1,"cul"],["Nikola Tesla Museum",7,1.5,"cul"],["Zemun old town and Gardoš Tower",0,2.5,"cul nat"],["River clubs on the Sava and Danube",0,3,"night"],["Ada Ciganlija lake",0,3,"nat relax"],["Free walking tour of the centre",0,2.5,"cul"]],
+ tips:["Serbia uses the dinar; pay by card where you can and use ATMs, not street exchange.","Bakeries and street food make cheap, filling meals.","The old centre is very walkable."]},
+sarajevo:{n:"Sarajevo",c:"Bosnia and Herzegovina",r:"BK",bed:[14,48,90],food:[9,18,35],tr:2,
+ acts:[["Baščaršija old bazaar",0,2.5,"cul food"],["Latin Bridge and Miljacka riverside walk",0,1.5,"cul relax"],["Tunnel of Hope Museum",6,1.5,"cul"],["Vrelo Bosne springs park",3,3,"nat relax"],["Trebević cable car and hills",7,2.5,"nat adv"],["Yellow Fortress sunset",0,1.5,"nat relax"],["Ćevapi and burek food crawl",7,2,"food"],["Free walking tour of the old town",0,2.5,"cul"]],
+ tips:["The currency is the convertible mark (KM); many places also take cards.","Eat at local ćevabdžinicas for the cheapest meals.","Trams and walking cover most of the centre."]},
+tirana:{n:"Tirana",c:"Albania",r:"BK",bed:[15,48,90],food:[9,18,34],tr:2,
+ acts:[["Skanderbeg Square and the centre",0,1.5,"cul"],["Bunk’Art 1 museum",7,2,"cul"],["Dajti Ekspres cable car",10,3,"nat adv"],["Grand Park and the artificial lake",0,2,"nat relax"],["Blloku district evening",0,3,"night food"],["Pyramid of Tirana and nearby streets",0,1,"cul"],["Pazari i Ri market",3,1.5,"food cul"],["Day trip to Krujë castle town",8,5,"cul adv"]],
+ tips:["Albania uses the lek; cards work in most cafés but carry some cash.","Local cafés and bakeries keep food costs low.","Walk the centre and use buses for longer trips."]},
+dubrovnik:{n:"Dubrovnik",c:"Croatia",r:"BK",bed:[32,95,170],food:[18,34,65],tr:4,
+ acts:[["Old Town stroll through Pile Gate",0,2,"cul relax"],["City walls walk",35,2.5,"cul adv"],["Mount Srđ hike for sunset views",0,3,"nat adv"],["Lokrum island ferry and swim",25,5,"nat relax"],["Banje beach afternoon",0,3,"relax nat"],["Lapad promenade and coves",0,2.5,"nat relax"],["Sunset drinks outside the walls",8,1.5,"night relax"],["Free walking tour of the old town",0,2,"cul"]],
+ tips:["Dubrovnik is the most expensive city on this list, so check the season before you go.","The walls ticket is a big single cost; go at opening time.","Eat a few streets back from the main street to save."]},
+split:{n:"Split",c:"Croatia",r:"EU",bed:[22,75,150],food:[14,28,55],tr:3,
+ acts:[["Diocletian’s Palace walk",0,2,"cul"],["Marjan Hill viewpoints",0,3,"nat adv"],["Bačvice and Kašjuni beach day",0,4,"sea relax"],["Krka National Park day trip",40,8,"nat adv"],["Island ferry day to Hvar or Brač",22,8,"sea adv"],["Riva promenade evening",0,2,"night food relax"],["Trogir old town half-day",5,4,"cul"]],
+ tips:["Ferries and day trips cost more in summer, so book early.","Lunch menus away from the Riva are cheaper."]},
+antalya:{n:"Antalya",c:"Türkiye",r:"TR",bed:[14,50,110],food:[9,18,38],tr:3,
+ acts:[["Kaleiçi old town walk",0,2,"cul"],["Konyaaltı beach day",0,4,"sea relax"],["Düden waterfalls",3,2,"nat"],["Old harbour boat trip",12,3,"sea relax"],["Perge and Aspendos day trip",18,7,"cul"],["Antalya Museum",6,2,"cul"],["Beach sunset and drinks",8,3,"night sea"]],
+ tips:["Agree prices before boat trips.","City buses and the tram are very cheap."]},
+lagos:{n:"Lagos (Algarve)",c:"Portugal",r:"EU",bed:[24,80,150],food:[14,28,50],tr:4,
+ acts:[["Ponta da Piedade cliffs and grottoes boat",20,2,"sea adv nat"],["Dona Ana beach",0,3,"sea relax"],["Old town and fort walk",0,2,"cul"],["Sagres and Cape St Vincent day trip",8,6,"nat cul"],["Seven Hanging Valleys coastal hike",0,4,"nat adv"],["Surf lesson",35,3,"sea adv"],["Sunset at Meia Praia",0,2,"sea relax night"]],
+ tips:["Summer is the most expensive season.","Local trains and buses link the coast cheaply."]},
+valletta:{n:"Valletta",c:"Malta",r:"EU",bed:[24,75,140],food:[14,26,48],tr:3,
+ acts:[["Upper Barrakka Gardens and fortifications",0,2,"cul"],["St John’s Co-Cathedral",15,1.5,"cul"],["Three Cities ferry and walk",3,4,"cul sea"],["Comino Blue Lagoon boat",25,6,"sea relax"],["Mdina day trip",3,4,"cul"],["Marsaxlokk fish market",3,3,"food sea"],["St Julian’s evening",0,3,"night"]],
+ tips:["Public buses cover the island; a 7-day pass pays off.","Pastizzi are a cheap, filling snack."]},
+nice:{n:"Nice",c:"France",r:"EU",bed:[40,120,220],food:[22,42,75],tr:6,
+ acts:[["Promenade des Anglais and beach day",0,4,"sea relax"],["Old Town and Cours Saleya market",0,2.5,"cul food"],["Castle Hill viewpoint",0,2,"nat"],["Monaco day trip by train",8,7,"cul adv"],["Èze village hike",5,5,"nat adv"],["Chagall Museum",10,1.5,"cul"],["Villefranche-sur-Mer swim",3,3,"sea"]],
+ tips:["Regional trains along the coast cost little.","Pebble beaches are free; private beaches charge for loungers."]},
+phuket:{n:"Phuket",c:"Thailand",r:"SE",bed:[9,35,90],food:[6,14,32],tr:5,
+ acts:[["Big Buddha viewpoint",0,1.5,"cul"],["Old Phuket Town walk",0,3,"cul food"],["Kata or Karon beach day",0,4,"sea relax"],["Phi Phi islands boat tour",55,9,"sea adv"],["Promthep Cape sunset",0,1.5,"nat sea"],["Muay Thai evening",25,2,"adv night"],["Wat Chalong temple",0,1.5,"cul"]],
+ tips:["Compare tour prices before booking.","Local songthaew buses are cheaper than taxis."]},
+santorini:{n:"Santorini",c:"Greece",r:"EU",bed:[38,130,260],food:[20,38,70],tr:5,
+ acts:[["Fira to Oia caldera hike",0,5,"nat adv"],["Oia sunset",0,2,"night nat"],["Perissa black-sand beach",0,4,"sea relax"],["Akrotiri archaeological site",15,2,"cul"],["Wine tasting",30,2,"food"],["Caldera boat tour",60,6,"sea adv"],["Fira old town walk",0,2,"cul"]],
+ tips:["Prices peak in July and August.","Buses are cheap; avoid taxis for short trips."]},
+athens:{n:"Athens",c:"Greece",r:"EU",bed:[18,65,120],food:[11,22,42],tr:4,
+ acts:[["Acropolis and Parthenon",30,3,"cul"],["Ancient Agora",10,2,"cul"],["Plaka and Anafiotika walk",0,2.5,"cul food"],["Lycabettus Hill sunset",0,2,"nat"],["National Archaeological Museum",12,2.5,"cul"],["Monastiraki flea market and souvlaki",8,2,"food"],["Cape Sounion day trip",12,5,"sea cul"],["Athens Riviera beach",6,4,"sea relax"]],
+ tips:["Check the combined ticket for several ancient sites.","Souvlaki is the best cheap meal."]},
+hanoi:{n:"Hanoi",c:"Vietnam",r:"SE",bed:[6,25,60],food:[4,10,24],tr:2,
+ acts:[["Old Quarter street food walk",6,3,"food cul"],["Hoan Kiem Lake and Ngoc Son Temple",1,1.5,"cul relax"],["Temple of Literature",2,1.5,"cul"],["Water puppet show",5,1,"cul night"],["Ho Chi Minh Mausoleum area",0,2,"cul"],["Ninh Binh day trip",35,10,"nat adv"],["Egg coffee café stop",2,1,"food"]],
+ tips:["Ride-hailing apps are cheap and clear on price.","Eat where locals sit on small stools."]},
+tbilisi:{n:"Tbilisi",c:"Georgia",r:"TR",bed:[9,35,80],food:[7,16,32],tr:2,
+ acts:[["Old Town and Narikala Fortress",0,3,"cul nat"],["Sulphur baths",12,2,"relax"],["Rustaveli Avenue and Dry Bridge market",0,2,"cul"],["Mtskheta day trip",8,5,"cul"],["Georgian wine tasting",15,2,"food"],["Khinkali dinner",8,1.5,"food night"],["Kazbegi mountains day trip",25,10,"nat adv"]],
+ tips:["The metro and minibuses are very cheap.","Georgian meals are big, so share dishes."]},
+krakow:{n:"Kraków",c:"Poland",r:"EU",bed:[15,55,100],food:[9,18,34],tr:3,
+ acts:[["Old Town and Main Square",0,2.5,"cul"],["Wawel Castle and cathedral",10,3,"cul"],["Kazimierz Jewish quarter",0,3,"cul food night"],["Schindler’s Factory museum",8,2,"cul"],["Wieliczka Salt Mine",22,4,"cul adv"],["Planty Park walk",0,1.5,"nat relax"],["Pierogi tasting at a milk bar",6,1.5,"food"]],
+ tips:["Milk bars (bar mleczny) serve very cheap meals.","Book popular museums ahead."]},
+mexico:{n:"Mexico City",c:"Mexico",r:"XX",bed:[12,45,100],food:[8,18,40],tr:3,
+ acts:[["Zócalo and Templo Mayor",5,3,"cul"],["Coyoacán and Frida Kahlo Museum",12,4,"cul"],["Teotihuacan pyramids day trip",20,7,"cul adv"],["Chapultepec Park and museum",5,4,"nat cul"],["Street tacos crawl",8,2.5,"food night"],["Xochimilco boat ride",15,3,"relax"],["Roma and Condesa walk",0,3,"food relax"]],
+ tips:["The metro costs very little.","Street tacos are cheap and excellent."]},
+zurich:{n:"Zürich",c:"Switzerland",r:"EU",bed:[55,170,320],food:[32,60,110],tr:11,
+ acts:[["Old Town and lake promenade",0,3,"cul relax"],["Uetliberg hike and views",0,3,"nat adv"],["Kunsthaus art museum",22,2,"cul"],["Lindt Home of Chocolate",18,2,"food"],["Rhine Falls day trip",20,5,"nat"],["Lucerne day trip by train",40,8,"cul nat"],["Swim in the lake",0,2,"nat relax"]],
+ tips:["Switzerland is expensive, so supermarket meals save a lot.","Tap water is free and safe."]},
+copenhagen:{n:"Copenhagen",c:"Denmark",r:"EU",bed:[42,135,240],food:[28,52,95],tr:10,
+ acts:[["Nyhavn and harbour walk",0,2,"cul relax"],["Tivoli Gardens",25,4,"night adv"],["Freetown Christiania walk",0,2,"cul"],["Rosenborg Castle",18,1.5,"cul"],["Canal tour",14,1,"relax cul"],["National Museum",0,3,"cul"],["Lakes bike ride",16,3,"nat adv"]],
+ tips:["Hot dog stands and bakeries are the cheap eats.","A bike is the best way to move around."]},
+london:{n:"London",c:"United Kingdom",r:"EU",bed:[38,140,260],food:[24,48,90],tr:12,
+ acts:[["British Museum",0,3,"cul"],["Tower of London",36,3,"cul"],["Hyde Park and Kensington",0,3,"nat relax"],["Camden and Borough Market",0,3,"food cul"],["Greenwich and Observatory views",0,3,"nat cul"],["West End show (cheap seats)",55,3,"night cul"],["National Gallery",0,2,"cul"],["Southbank Thames walk",0,2.5,"relax cul"]],
+ tips:["Many top museums are free.","Pay by contactless; daily fares are capped."]},
+newyork:{n:"New York",c:"United States",r:"XX",bed:[55,200,380],food:[28,55,110],tr:12,
+ acts:[["Central Park",0,3,"nat relax"],["Staten Island Ferry",0,1.5,"relax"],["Brooklyn Bridge and DUMBO",0,3,"cul relax"],["The Met museum",30,3,"cul"],["High Line walk",0,1.5,"nat relax"],["Empire State Building",45,1.5,"adv"],["Pizza slice crawl",15,2,"food"],["Broadway show",130,3,"night"]],
+ tips:["Pizza slices and halal carts are the cheapest meals.","Subway fares are the same all day."]},
+dubai:{n:"Dubai",c:"UAE",r:"XX",bed:[30,120,300],food:[16,35,80],tr:8,
+ acts:[["Old Dubai souks and abra ferry",2,3,"cul food"],["Dubai Mall and fountain show",0,3,"night relax"],["Jumeirah public beach",0,4,"sea relax"],["Burj Khalifa observation deck",50,1.5,"adv"],["Desert safari",55,6,"adv night"],["Al Fahidi historic district",0,2,"cul"],["Dubai Frame",14,1,"cul"]],
+ tips:["Summer is very hot; evenings are best.","The metro is the cheapest way to travel."]},
+singapore:{n:"Singapore",c:"Singapore",r:"SE",bed:[30,110,250],food:[12,28,65],tr:6,
+ acts:[["Gardens by the Bay outdoor gardens",0,2.5,"nat night"],["Hawker centre food crawl",10,2,"food"],["Chinatown and Buddha Tooth Relic Temple",0,2,"cul"],["Sentosa beach",5,4,"sea relax"],["Botanic Gardens",0,2.5,"nat relax"],["Little India walk",0,2,"cul food"],["Marina Bay Sands observation deck",25,1.5,"adv"]],
+ tips:["Hawker centres are the cheapest great meals.","Public transport is clean and cheap."]}
+};
+var DISH={paris:"jambon-beurre sandwich, crêpe, bakery lunch menu",rome:"pizza al taglio, supplì, panino",barcelona:"bocadillo, menú del día, tapas",lisbon:"bifana, soup, pastel de nata",prague:"lunch menu, sausage stand, goulash",budapest:"lángos, goulash, pastry",istanbul:"simit, döner, balık ekmek",marrakech:"tagine, msemen, street grills",bangkok:"pad thai, rice dishes, mango sticky rice",bali:"nasi campur at a warung, mie goreng",tokyo:"konbini onigiri, ramen, teishoku set",kotor:"burek, grilled fish, čevapi",belgrade:"burek, pljeskavica, gibanica",sarajevo:"ćevapi, burek, somun bread",tirana:"byrek, tavë kosi, grilled meat",dubrovnik:"pizza slice, burek, black risotto"};
+Object.assign(DISH,{split:"burek, pizza slice, fish fry",antalya:"döner, pide, simit",lagos:"grilled sardines, tosta, pastel de nata",valletta:"pastizzi, ftira",nice:"socca, pan bagnat",phuket:"pad thai, curry rice, street seafood",santorini:"gyros, souvlaki, tomato fritters",athens:"souvlaki, koulouri, spanakopita",hanoi:"phở, bún chả, bánh mì",tbilisi:"khachapuri, khinkali, lobiani",krakow:"zapiekanka, pierogi, milk-bar lunch",mexico:"tacos al pastor, tamales, quesadillas",zurich:"bakery sandwich, bratwurst, supermarket deli",copenhagen:"smørrebrød, hot dog, bakery",london:"meal deal, pie and mash, market stalls",newyork:"pizza slice, halal cart, bagel",dubai:"shawarma, karak chai, biryani",singapore:"hawker chicken rice, laksa, kaya toast"});
+Object.keys(DISH).forEach(function(k){if(D[k])D[k].dish=DISH[k];});
+var EAT=["Groceries","Street / local","Fast food","Sit-down"],MEALEX=["Bakery, supermarket picnic or cooking","Stalls, bakeries and local counters","Chain combo: burger, kebab or pizza","Table service: main dish and a drink"];
+function mealBase(c,ty){var f0=c.food[0]/3,f1=c.food[1]/3;return ty===0?f0*0.5:ty===1?f0*1.05:ty===2?f0*1.6:f1*1.4;}
+function mealPrice(c,ty,m){return mealBase(c,ty)*({b:0.7,l:1,d:1.3}[m]);}
+function foodDay(c,E){return mealPrice(c,E.b,"b")+mealPrice(c,E.l,"l")+mealPrice(c,E.d,"d");}
+function pr(n){return n<10?"€"+n.toFixed(1):eur(n);}
+function hm(x){var H=Math.floor(x),M=Math.round((x-H)*60);if(M===60){H++;M=0;}return (H<10?"0":"")+H+":"+(M<10?"0":"")+M;}
+function dayRows(d,c,p){
+  var r=[],t=8,lunch=0,E=p.eat||S.eat;
+  function meal(m,lab,ic,dur){var ty=E[m];r.push({t:hm(t),n:ic+" "+lab+" · "+EAT[ty],m:MEALEX[ty]+(ty===1&&c.dish?" · e.g. "+c.dish:""),c:mealPrice(c,ty,m),meal:1});t+=dur;}
+  var day=d.filter(function(a){return !/night/.test(a.t);}),night=d.filter(function(a){return /night/.test(a.t);});
+  meal("b","Breakfast","🍳",0.75);
+  day.forEach(function(a){if(!lunch&&t>=12){meal("l","Lunch","🥪",1);lunch=1;}r.push({t:hm(t),n:a.n,m:"~"+a.h+" h",c:a.c,ai:d.indexOf(a),f:a.f});t+=a.h+0.4;});
+  if(!lunch){t=Math.max(t,12.5);meal("l","Lunch","🥪",1);}
+  t=Math.max(t,19);meal("d","Dinner","🍽",1.5);
+  night.forEach(function(a){r.push({t:hm(t),n:a.n,m:"~"+a.h+" h",c:a.c,ai:d.indexOf(a),f:a.f});t+=a.h+0.4;});
+  r.push({t:"All day",n:"🚇 Local transport",m:"Day pass or single rides",c:c.tr});
+  return r;
+}
+function eatCtl(){return '<label>Stay <select data-st="1">'+STAYN.map(function(x,i){return '<option value="'+i+'"'+(S.sty===i?' selected':'')+'>'+x+'</option>';}).join('')+'</select></label>'+[["b","Breakfast"],["l","Lunch"],["d","Dinner"]].map(function(m){return '<label>'+m[1]+' <select data-e="'+m[0]+'">'+EAT.map(function(x,i){return '<option value="'+i+'"'+(S.eat[m[0]]===i?' selected':'')+'>'+x+'</option>';}).join("")+'</select></label>';}).join("");}
+var FILL=[["Sunset walk at a free viewpoint",0,1.5,"nat relax"],["Coffee and dessert stop at a local café",4,1,"food relax"],["Self-guided street-art or architecture walk",0,2,"cul"],["Swim or sit by the water, free spot",0,2.5,"relax nat"],["Browse a local bookshop or second-hand shop",0,1.5,"cul relax"],["Try one local snack from a market stall",3,1,"food"],["Free wander: local streets and cafés",0,2,"relax cul"],["Park, picnic and people-watching",4,2,"relax nat"],["Local market browse",3,1.5,"food cul"],["Rest and catch-up time",0,2,"relax"],["Neighbourhood walk with a self-guided route",0,2.5,"cul nat"],["Cook or picnic with local groceries",6,1.5,"food"]];
+var REG={BK:{BK:30,EU:110,TR:140,AF:220,SE:580,EA:700},EU:{EU:70,TR:130,AF:90,SE:520,EA:650},TR:{TR:0,AF:200,SE:380,EA:600},AF:{AF:0,SE:600,EA:750},SE:{SE:100,EA:300},EA:{EA:0}};
+function xfer(a,b){var x=D[a].r,y=D[b].r;if(a===b)return 0;var v=(REG[x]&&REG[x][y])||(REG[y]&&REG[y][x]);return v==null?100:v;}
+
+var FLAG={paris:"🇫🇷",rome:"🇮🇹",barcelona:"🇪🇸",lisbon:"🇵🇹",prague:"🇨🇿",budapest:"🇭🇺",istanbul:"🇹🇷",marrakech:"🇲🇦",bangkok:"🇹🇭",bali:"🇮🇩",tokyo:"🇯🇵",kotor:"🇲🇪",belgrade:"🇷🇸",sarajevo:"🇧🇦",tirana:"🇦🇱",dubrovnik:"🇭🇷",split:"🇭🇷",antalya:"🇹🇷",lagos:"🇵🇹",valletta:"🇲🇹",nice:"🇫🇷",phuket:"🇹🇭",santorini:"🇬🇷",athens:"🇬🇷",hanoi:"🇻🇳",tbilisi:"🇬🇪",krakow:"🇵🇱",mexico:"🇲🇽",zurich:"🇨🇭",copenhagen:"🇩🇰",london:"🇬🇧",newyork:"🇺🇸",dubai:"🇦🇪",singapore:"🇸🇬"};
+var TINT=["#0ea5e9","#f97316","#a855f7","#22c55e","#ef4444","#eab308","#14b8a6","#ec4899","#6366f1","#f43f5e","#84cc16"];
+var WORLD=[["paris",5],["istanbul",5],["bangkok",8],["bali",9],["tokyo",8]];
+var INTS={cul:1,food:1,nat:1,night:1,relax:1,adv:1};
+
+function score(a,ints){var t=a[3].split(" "),s=0;t.forEach(function(x){if(ints[x])s+=2;});if(a[1]===0)s+=0.6;return s;}
+var STAYN=["Hostel","Guesthouse","Apartment / mid hotel","Comfort hotel"];
+function bedPP(c,st,pax){var sh=pax===1?0.75:0.5;return st===0?c.bed[0]:st===1?c.bed[0]*1.7*(pax>1?0.8:1):st===2?c.bed[1]*sh:c.bed[2]*sh;}
+function buildStop(key,days,nights,ctx){
+  var c=D[key],R=ctx.rand,slots=ctx.pace,used={},pool=c.acts.map(function(a){return {a:a,s:score(a,ctx.int)+R()*1.4};}).sort(function(x,y){return y.s-x.s;});
+  var out=[],i,d,j,fi=0;
+  for(d=0;d<days;d++){
+    var day=[],hrs=0;
+    while(day.length<5&&hrs<7){
+      var pick=null,pi=-1;
+      for(i=0;i<pool.length;i++){if(!used[i]){pick=pool[i].a;pi=i;break;}}
+      if(!pick){pick=FILL[(fi+Math.floor(R()*3))%FILL.length];fi++;}
+      if(day.length>0&&hrs+pick[2]>8.5)break;
+      if(pi>=0)used[pi]=1;
+      day.push({n:pick[0],c:pick[1],h:pick[2],t:pick[3],f:c.acts.indexOf(pick)<0});hrs+=pick[2];
+    }
+    day.sort(function(x,y){return (/night/.test(x.t)?1:0)-(/night/.test(y.t)?1:0);});
+    out.push(day);
+  }
+  return {key:key,days:out,nights:nights};
+}
+function totals(plan){
+  var pax=plan.pax,sty=plan.sty,parts={stay:0,food:0,local:0,acts:0,move:0},prev=null;
+  plan.stops.forEach(function(s){
+    var c=D[s.key],dn=s.days.length;
+    parts.stay+=s.nights*bedPP(c,sty,pax);
+    parts.food+=dn*foodDay(c,plan.eat||S.eat);
+    parts.local+=dn*c.tr;
+    s.days.forEach(function(d){d.forEach(function(a){parts.acts+=a.c;});});
+    if(prev!==null)parts.move+=xfer(prev,s.key);
+    prev=s.key;
+  });
+  var sub=parts.stay+parts.food+parts.local+parts.acts+parts.move;
+  parts.buffer=sub*0.1;
+  var pp=sub+parts.buffer;
+  return {parts:parts,pp:pp,total:pp*pax,days:plan.stops.reduce(function(a,s){return a+s.days.length;},0)};
+}
+function fitBudget(plan){
+  var swaps=0,guard=400,t=totals(plan);
+  while(t.total>plan.bud&&guard-->0){
+    var best=null;
+    plan.stops.forEach(function(s,si){s.days.forEach(function(d,di){d.forEach(function(a,ai){if(a.c>0&&(!best||a.c>best.a.c))best={a:a,s:si,d:di,i:ai};});});});
+    if(!best)break;
+    var FREE=FILL.filter(function(x){return x[1]===0;}),need=best.a.h,k=0,items=[];
+    while(need>0.2&&k<4){var f=FREE[(swaps+k+best.d)%FREE.length];items.push({n:f[0],c:0,h:f[2],t:f[3],f:true});need-=f[2];k++;}
+    Array.prototype.splice.apply(plan.stops[best.s].days[best.d],[best.i,1].concat(items));
+    swaps++;t=totals(plan);
+  }
+  plan.swapped=swaps;
+}
+
+/* ---------- state ---------- */
+var S={bud:500,pax:1,sty:0,eat:{b:0,l:1,d:1}};
+var CUR=null,PLAN=null,SEED=1;
+var MY=[];try{MY=JSON.parse(localStorage.getItem("bt_trips")||"[]");}catch(e){}
+function saveMy(){try{localStorage.setItem("bt_trips",JSON.stringify(MY));}catch(e){}}
+var AFF={booking:"",gyg:""};
+var AFFL={flights:"",bus:"",car:"",hostels:"",esim:"",insurance:""}; /* optional full affiliate links; placeholders {city} {from} {country}. Empty = plain working link to the partner site. Can also be set from prices.json */
+function anyL(){return !!(AFFL.flights||AFFL.bus||AFFL.car||AFFL.hostels||AFFL.esim||AFFL.insurance);}
+var FROM="Podgorica";try{FROM=localStorage.getItem("bt_from")||FROM;}catch(e){}
+var ESL={"turkiye":"turkey","czechia":"czech-republic","uae":"united-arab-emirates","bosnia-and-herzegovina":"bosnia-and-herzegovina"};
+function bookUrl(t,k){
+  var c=D[k],cn=c.n.replace(/ \(.*/,""),e=encodeURIComponent,fr=FROM.trim()||"Podgorica";
+  if(AFFL[t])return AFFL[t].replace(/\{city\}/g,e(cn)).replace(/\{from\}/g,e(fr)).replace(/\{country\}/g,e(c.c));
+  var sl=c.c.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/&/g,"and").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");sl=ESL[sl]||sl;
+  return {flights:"https://www.google.com/travel/flights?q="+e("Flights from "+fr+" to "+cn),
+    bus:"https://www.rome2rio.com/map/"+e(fr.replace(/ +/g,"-"))+"/"+e(cn.replace(/ +/g,"-")),
+    car:"https://www.discovercars.com/",hostels:"https://www.hostelworld.com/s?q="+e(cn),
+    esim:"https://www.airalo.com/"+sl+"-esim",insurance:"https://safetywing.com/"}[t];
+}
+function bookBlock(k){
+  var L=[["flights","✈ Flights"],["bus","🚌 Bus & train"],["car","🚗 Car rental"],["hostels","🛌 Hostels"],["esim","📶 eSIM"],["insurance","🛡 Insurance"]];
+  function row(a){return '<div class="acts">'+a.map(function(x){return '<a class="bl" data-bk="'+x[0]+'" data-bkk="'+k+'" target="_blank" rel="noopener sponsored" href="'+esc(bookUrl(x[0],k))+'">'+x[1]+'</a>';}).join("")+'</div>';}
+  return '<div class="tt">Book everything <span>opens the partner site</span></div><label class="frm2">Leaving from <input type="text" id="frm" value="'+esc(FROM)+'" autocomplete="off" aria-label="Leaving from"></label>'+row(L.slice(0,3))+row(L.slice(3));
+}
+document.addEventListener("input",function(e){if(e.target.id!=="frm")return;FROM=e.target.value;try{localStorage.setItem("bt_from",FROM);}catch(x){}Array.prototype.forEach.call(document.querySelectorAll("[data-bk]"),function(a){a.href=bookUrl(a.getAttribute("data-bk"),a.getAttribute("data-bkk"));});});
+var VERIFIED={}; /* city key -> "2026-10-25" once you have checked its prices against real sources */
+var BPTIPS=["Choose hostels with a free breakfast or a kitchen; cooking some meals saves a lot.","Carry a student card; many museums and transport systems offer discounts, so check each site.","Night buses or trains can replace a night of accommodation.","Join a free (tip-based) walking tour on day 1 to learn the city.","Buy a city transport pass only if you will ride enough to cover it.","Share rooms, taxis and groceries when you travel with friends."];
+function rng(seed){var a=seed>>>0;return function(){a=(a+0x6D2B79F5)>>>0;var t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;};}
+
+/* ---------- budget slider (non-linear: 50 to 10,000) ---------- */
+function fromSlider(v){var t=v/100;return Math.round(50*Math.pow(200,t)/10)*10;}
+function toSlider(b){return Math.log(b/50)/Math.log(200)*100;}
+function setSliderFill(){var v=$("rng").value;$("rng").style.setProperty("--p",v+"%");}
+
+/* ---------- what the budget buys ---------- */
+function perPerson(){return S.bud/S.pax;}
+function maxDays(key){
+  var c=D[key],bed=bedPP(c,S.sty,S.pax),daily=foodDay(c,S.eat)+c.tr+6;
+  var d=Math.floor((S.bud/(1.1*S.pax)+bed)/(bed+daily));
+  return Math.max(0,Math.min(60,d));
+}
+function worldDays(){
+  var best=0,f,st,i;
+  for(f=0.2;f<=2.4;f+=0.05){
+    st=WORLD.map(function(s){return [s[0],Math.max(1,Math.round(s[1]*f))];});
+    var cost=0,prev=null;
+    st.forEach(function(s,idx){var c=D[s[0]],bed=bedPP(c,S.sty,S.pax),last=idx===st.length-1;cost+=(last?s[1]-1:s[1])*bed+s[1]*(foodDay(c,S.eat)+c.tr+6);if(prev)cost+=xfer(prev,s[0]);prev=s[0];});
+    if(cost*1.1*S.pax<=S.bud)best=st;
+  }
+  return best;
+}
+function drawList(){
+  var rows=Object.keys(D).map(function(k,i){return {k:k,d:maxDays(k),i:i};}).sort(function(a,b){return b.d-a.d;});
+  var h="",w=S.bud>=1200?worldDays():0;
+  if(w){var wd=w.reduce(function(a,s){return a+s[1];},0);h+='<button class="c" data-w="1"><div class="ic" style="background:linear-gradient(135deg,#22d3ee55,#a3e63555)">🌍</div><div><div class="n">Around the world</div><div class="k">'+w.length+' countries · Paris to Tokyo</div></div><div class="d"><b>'+wd+'</b><small>days</small></div></button>';}
+  rows.forEach(function(r){
+    var c=D[r.k],low=r.d<1;
+    h+='<button class="c'+(low?' low':'')+'" data-k="'+r.k+'"><div class="ic" style="background:'+TINT[r.i%TINT.length]+'33">'+FLAG[r.k]+'</div><div><div class="n">'+esc(c.n)+'</div><div class="k">'+esc(c.c)+'</div></div><div class="d"><b>'+(low?'—':(r.d>=60?'60+':r.d))+'</b><small>'+(low?'too low':(r.d===1?'day':'days'))+'</small></div></button>';
+  });
+  $("list").innerHTML=h;
+  $("hh").textContent="Your "+eur(S.bud)+" could get you";
+  $("hs").textContent=S.pax+" traveller"+(S.pax>1?"s":"")+" · "+STAYN[S.sty];
+}
+function drawTop(){
+  $("amt").textContent=eur(S.bud);
+  $("sub").textContent=S.pax>1?"in total for "+S.pax+" people":"for everything: stay, food, transport and fun";
+  setSliderFill();
+}
+function drawControls(){
+  $("eatc").innerHTML="🍴 "+eatCtl();
+  $("quick").innerHTML=[100,300,500,1000,3000].map(function(v){return '<button class="chip'+(S.bud===v?' on':'')+'" data-q="'+v+'">'+eur(v)+'</button>';}).join("");
+  $("paxc").innerHTML=[1,2,3,4].map(function(v){return '<button class="chip'+(S.pax===v?' on':'')+'" data-p="'+v+'">'+v+'</button>';}).join(" ");
+  $("styc").innerHTML="";
+}
+function drawMine(){var el=$("mine");if(!el)return;el.innerHTML=MY.length?'<div class="h"><b>💾 My trips</b><span>saved on this device</span></div>'+MY.map(function(m,i){return '<button class="c" data-my="'+i+'"><div class="ic" style="background:#2dd4bf33">'+FLAG[m.k]+'</div><div><div class="n">'+esc(D[m.k].n)+'</div><div class="k">'+esc(m.t)+'</div></div><div class="d"><span data-mydel="'+i+'" role="button" aria-label="Delete trip" style="padding:6px;color:var(--mut)">✕</span></div></button>';}).join(""):"";}
+function refresh(){drawTop();drawControls();drawList();drawMine();}
+
+/* ---------- planning ---------- */
+function build(cfg){
+  var R=rng(SEED),plan={stops:[],pax:S.pax,sty:S.sty,bud:S.bud,pace:4,eat:Object.assign({},S.eat)},st=cfg.stops;
+  st.forEach(function(s,i){var last=i===st.length-1;plan.stops.push(buildStop(s[0],s[1],last?Math.max(0,s[1]-1):s[1],{rand:R,pace:4,int:INTS}));});
+  fitBudget(plan);return plan;
+}
+function openPlan(cfg){
+  CUR=cfg;SEED=1+Math.floor(Math.random()*99999);
+  // loading moment
+  $("lt").textContent="Planning your trip…";$("ls").textContent="Fitting it to "+eur(S.bud);$("lp").style.width="0";$("lp").style.transition="none";
+  $("load").classList.add("on");
+  setTimeout(function(){$("lp").style.transition="width 1.15s cubic-bezier(.3,.6,.2,1)";$("lp").style.width="100%";},30);
+  setTimeout(function(){PLAN=build(CUR);$("load").classList.remove("on");showPlan(true);},1250);
+}
+var SLOT=["Morning","Afternoon","Evening"];
+function countUp(el,to,ms){var t0=null,from=0;function f(ts){if(!t0)t0=ts;var p=Math.min(1,(ts-t0)/ms),e=1-Math.pow(1-p,3);el.textContent=eur(from+(to-from)*e);if(p<1)requestAnimationFrame(f);}requestAnimationFrame(f);}
+function showPlan(anim){
+  var p=PLAN,t=totals(p),left=p.bud-t.total,cls=left>=0?"":"bad",h="",single=CUR.stops.length===1;
+  var first=D[p.stops[0].key];var verTxt=single?"Prices for "+first.n+": "+(VERIFIED[p.stops[0].key]?"checked "+VERIFIED[p.stops[0].key]+".":"estimate, not yet checked against real sources."):"";
+  $("pttl").innerHTML=single?esc(first.n)+" "+FLAG[p.stops[0].key]:"Around the world 🌍";
+  $("stp").style.display=single?"flex":"none";$("dn").textContent=CUR.stops[0][1]+(CUR.stops[0][1]>1?" days":" day");
+  h+='<div class="hero '+cls+'"><div class="l">Your plan costs</div><div class="t"><span id="cu">'+eur(t.total)+'</span> <small>of '+eur(p.bud)+'</small></div><div class="meter"><i id="mt"></i></div><div class="r"><span>'+(left>=0?'✓ '+eur(left)+' left':'⚠ '+eur(-left)+' over')+'</span><span>'+eur(t.pp/t.days)+' per day</span></div><div class="est">Likely range '+eur(t.total*0.88)+'–'+eur(t.total*1.18)+'. These are planning estimates, not live prices: check before you book. '+verTxt+(t.total*1.18>p.bud?' Keep your buffer, tap ⇄ for cheaper activities, or choose cheaper meals.':'')+'</div></div>'+(single?'<div class="acts"><button data-share="1">🔗 Share link</button><button data-save="1">💾 Save trip</button><button data-print="1">📄 PDF</button></div>':'');
+  var k=["stay","food","local","acts"],lb={stay:"Stay",food:"Food",local:"Transport",acts:"Fun"};
+  h+='<div class="mini">'+k.map(function(x){return '<div><b>'+eur(t.parts[x]*(p.pax))+'</b><small>'+lb[x]+'</small></div>';}).join("")+'</div>';
+  if(single){var cc=D[p.stops[0].key],rowsE=[["b","Breakfast"],["l","Lunch"],["d","Dinner"]];
+    h+='<div class="eatp"><b>🍴 How do you want to eat?</b><div class="eat">'+eatCtl()+'</div><table><tr><th>Per person</th>'+EAT.map(function(x){return '<th>'+x+'</th>';}).join("")+'</tr>'+rowsE.map(function(m){return '<tr><td>'+m[1]+'</td>'+EAT.map(function(x,i){return '<td style="'+(p.eat[m[0]]===i?'color:var(--a2);font-weight:700':'')+'">'+pr(mealPrice(cc,i,m[0]))+'</td>';}).join("")+'</tr>';}).join("")+'<tr><td>Full day</td>'+EAT.map(function(x,i){return '<td>'+pr(foodDay(cc,{b:i,l:i,d:i}))+'</td>';}).join("")+'</tr></table><div class="mut" style="color:var(--mut);font-size:11px;margin-top:6px">Meal prices are estimates based on typical local price levels, not live menus.</div></div>';}
+  var n=0;
+  p.stops.forEach(function(s,si){
+    var c=D[s.key];
+    if(!single||si>0)h+='<div class="tt">'+FLAG[s.key]+' '+esc(c.n)+' <span>'+s.days.length+' days'+(si>0?' · travel ~'+eur(xfer(p.stops[si-1].key,s.key))+' pp':'')+'</span></div>';
+    s.days.forEach(function(d,di){
+      n++;var rws=dayRows(d,c,p),dc=rws.reduce(function(x,y){return x+y.c;},0);
+      h+='<div class="day" style="animation-delay:'+Math.min(n*70,900)+'ms"><div class="dh">Day '+n+'<span>~'+eur(dc)+(p.pax>1?' pp':'')+'</span></div>';
+      var pl=rws.filter(function(r){return r.ai!=null&&!r.f;}).map(function(r){return r.n+" "+c.n;});
+      if(pl.length>=2)h+='<div class="a" style="grid-template-columns:1fr"><a class="rt" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&travelmode=walking&origin='+encodeURIComponent(pl[0])+'&destination='+encodeURIComponent(pl[pl.length-1])+(pl.length>2?'&waypoints='+encodeURIComponent(pl.slice(1,-1).join("|")):'')+'">🗺 Open this day’s route in Google Maps</a></div>';
+      rws.forEach(function(r){h+='<div class="a"><div class="t">'+r.t+'</div><div><div class="n">'+esc(r.n)+'</div><div class="m">'+esc(r.m)+(r.ai!=null&&!r.f?' · <a class="mp" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(r.n+" "+c.n)+'">📍 Map</a>':'')+'</div></div><div class="p '+(r.c?'':'f')+'">'+(r.c?pr(r.c):'Free')+(r.ai!=null?'<button class="sw" data-sw="'+si+','+di+','+r.ai+'" type="button" aria-label="Swap for a cheaper or different option">⇄</button>':'')+'</div></div>';});
+      h+='</div>';
+    });
+    if(single||si===p.stops.length-1)h+=c.tips.slice(0,2).map(function(x){return '<div class="tip">💡 '+esc(x)+'</div>';}).join("");
+  });
+  h+='<div class="tt">Track your spending <span>during the trip</span></div><div class="trk" id="trk"></div>';
+  if(single){var cb=D[p.stops[0].key];if(S.bp)h+='<div class="tt">🎒 Backpacker tips</div>'+BPTIPS.map(function(x){return '<div class="tip">'+esc(x)+'</div>';}).join("");
+    h+='<div class="tt">Book smart <span>compare before you pay</span></div><div class="acts"><a class="bl" target="_blank" rel="noopener" href="https://www.booking.com/searchresults.html?ss='+encodeURIComponent(cb.n)+AFF.booking+'">🛏 Find stays</a><a class="bl" target="_blank" rel="noopener" href="https://www.getyourguide.com/s/?q='+encodeURIComponent(cb.n)+AFF.gyg+'">🎟 Tours and tickets</a></div>'+bookBlock(p.stops[0].key)+((AFF.booking||AFF.gyg||anyL())?'<div class="mut" style="color:var(--mut);font-size:11px">Some links may earn us a commission at no extra cost to you.</div>':'');}
+  $("pb").innerHTML='<div class="pi">'+h+'</div>';drawTrk();$("pb").scrollTop=0;
+  $("plan").classList.add("on");fxShow(t.total);
+  if(anim){countUp($("cu"),t.total,1100);setTimeout(function(){$("mt").style.width=Math.min(100,t.total/Math.max(1,p.bud)*100)+"%";},60);}
+  else{$("mt").style.width=Math.min(100,t.total/Math.max(1,p.bud)*100)+"%";}
+}
+var LOG=[];try{LOG=JSON.parse(localStorage.getItem("bt_log")||"[]");}catch(e){}
+function saveLog(){try{localStorage.setItem("bt_log",JSON.stringify(LOG));}catch(e){}}
+function drawTrk(){
+  var el=$("trk");if(!el||!PLAN)return;var sp=LOG.reduce(function(a,x){return a+x.a;},0),left=PLAN.bud-sp;
+  el.innerHTML='<div class="r2"><b>'+eur(sp)+' spent</b><span class="'+(left<0?'neg':'')+'">'+(left>=0?eur(left)+' left':eur(-left)+' over')+' of '+eur(PLAN.bud)+'</span></div><div class="meter"><i style="width:'+Math.min(100,sp/Math.max(1,PLAN.bud)*100)+'%"></i></div><div class="frm"><input id="sa" type="number" inputmode="decimal" min="0" placeholder="€ amount"><input id="sn" type="text" maxlength="30" placeholder="What for"><button type="button" data-add="1">Add</button></div>'+LOG.map(function(x,i){return '<div class="li"><span>'+esc(x.n||"Spent")+'</span><b>'+eur(x.a)+'</b><button type="button" data-del="'+i+'" aria-label="Remove">✕</button></div>';}).join("")+(LOG.length?'<button type="button" class="clr" data-clr="1">Clear all</button>':'<div class="mut">Saved on this device only. Works offline.</div>');
+}
+function planText(){var p=PLAN,t=totals(p),s="Trip plan · budget "+eur(p.bud)+" · estimated "+eur(t.total)+" for "+p.pax+" traveller(s)\n(estimates per person per line; check prices before booking)\n",n=0;
+  p.stops.forEach(function(st){var c=D[st.key];s+="\n== "+c.n+" ==\n";st.days.forEach(function(d){n++;s+="Day "+n+"\n";dayRows(d,c,p).forEach(function(r){s+="  "+r.t+"  "+r.n+" ("+(r.c?pr(r.c):"free")+")\n";});});});return s;}
+function copyText(txt,btn){
+  var done=function(){var o=btn.textContent;btn.textContent="Copied ✓";setTimeout(function(){btn.textContent=o;},1400);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,fb);}else fb();
+  function fb(){var a=document.createElement("textarea");a.value=txt;a.style.cssText="position:fixed;opacity:0;-webkit-user-select:text;user-select:text";document.body.appendChild(a);a.select();try{a.setSelectionRange(0,999999);}catch(e){}var ok=false;try{ok=document.execCommand("copy");}catch(e){}document.body.removeChild(a);if(ok)done();else window.prompt("Copy this:",txt);}
+}
+function swap(ix){
+  var s=PLAN.stops[ix[0]],c=D[s.key],cur=s.days[ix[1]][ix[2]],used={};
+  PLAN.stops.forEach(function(x){x.days.forEach(function(d){d.forEach(function(a){used[a.n]=1;});});});
+  var cands=c.acts.filter(function(a){return !used[a[0]]&&a[1]<=Math.max(cur.c,8);});
+  var pick=cands.length?cands[Math.floor(Math.random()*cands.length)]:FILL[Math.floor(Math.random()*FILL.length)];
+  s.days[ix[1]][ix[2]]={n:pick[0],c:pick[1],h:pick[2],t:pick[3],f:c.acts.indexOf(pick)<0};
+  var sc=$("pb").scrollTop;showPlan(false);$("pb").scrollTop=sc;
+}
+
+/* ---------- step-by-step wizard ---------- */
+var G={paris:"cul food",rome:"cul food",barcelona:"sea cul food",lisbon:"cul sea food",prague:"cul food",budapest:"cul food",istanbul:"cul food",marrakech:"cul food",bangkok:"food cul",bali:"nat sea",tokyo:"cul food",kotor:"sea nat cul",belgrade:"cul food",sarajevo:"cul nat",tirana:"cul food",dubrovnik:"sea cul",split:"sea cul",antalya:"sea cul",lagos:"sea nat",valletta:"sea cul",nice:"sea cul",phuket:"sea nat",santorini:"sea nat",athens:"cul sea",hanoi:"food cul",tbilisi:"cul food nat",krakow:"cul food",mexico:"cul food",zurich:"nat cul",copenhagen:"cul food",london:"cul food",newyork:"cul food",dubai:"sea cul",singapore:"food nat sea"};
+function tier(c){var d=c.bed[0]+c.food[0]+c.tr;return d<32?0:d<=60?1:2;}
+var TIERN=["€ cheap","€€ mid-range","€€€ expensive"],EATP=[{b:0,l:1,d:1},{b:0,l:1,d:3},{b:1,l:2,d:2},{b:1,l:3,d:3}];
+var W={step:0,a:{type:"cul",price:-1,bud:500,pax:1,days:0,stay:0,eat:0}};
+var STEPS=[{k:"who",q:"Who is travelling?",o:[["🎒 Student or backpacker","bp"],["🧳 Regular traveller","reg"],["💑 Relaxed couple or family","rel"]]},
+{k:"type",q:"What kind of trip do you want?",o:[["🏛 Sights & culture","cul"],["🏖 Sea & beaches","sea"],["🌲 Nature & adventure","nat"],["🍜 Food & nightlife","food"]]},
+{k:"price",q:"What kind of place?",o:[["💸 Cheap places, where money goes far",0],["⚖ Mid-range places",1],["💎 Expensive, rich places",2],["🌍 Show me everything",-1]]},
+{k:"bud",q:"What is your total budget?",g:1,o:[200,300,500,800,1200,2000,3500,5000].map(function(v){return ["€"+v,v];})},
+{k:"pax",q:"How many travellers?",g:1,o:[["1 · solo",1],["2",2],["3",3],["4",4]]},
+{k:"days",q:"How many days?",o:[["Weekend · 3 days",3],["5 days",5],["1 week · 7 days",7],["10 days",10],["2 weeks · 14 days",14],["As long as my budget allows",0]]},
+{k:"stay",q:"Where will you stay?",o:[["🛏 Hostel or shared room",0],["🏠 Guesthouse or budget hotel",1],["🏢 Apartment or mid-range hotel",2],["🏨 Comfortable hotel",3]]},
+{k:"eat",q:"How do you want to eat?",o:[["🥖 Cheap: groceries and street food",0],["🍝 Street food and a sit-down dinner",1],["🍔 Mostly fast food",2],["🍽 Restaurants for most meals",3]]}];
+function estCost(k,days){var c=D[k];return ((days-1)*bedPP(c,S.sty,S.pax)+days*(foodDay(c,S.eat)+c.tr+6))*1.1*S.pax;}
+function wizDraw(){
+  var h,a=W.a,st=STEPS[W.step];
+  var top='<div class="wt"><button class="wbtn" data-wb="1">‹ Back</button><div class="dots">'+STEPS.map(function(x,i){return '<i class="'+(i<=W.step?'on':'')+'"></i>';}).join("")+'</div><button class="wbtn" data-wskip="1">Skip</button><button class="wbtn" data-lhome="1" aria-label="Home">🌍</button></div>';
+  if(!st){
+    S.bp=a.who==="bp";S.bud=a.bud;S.pax=a.pax;S.sty=a.stay;S.eat=Object.assign({},EATP[a.eat]);$("rng").value=toSlider(S.bud);refresh();
+    var rows=Object.keys(D).map(function(k){var c=D[k],md=maxDays(k),days=a.days||Math.max(1,md),est=estCost(k,days);
+      return {k:k,days:days,est:est,fit:est<=S.bud*1.08,m:G[k].indexOf(a.type)>=0?1:0,t:(a.price<0||tier(c)===a.price)?1:0};})
+      .sort(function(x,y){return (y.m*2+y.t)-(x.m*2+x.t)||(y.fit-x.fit)||x.est-y.est;}).slice(0,12);
+    h='<div class="wz">'+top+'<h2>Your best matches</h2><div class="wsum">'+eur(S.bud)+' · '+S.pax+' traveller'+(S.pax>1?'s':'')+' · '+STAYN[S.sty]+' · '+(a.days?a.days+' days':'longest stay')+'. Tap one for the full plan.</div>'+rows.map(function(r,i){var c=D[r.k];return '<button class="c'+(r.est>S.bud*1.6?' low':'')+'" data-wk="'+r.k+','+r.days+'"><div class="ic" style="background:'+TINT[i%TINT.length]+'33">'+FLAG[r.k]+'</div><div><div class="n">'+esc(c.n)+'</div><div class="k">'+esc(c.c)+' · '+TIERN[tier(c)]+' · '+(r.fit?'<span style="color:var(--ok)">fits ✓</span>':'<span style="color:var(--bad)">over by '+eur(r.est-S.bud)+'</span>')+'</div></div><div class="d"><b>~'+eur(r.est)+'</b><small>'+r.days+' days</small></div></button>';}).join("")+'<p class="foot">Estimates for planning only. Prices change, so always check before you book.</p></div>';
+  } else {
+    var sum=STEPS.slice(0,W.step).map(function(x){var o=x.o.filter(function(y){return y[1]===a[x.k];})[0];return o?o[0].replace(/^[^\w€]+\s*/,""):"";}).filter(Boolean).join(" · ");
+    h='<div class="wz">'+top+'<h2>'+st.q+'</h2><div class="wsum">'+esc(sum)+'</div><div class="wo'+(st.g?' g2':'')+'">'+st.o.map(function(o,i){return '<button class="wopt'+(a[st.k]===o[1]?' on':'')+'" data-wo="'+i+'">'+o[0]+'</button>';}).join("")+'</div></div>';
+  }
+  $("wiz").innerHTML=h;$("wiz").scrollTop=0;
+}
+$("wiz").classList.add("on");wizDraw();
+function params(){return {k:CUR.stops[0][0],d:CUR.stops[0][1],b:PLAN.bud,p:PLAN.pax,s:PLAN.sty,e:[PLAN.eat.b,PLAN.eat.l,PLAN.eat.d],r:SEED,x:S.bp?1:0};}
+function toHash(o){return "k="+o.k+"&d="+o.d+"&b="+o.b+"&p="+o.p+"&s="+o.s+"&e="+o.e.join(",")+"&r="+o.r+"&x="+o.x;}
+function openFrom(o){if(!o||!D[o.k])return;S.bud=+o.b;S.pax=+o.p;S.sty=+o.s;S.eat={b:+o.e[0],l:+o.e[1],d:+o.e[2]};S.bp=!!(+o.x);$("rng").value=toSlider(S.bud);refresh();CUR={stops:[[o.k,+o.d]]};SEED=+o.r;PLAN=build(CUR);$("wiz").classList.remove("on");showPlan(true);}
+function loadHash(){var h=location.hash.replace(/^#/,"");if(h.indexOf("k=")<0)return;var q={};h.split("&").forEach(function(x){var a=x.split("=");q[a[0]]=a[1];});if(!q.e)return;q.e=q.e.split(",");openFrom(q);}
+window.__t={params:params,toHash:toHash};
+/* ---------- events ---------- */
+document.addEventListener("change",function(e){var st=e.target.closest&&e.target.closest("[data-st]");if(st){S.sty=+st.value;if(PLAN&&$("plan").classList.contains("on")){PLAN.sty=S.sty;var sc0=$("pb").scrollTop;showPlan(false);$("pb").scrollTop=sc0;}refresh();return;}
+var sel=e.target.closest&&e.target.closest("[data-e]");if(!sel)return;S.eat[sel.getAttribute("data-e")]=+sel.value;if(PLAN&&$("plan").classList.contains("on")){PLAN.eat=Object.assign({},S.eat);var sc=$("pb").scrollTop;showPlan(false);$("pb").scrollTop=sc;}refresh();});
+$("rng").addEventListener("input",function(){S.bud=fromSlider(+this.value);refresh();});
+document.addEventListener("click",function(e){
+  var t=e.target,b;
+  if((b=t.closest("[data-share]"))){var pq=params();doShare(location.href.split("#")[0]+"#"+toHash(pq),"My "+D[pq.k].n+" trip: "+pq.d+" days for "+eur(pq.b)+" ✈️",b);return;}
+  if((b=t.closest("[data-save]"))){var pp=params();pp.t=D[pp.k].n+" · "+pp.d+" days · "+eur(pp.b);MY.unshift(pp);MY=MY.slice(0,20);saveMy();drawMine();b.textContent="Saved ✓";return;}
+  if((b=t.closest("[data-print]"))){doPdf(b);return;}
+  if(t.closest("[data-lhome]")){gshow();return;}
+  if((b=t.closest("[data-mydel]"))){MY.splice(+b.getAttribute("data-mydel"),1);saveMy();drawMine();return;}
+  if((b=t.closest("[data-my]"))){openFrom(MY[+b.getAttribute("data-my")]);return;}
+  if((b=t.closest("[data-wo]"))){var st0=STEPS[W.step];W.a[st0.k]=st0.o[+b.getAttribute("data-wo")][1];if(st0.k==="who"){var wv=W.a.who;if(wv==="bp"){W.a.price=0;W.a.stay=0;W.a.eat=0;}else if(wv==="rel"){W.a.price=-1;W.a.stay=2;W.a.eat=1;}else{W.a.price=-1;W.a.stay=1;W.a.eat=0;}}W.step++;wizDraw();return;}
+  if(t.closest("[data-wb]")){if(W.step>0){W.step--;wizDraw();}else $("wiz").classList.remove("on");return;}
+  if(t.closest("[data-wskip]")){$("wiz").classList.remove("on");return;}
+  if(t.closest("#wizb")){W.step=0;wizDraw();$("wiz").classList.add("on");return;}
+  if((b=t.closest("[data-wk]"))){var p2=b.getAttribute("data-wk").split(",");openPlan({stops:[[p2[0],+p2[1]]]});return;}
+  if((b=t.closest("[data-q]"))){S.bud=+b.getAttribute("data-q");$("rng").value=toSlider(S.bud);refresh();return;}
+  if((b=t.closest("[data-p]"))){S.pax=+b.getAttribute("data-p");refresh();return;}
+  if((b=t.closest("[data-s]"))){S.sty=+b.getAttribute("data-s");refresh();return;}
+  if((b=t.closest("[data-k]"))){var k=b.getAttribute("data-k"),d=Math.max(1,maxDays(k));openPlan({stops:[[k,d]]});return;}
+  if(t.closest("[data-w]")){var w=worldDays();if(w)openPlan({stops:w});return;}
+  if(t.id==="sur"||t.closest("#sur")){var ks=Object.keys(D).filter(function(k){return maxDays(k)>=2;});if(!ks.length)ks=Object.keys(D);var k2=ks[Math.floor(Math.random()*ks.length)];openPlan({stops:[[k2,Math.max(1,maxDays(k2))]]});return;}
+  if(t.closest("#back")){$("plan").classList.remove("on");return;}
+  if(t.closest("#dm")){var s=CUR.stops[0];if(s[1]>1){s[1]--;PLAN=build(CUR);showPlan(true);}return;}
+  if(t.closest("#dp")){var s2=CUR.stops[0];if(s2[1]<60){s2[1]++;PLAN=build(CUR);showPlan(true);}return;}
+  if(t.closest("#regen")){SEED=1+Math.floor(Math.random()*99999);PLAN=build(CUR);showPlan(true);return;}
+  if(t.closest("#copy")){copyText(planText(),$("copy"));return;}
+  if(t.closest("[data-add]")){var v=parseFloat($("sa").value);if(v>0){LOG.push({a:v,n:$("sn").value.trim()});saveLog();}drawTrk();return;}
+  if((b=t.closest("[data-del]"))){LOG.splice(+b.getAttribute("data-del"),1);saveLog();drawTrk();return;}
+  if(t.closest("[data-clr]")){LOG=[];saveLog();drawTrk();return;}
+  if((b=t.closest("[data-sw]"))){swap(b.getAttribute("data-sw").split(",").map(Number));return;}
+});
+
+
+/* ---------- share, PDF, live data ---------- */
+function toast(m){var t=$("toast");if(!t){t=document.createElement("div");t.id="toast";document.body.appendChild(t);}t.textContent=m;t.className="on";clearTimeout(toast.h);toast.h=setTimeout(function(){t.className="";},3600);}
+function doShare(u,tx,btn){
+  var web=/^https?:$/.test(location.protocol);
+  function cp(){copyText(u,btn);toast(web?"Link copied. Paste it anywhere.":"Copied, but this link only opens for others once the app is hosted online.");}
+  if(navigator.share&&web){navigator.share({title:"Budget Trip",text:tx,url:u}).catch(function(e){if(!e||e.name!=="AbortError")cp();});}else cp();
+}
+function pdfClean(t){return String(t).replace(/€/g,"\x80").replace(/[’‘]/g,"'").replace(/[“”]/g,'"').replace(/[–—]/g,"-").replace(/·/g,"\xB7").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\x20-\x7e\x80\xA0-\xFF]/g,"");}
+function pdfBlob(src){
+  var PW=595,PH=842,M=48,LH=14,per=Math.floor((PH-2*M-20)/LH),pages=[[]],i,lines=[];
+  String(src).split("\n").forEach(function(raw,ix){
+    var t=pdfClean(raw),b=ix===0||/^(==|Day )/.test(raw),ind=(t.match(/^\s*/)[0]).length,w=b?70:92;
+    if(/^==|^Day /.test(raw)&&lines.length)lines.push({t:"",b:0});
+    if(!t.trim()){lines.push({t:"",b:0});return;}
+    while(t.length>w){var k=t.lastIndexOf(" ",w);if(k<ind+8)k=w;lines.push({t:t.slice(0,k),b:b});t=new Array(ind+3).join(" ")+t.slice(k).trim();}
+    lines.push({t:t,b:b});
+  });
+  lines.forEach(function(l){var pg=pages[pages.length-1];if(pg.length>=per){pg=[];pages.push(pg);}pg.push(l);});
+  var out="%PDF-1.4\n",off=[],n=4+pages.length*2;
+  function add(id,body){off[id]=out.length;out+=id+" 0 obj\n"+body+"\nendobj\n";}
+  function esc2(t){return t.replace(/[\\()]/g,"\\$&");}
+  var kids=pages.map(function(_,p){return (6+2*p)+" 0 R";}).join(" ");
+  add(1,"<< /Type /Catalog /Pages 2 0 R >>");add(2,"<< /Type /Pages /Kids ["+kids+"] /Count "+pages.length+" >>");
+  add(3,"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>");add(4,"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>");
+  pages.forEach(function(pg,p){
+    var c="",y=PH-M;
+    pg.forEach(function(l){if(l.t)c+="BT /"+(l.b?"F2 12":"F1 10")+" Tf 1 0 0 1 "+M+" "+y+" Tm ("+esc2(l.t)+") Tj ET\n";y-=LH;});
+    c+="BT /F1 8 Tf 1 0 0 1 "+M+" 30 Tm (Budget Trip - estimates for planning only, prices change.   Page "+(p+1)+"/"+pages.length+") Tj ET\n";
+    add(5+2*p,"<< /Length "+c.length+" >>\nstream\n"+c+"endstream");
+    add(6+2*p,"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 "+PW+" "+PH+"] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents "+(5+2*p)+" 0 R >>");
+  });
+  var xr=out.length;out+="xref\n0 "+(n+1)+"\n0000000000 65535 f \n";
+  for(i=1;i<=n;i++)out+=("0000000000"+off[i]).slice(-10)+" 00000 n \n";
+  out+="trailer\n<< /Size "+(n+1)+" /Root 1 0 R >>\nstartxref\n"+xr+"\n%%EOF";
+  var u8=new Uint8Array(out.length);for(i=0;i<out.length;i++)u8[i]=out.charCodeAt(i)&255;
+  return new Blob([u8],{type:"application/pdf"});
+}
+function doPdf(btn){
+  if(!PLAN){return;}
+  try{
+    var bl=pdfBlob(planText()),nm="trip-"+CUR.stops[0][0]+"-"+CUR.stops.reduce(function(a,x){return a+x[1];},0)+"days.pdf";
+    if(/FBAN|FBAV|Instagram|TikTok|musical_ly|Snapchat|Line\//i.test(navigator.userAgent)){copyText(planText(),btn);toast("This in-app browser blocks downloads. Plan copied as text. Open the link in Chrome or Safari for the PDF.");return;}
+    var u=URL.createObjectURL(bl),a=document.createElement("a");a.href=u;a.download=nm;a.rel="noopener";document.body.appendChild(a);a.click();
+    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(u);},4000);toast("PDF saved");
+  }catch(e){try{window.print();}catch(x){toast("Could not make the PDF on this device.");}}
+}
+var FX=null;
+function fxLoad(){
+  try{var c=JSON.parse(localStorage.getItem("bt_fx")||"null");if(c&&Date.now()-c.t<6*3600e3){FX=c;return;}}catch(e){}
+  try{fetch("https://api.frankfurter.dev/v1/latest?base=EUR&symbols=USD,GBP").then(function(r){return r.json();}).then(function(j){if(j&&j.rates&&j.rates.USD){FX={t:Date.now(),usd:j.rates.USD,gbp:j.rates.GBP,d:j.date};try{localStorage.setItem("bt_fx",JSON.stringify(FX));}catch(e){}if(PLAN&&$("plan").classList.contains("on"))fxShow(totals(PLAN).total);}}).catch(function(){});}catch(e){}
+}
+function fxShow(total){var h=document.querySelector("#pb .hero");if(!h||!FX)return;var o=h.querySelector(".fx");if(!o){o=document.createElement("div");o.className="fx";h.appendChild(o);}o.textContent="≈ $"+Math.round(total*FX.usd).toLocaleString("en-US")+" · £"+Math.round(total*FX.gbp).toLocaleString("en-GB")+" · live rates, "+FX.d;}
+function loadPrices(){
+  try{fetch("prices.json",{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){
+    var ch=0,ok=function(a){return a&&a.length===3&&a.every(function(x){return typeof x==="number"&&x>=0;});};
+    Object.keys(j.cities||{}).forEach(function(k){var v=j.cities[k];if(!D[k]||!v)return;if(ok(v.bed))D[k].bed=v.bed;if(ok(v.food))D[k].food=v.food;if(typeof v.tr==="number")D[k].tr=v.tr;if(v.verified)VERIFIED[k]=v.verified;ch++;});
+    Object.keys(j.aff||{}).forEach(function(k){if(typeof j.aff[k]!=="string")return;if(k in AFF)AFF[k]=j.aff[k];else if(k in AFFL)AFFL[k]=j.aff[k];});
+    if(ch||j.aff){refresh();gui();}
+  }).catch(function(){});}catch(e){}
+}
+
+/* ---------- landing: globe + plane ---------- */
+var gLC={paris:[48.86,2.35],rome:[41.9,12.5],barcelona:[41.39,2.17],lisbon:[38.72,-9.14],prague:[50.08,14.44],budapest:[47.5,19.04],istanbul:[41.01,28.98],marrakech:[31.63,-8],bangkok:[13.76,100.5],bali:[-8.5,115.26],tokyo:[35.68,139.7],kotor:[42.42,18.77],belgrade:[44.8,20.46],sarajevo:[43.86,18.41],tirana:[41.33,19.82],dubrovnik:[42.65,18.09],split:[43.51,16.44],antalya:[36.9,30.7],lagos:[37.1,-8.67],valletta:[35.9,14.51],nice:[43.7,7.27],phuket:[7.88,98.39],santorini:[36.39,25.46],athens:[37.98,23.73],hanoi:[21.03,105.85],tbilisi:[41.72,44.79],krakow:[50.06,19.94],mexico:[19.43,-99.13],zurich:[47.37,8.54],copenhagen:[55.68,12.57],london:[51.5,-0.12],newyork:[40.71,-74],dubai:[25.2,55.27],singapore:[1.35,103.82]};
+var gORIGIN=[42.44,19.26]; /* home airport: change to your audience's main city */
+var gLAND=[
+[-168,66,-156,71,-141,70,-125,70,-110,73,-95,72,-90,69,-85,69,-82,66,-88,64,-94,60,-93,57,-86,55,-82,52,-79,53,-78,58,-77,62,-72,62,-65,60,-62,57,-56,52,-60,48,-66,45,-70,43,-74,40,-76,35,-80,32,-81,28,-80,25,-82,26,-84,30,-89,30,-94,29,-97,27,-97,22,-95,19,-91,19,-90,21,-87,21,-88,16,-84,15,-83,11,-80,9,-77,8,-80,7,-84,8,-86,12,-90,14,-95,16,-102,18,-105,20,-106,23,-110,27,-114,31,-117,32,-121,35,-124,40,-124,47,-128,51,-133,56,-140,60,-148,60,-152,58,-158,57,-164,55,-160,59,-165,62],
+[-77,8,-72,12,-64,10,-60,8,-52,5,-50,0,-44,-2,-35,-5,-35,-9,-39,-14,-41,-22,-48,-26,-53,-34,-58,-35,-57,-38,-62,-39,-65,-45,-68,-50,-69,-54,-72,-52,-74,-46,-73,-37,-71,-30,-70,-18,-76,-14,-81,-6,-80,-2,-78,2],
+[-9,37,-9,43,-2,43,-1,46,-4,48,1,50,4,52,8,54,9,57,10,55,13,54,19,54.5,21,57,24,58,29,60,24,60,22,64,18,63,17,60,12,56,6,58,5,62,14,67,20,70,28,71,34,69,41,67,44,66,44,68,55,68,60,69,69,73,80,73,88,75,100,77,112,74,130,71,140,72,160,70,170,70,180,69,180,65,172,62,163,60,162,57,156,51,156,57,149,59,142,59,136,54,141,52,140,47,134,43,130,42,129,37,126,35,126,38,122,40,118,39,121,37,120,34,122,31,120,26,116,23,110,21,108,21,106,17,109,12,105,9,100,13,100,8,103,2,101,3,98,8,98,16,94,17,92,22,88,22,86,20,81,15,80,10,77,8,73,16,72,21,67,24,62,25,57,26,56,27,52,28,48,30,50,26,52,24,56,25,59,22,55,17,49,15,44,12,43,16,39,22,35,28,34,31,35,36,30,36,27,37,26,40,23,40,22,37,20,40,19,42,14,45,12,45,12,44,16,41,18,40,16,38,15,38,12,42,9,44,6,43,3,43,0,39,-2,37,-5,36],
+[-17,21,-13,28,-10,30,-6,36,0,36,10,37,11,33,20,31,25,32,32,31,33,27,37,22,39,16,43,12,51,12,48,6,41,-2,40,-10,40,-15,35,-20,35,-25,32,-29,27,-34,20,-35,18,-32,14,-23,12,-15,13,-9,9,-1,9,4,5,6,-2,5,-8,4,-13,8,-17,14],
+[114,-22,122,-18,130,-12,136,-12,137,-16,142,-11,146,-19,153,-26,151,-34,146,-39,140,-38,135,-35,131,-31,124,-33,115,-34,113,-26],
+[-55,60,-43,60,-20,70,-20,80,-40,83,-65,81,-70,77,-58,75,-53,68],
+[-5,50,1,51,2,53,-2,56,-2,58,-5,58.5,-6,56,-3,54,-5,52],[-10,52,-6,52,-6,55,-10,54],[-24,64,-14,64,-16,66,-22,66],
+[130,32,135,34,140,35,142,39,141,42,143,44,140,43,138,38,133,35],
+[95,5,98,4,104,-2,106,-6,102,-4,98,0],[109,1,111,-3,116,-4,119,1,117,7,113,3],[105,-6,114,-8,114,-7,106,-6],[131,-1,141,-3,150,-10,141,-9,135,-4],
+[44,-24,47,-25,50,-16,49,-12,46,-15,44,-20],[172,-34,178,-38,175,-41,172,-41],[172,-41,174,-42,169,-47,167,-46]];
+var gSEA=[[28,42,28,46,34,46,38,47,41,42,36,41,31,41],[47,45,52,47,54,42,53,37,49,37,49,41]];
+function gin(p,x,y){var c=false,n=p.length,i,j=n-2;for(i=0;i<n;j=i,i+=2){if((p[i+1]>y)!==(p[j+1]>y)&&x<(p[j]-p[i])*(y-p[i+1])/(p[j+1]-p[i+1])+p[i])c=!c;}return c;}
+function gland(x,y){var i,l=false;for(i=0;i<gLAND.length;i++)if(gin(gLAND[i],x,y)){l=true;break;}if(!l)return false;for(i=0;i<gSEA.length;i++)if(gin(gSEA[i],x,y))return false;return true;}
+function gvec(la,lo){var f=la*Math.PI/180,g=lo*Math.PI/180;return [Math.cos(f)*Math.sin(g),Math.sin(f),Math.cos(f)*Math.cos(g)];}
+var gDOTS=[];(function(){var st=2.6,la,k,n,lo;for(la=-58;la<=80;la+=st){n=Math.max(1,Math.round(360*Math.cos(la*Math.PI/180)/st));for(k=0;k<n;k++){lo=-180+(k+.5)*360/n;if(gland(lo,la))gDOTS.push(gvec(la,lo));}}})();
+function gdist(a,b){var p=Math.PI/180,x=Math.sin((b[0]-a[0])*p/2),y=Math.sin((b[1]-a[1])*p/2);return 12742*Math.asin(Math.sqrt(x*x+Math.cos(a[0]*p)*Math.cos(b[0]*p)*y*y));}
+function gflight(km){return Math.round((km<600?15+0.05*km:30+0.07*km)/5)*5;}
+function gdays(k,b){var o=S.bud;S.bud=b;var d=maxDays(k);S.bud=o;return d;}
+function greach(){var o=[];Object.keys(D).forEach(function(k){if(!gLC[k])return;var km=gdist(gORIGIN,gLC[k]),f=gflight(km),d=gdays(k,S.bud-f*S.pax);if(d>=2&&km>=40)o.push({k:k,km:km,f:f,d:d});});return o;}
+function gnv(v){var l=Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2])||1;return [v[0]/l,v[1]/l,v[2]/l];}
+var gcv=$("gcv"),gx=gcv.getContext("2d"),GW=300,GL0=0.35,GT0=0.3,gRM=!!(window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches),gRun=false,gLast=0,gF=null,gR=[],gLK=null,gHome=gvec(gORIGIN[0],gORIGIN[1]);
+function gsize(){var r=gcv.getBoundingClientRect(),d=Math.min(window.devicePixelRatio||1,2);if(!r.width)return;GW=r.width;gcv.width=r.width*d;gcv.height=r.width*d;gx.setTransform(d,0,0,d,0,0);}
+function gat(f,u){var s=Math.sin(f.om)||1,k1=Math.sin((1-u)*f.om)/s,k2=Math.sin(u*f.om)/s,h=1+(0.03+0.2*Math.min(1,f.om/1.6))*Math.sin(Math.PI*u);return [(f.a[0]*k1+f.b[0]*k2)*h,(f.a[1]*k1+f.b[1]*k2)*h,(f.a[2]*k1+f.b[2]*k2)*h];}
+function gcard(r,landed){var el=$("lcard");if(!r){el.innerHTML='Nothing fits yet. Slide the budget up ✈️';return;}el.innerHTML='<div class="lf">'+FLAG[r.k]+'</div><div class="lt"><b>'+esc(D[r.k].n)+'</b><span>'+(landed?r.d+' days · flight ~'+eur(r.f)+' included':'Taking off…')+'</span></div><button data-lgo="'+r.k+'">See trip</button>';}
+function gnext(){if(!gR.length){gF=null;gcard(null);return;}var c=gR.filter(function(r){return r.k!==gLK;});if(!c.length)c=gR;var r=c[Math.floor(Math.random()*c.length)],b=gvec(gLC[r.k][0],gLC[r.k][1]),dt=Math.max(-1,Math.min(1,gHome[0]*b[0]+gHome[1]*b[1]+gHome[2]*b[2]));gLK=r.k;gF={r:r,a:gHome,b:b,om:Math.acos(dt),t0:performance.now(),dur:2900,hold:2400,done:false};gcard(r,false);}
+function gdraw(ts,u,t){
+  var c=GW/2,R=GW*0.46,cL=Math.cos(GL0),sL=Math.sin(GL0),cT=Math.cos(GT0),sT=Math.sin(GT0),i,p,g;
+  function P(v){var x1=v[0]*cL-v[2]*sL,z1=v[0]*sL+v[2]*cL;return [c+R*x1,c-R*(v[1]*cT-z1*sT),v[1]*sT+z1*cT];}
+  function arc(f,u0,u1,n){gx.beginPath();var pen=false,j,q;for(j=0;j<=n;j++){q=P(gat(f,u0+(u1-u0)*j/n));if(q[2]>0){if(pen)gx.lineTo(q[0],q[1]);else gx.moveTo(q[0],q[1]);pen=true;}else pen=false;}gx.stroke();}
+  gx.clearRect(0,0,GW,GW);
+  g=gx.createRadialGradient(c,c,R*.96,c,c,R*1.17);g.addColorStop(0,"rgba(45,212,191,.38)");g.addColorStop(1,"rgba(45,212,191,0)");gx.fillStyle=g;gx.beginPath();gx.arc(c,c,R*1.17,0,7);gx.fill();
+  g=gx.createRadialGradient(c*.8,c*.7,R*.1,c,c,R);g.addColorStop(0,"#17406a");g.addColorStop(1,"#09152b");gx.fillStyle=g;gx.beginPath();gx.arc(c,c,R,0,7);gx.fill();
+  gx.strokeStyle="rgba(94,234,212,.4)";gx.lineWidth=1;gx.stroke();
+  gx.fillStyle="#8fe3d6";
+  for(i=0;i<gDOTS.length;i++){p=P(gDOTS[i]);if(p[2]>0){gx.globalAlpha=.16+.8*p[2];var s=1.2+1.3*p[2];gx.fillRect(p[0]-s/2,p[1]-s/2,s,s);}}
+  gx.globalAlpha=1;
+  var pulse=(ts%1800)/1800,ok={};gR.forEach(function(r){ok[r.k]=1;});
+  Object.keys(gLC).forEach(function(k){p=P(gvec(gLC[k][0],gLC[k][1]));if(p[2]<=0.02)return;
+    if(ok[k]){gx.fillStyle="#5eead4";gx.beginPath();gx.arc(p[0],p[1],2.6,0,7);gx.fill();gx.strokeStyle="rgba(94,234,212,"+(.5*(1-pulse))+")";gx.lineWidth=1.2;gx.beginPath();gx.arc(p[0],p[1],3+pulse*7,0,7);gx.stroke();}
+    else{gx.fillStyle="rgba(255,255,255,.22)";gx.beginPath();gx.arc(p[0],p[1],1.5,0,7);gx.fill();}});
+  p=P(gHome);if(p[2]>0){gx.fillStyle="#fff";gx.beginPath();gx.arc(p[0],p[1],3.4,0,7);gx.fill();}
+  if(gF){
+    gx.setLineDash([3,4]);gx.strokeStyle="rgba(94,234,212,.28)";gx.lineWidth=1.5;arc(gF,0,1,48);gx.setLineDash([]);
+    gx.strokeStyle="#5eead4";gx.lineWidth=2.2;gx.shadowColor="#2dd4bf";gx.shadowBlur=9;if(u>0.001)arc(gF,0,u,Math.max(2,Math.ceil(48*u)));gx.shadowBlur=0;
+    if(t<1){var h=P(gat(gF,u));if(h[2]>0){var q0=P(gat(gF,Math.max(0,u-.03))),q1=P(gat(gF,Math.min(1,u+.03))),an=Math.atan2(q1[1]-q0[1],q1[0]-q0[0]),k=GW/330;
+      gx.save();gx.translate(h[0],h[1]);gx.rotate(an);gx.scale(k,k);gx.fillStyle="#fff";gx.shadowColor="#2dd4bf";gx.shadowBlur=10;gx.beginPath();
+      gx.moveTo(10,0);gx.lineTo(2,-2);gx.lineTo(-2,-9);gx.lineTo(-4,-9);gx.lineTo(-2.5,-2);gx.lineTo(-8,-1.5);gx.lineTo(-9.5,-4);gx.lineTo(-11,-4);gx.lineTo(-10,0);gx.lineTo(-11,4);gx.lineTo(-9.5,4);gx.lineTo(-8,1.5);gx.lineTo(-2.5,2);gx.lineTo(-4,9);gx.lineTo(-2,9);gx.lineTo(2,2);gx.closePath();gx.fill();gx.restore();gx.shadowBlur=0;}}
+    else{var d=P(gF.b);if(d[2]>0){gx.font="600 12px -apple-system,system-ui,sans-serif";gx.textAlign="center";gx.fillStyle="#fff";gx.shadowColor="#000";gx.shadowBlur=6;gx.fillText(D[gF.r.k].n.replace(/ \(.*/,""),d[0],d[1]-13);gx.shadowBlur=0;}}
+  }
+}
+function gframe(ts){
+  if(!gRun)return;
+  var dt=Math.min(.05,(ts-(gLast||ts))/1000),t=0,u=0,tv,d;gLast=ts;
+  if(gF){t=Math.max(0,Math.min(1,(ts-gF.t0)/gF.dur));u=t*t*(3-2*t);
+    if(t>=1&&!gF.done){gF.done=true;gcard(gF.r,true);}
+    if(ts>gF.t0+gF.dur+gF.hold)gnext();}
+  if(!gRM){
+    if(gF){var w=gF.done?1:0.25+0.5*u;tv=gnv([gF.a[0]*(1-w)+gF.b[0]*w,gF.a[1]*(1-w)+gF.b[1]*w,gF.a[2]*(1-w)+gF.b[2]*w]);
+      d=Math.atan2(tv[0],tv[2])-GL0;d=Math.atan2(Math.sin(d),Math.cos(d));GL0+=d*Math.min(1,dt*1.8);GT0+=((Math.asin(tv[1])*.55+.12)-GT0)*Math.min(1,dt*1.8);}
+    else{GL0+=dt*.22;GT0+=(.3-GT0)*Math.min(1,dt*2);}}
+  gdraw(ts,u,t);requestAnimationFrame(gframe);
+}
+function gstart(){if(gRun)return;gRun=true;gLast=0;requestAnimationFrame(gframe);}
+function gui(){
+  var v=toSlider(S.bud);$("lamt").textContent=eur(S.bud);$("lrng").value=v;$("lrng").style.setProperty("--p",v+"%");
+  $("lq").innerHTML=[100,300,500,1000,3000].map(function(x){return '<button class="chip'+(S.bud===x?' on':'')+'" data-lq="'+x+'">'+eur(x)+'</button>';}).join("");
+  gR=greach();
+  if(!gF){if(gR.length)gnext();else gcard(null);return;}
+  var n=gR.filter(function(r){return r.k===gF.r.k;})[0];
+  if(!n){gnext();return;}
+  gF.r=n;if(gF.done)gcard(n,true);
+}
+function gsync(){$("rng").value=toSlider(S.bud);refresh();gui();}
+function ghide(browse){$("land").classList.add("off");gRun=false;W.a.bud=S.bud;if(browse)$("wiz").classList.remove("on");}
+function gshare(b){var r=gF&&gF.r;doShare(location.href.split("#")[0]+"#b="+S.bud,r?eur(S.bud)+" can take me to "+D[r.k].n+" for "+r.d+" days ✈️":"Where can your budget take you? ✈️",b);}
+function gshow(){$("plan").classList.remove("on");$("wiz").classList.remove("on");$("load").classList.remove("on");$("land").classList.remove("off");$("land").scrollTop=0;gui();gstart();}
+$("lrng").addEventListener("input",function(){S.bud=fromSlider(+this.value);$("rng").value=this.value;refresh();gui();});
+$("land").addEventListener("click",function(e){var t=e.target,b;
+  if((b=t.closest("[data-lq]"))){S.bud=+b.getAttribute("data-lq");gsync();return;}
+  if((b=t.closest("[data-lgo]"))){var k=b.getAttribute("data-lgo"),r=gR.filter(function(x){return x.k===k;})[0];ghide(1);if(r){S.bud=Math.max(50,Math.round((S.bud-r.f*S.pax)/10)*10);}$("rng").value=toSlider(S.bud);refresh();openPlan({stops:[[k,Math.max(1,maxDays(k))]]});return;}
+  if(t.closest("#lgo")){ghide(0);W.step=0;wizDraw();return;}
+  if(t.closest("#lbr")){ghide(1);return;}
+  if((b=t.closest("#lsh"))){gshare(b);return;}
+});
+window.addEventListener("resize",gsize);
+document.addEventListener("visibilitychange",function(){if(document.hidden)gRun=false;else if(!$("land").classList.contains("off"))gstart();});
+(function(){var m=/(?:^|&)b=(\d+)/.exec(location.hash.replace(/^#/,""));if(m&&location.hash.indexOf("k=")<0)S.bud=Math.max(50,Math.min(10000,+m[1]));})();
+$("rng").value=toSlider(S.bud);refresh();loadHash();
+gsize();gui();fxLoad();loadPrices();
+if(location.hash.indexOf("k=")>=0){$("land").classList.add("off");}else gstart();
+})();
+</script>
+</body>
+</html>
