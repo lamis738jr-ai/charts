@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prop Firm Dashboard (Demo)</title>
+<style>
+:root{--bg:#0b0a08;--panel:#14120d;--card:#1a1710;--line:#2c2718;--gold:#e6c36a;--gold-d:#4a3f1c;--gold-bg:#2a2410;--text:#f2efe6;--mute:#8b8672;--blue:#5b8def;--green:#6fcf97;--red:#e5646b}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:#050504;color:var(--text);font-family:"Inter",-apple-system,"SF Pro Text","Segoe UI",system-ui,sans-serif;display:flex;justify-content:center;align-items:center;-webkit-text-size-adjust:100%}
+.app{width:100%;max-width:393px;height:100%;position:relative;overflow:hidden;background:radial-gradient(120% 60% at 80% 0%,#3a2518 0%,#150f0b 45%,var(--bg) 100%)}
+@media(min-width:500px){.app{height:min(100%,852px);border-radius:40px;border:1px solid #222}}
+.scroll{height:100%;overflow-y:auto;padding:30px 12px 110px;scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+h1{white-space:nowrap;font-size:21px;letter-spacing:.05em;font-weight:800;padding:0 4px}
+h1 b{color:var(--gold)}
+.sub{color:var(--mute);font-size:12px;margin:4px 4px 14px}
+.profile{border:2px solid #cfc7b4;border-radius:6px;overflow:hidden;background:linear-gradient(135deg,#3b4a58,#8aa0b2 50%,#2d3946);margin-bottom:14px;height:148px;display:flex;flex-direction:column}
+.profile .top{display:flex;align-items:center;gap:12px;padding:0 16px;flex:1}
+.avatar{width:58px;height:58px;border-radius:50%;background:linear-gradient(160deg,var(--gold),#8a6a1c);display:grid;place-items:center;font-weight:800;font-size:22px;color:#1a1306}
+.profile .name{font-family:Georgia,serif;font-size:18px;letter-spacing:.04em}
+.profile .tag{color:#ff6b8b;font-style:italic;font-size:12px}
+.profile .bar{display:flex;align-items:center;gap:10px;background:#000;padding:0 14px;height:32px;font-size:11px;font-weight:700}
+.xp{flex:1;height:4px;background:#222;border-radius:3px;overflow:hidden}.xp i{display:block;height:100%;width:32%;background:#5fc4e0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:10px}
+.row{display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:none}
+.row::-webkit-scrollbar{display:none}
+.lbl{font-size:9px;letter-spacing:.1em;color:var(--mute);margin-right:6px;flex:none}
+.chip{flex:none;height:26px;padding:0 11px;border-radius:9px;border:1px solid transparent;color:var(--mute);background:none;font:inherit;font-size:11px;cursor:pointer}
+.chip.on{color:var(--text);background:var(--gold-bg);border-color:var(--gold-d)}
+.hr{height:1px;background:var(--line);margin:8px 0}
+.platform{display:flex;gap:6px;margin:10px 0 2px}
+.platform div{flex:1;height:39px;background:#0a0a0f;border-radius:10px;font-size:12px;display:flex;gap:8px;justify-content:center;align-items:center}
+.platform span{width:42px;height:39px;font-size:12px;display:grid;place-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;color:var(--mute)}
+.platform .sq{width:16px;height:16px;border-radius:4px;background:linear-gradient(135deg,var(--blue) 50%,#8fb0ff 50%)}
+.collapse{text-align:right;font-size:10px;color:var(--mute);margin:18px 6px 12px}
+.acct{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 15px 13px;margin-bottom:13px}
+.broker{font-weight:700;font-size:10px;color:#cfd8c8;margin-bottom:8px}.broker i{color:var(--green);font-style:normal}
+.title{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.title h3{font-size:17px;letter-spacing:0;font-weight:700}
+.badge{font-size:9px;letter-spacing:.06em;border:1px solid var(--line);background:#221f15;border-radius:6px;padding:5px 8px;color:#cfcab8;font-weight:700;white-space:nowrap}
+.title .badge{font-size:10px}
+.badge.gold{color:var(--gold);border-color:var(--gold-d);background:var(--gold-bg)}
+.badge.blue{color:var(--blue);background:#10182a;border-color:#1d2c4f}
+.badge.red{color:var(--red);background:#2a1215;border-color:#4d2024}
+.badge.green{color:var(--green);background:#0f2218;border-color:#1c4030}
+.aid{font-family:ui-monospace,Menlo,monospace;font-size:10px;color:#5d5946;margin:10px 0 11px}
+.tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px}
+.elig{display:flex;align-items:center;gap:10px;justify-content:center;color:var(--gold);font-weight:600;font-size:13px;height:90px;border-top:1px solid #241f13;border-bottom:1px solid #241f13;margin-bottom:11px}
+.coin{width:25px;height:25px;border-radius:50%;border:1.5px solid var(--gold-d);background:var(--gold-bg);display:grid;place-items:center;font-weight:700;font-size:12px}
+.btns{display:flex;gap:7px}
+.btn{flex:1;height:39px;padding:0;border-radius:10px;border:1px solid var(--line);background:#24211a;color:var(--text);font:inherit;font-weight:600;font-size:12px;cursor:pointer}
+.btns .btn.gold{flex:1.12}
+.btn.gold{background:var(--gold-bg);border:1.5px solid var(--gold);color:var(--gold)}
+.btn:disabled{opacity:.4;cursor:default}
+.nav{position:absolute;left:12px;right:12px;bottom:calc(20px + env(safe-area-inset-bottom,0px));height:68px;background:#0e0f14ee;backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:22px;display:flex;justify-content:space-around;align-items:center}
+.nav button{background:none;border:0;color:var(--mute);font:inherit;font-size:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;width:64px}
+.nav button.on{color:var(--text)}
+.nav svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7}
+.nav .plus{width:26px;height:26px;border-radius:7px;border:1px solid var(--gold-d);background:var(--gold-bg);display:grid;place-items:center;color:var(--gold);font-size:16px;line-height:1}
+.nav button.add{color:var(--gold)}
+.ph{display:flex;align-items:center;gap:10px;margin:2px 4px 12px;font-weight:800;font-size:12px}
+.ph span{font-size:15px}
+.ph em{margin-left:auto;font-style:normal;font-size:9px;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:4px 8px;color:var(--mute)}
+.verified{margin:6px auto 16px;width:max-content}.verified .badge{font-size:10px;padding:8px 12px}
+.preq{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 15px 14px;margin-bottom:10px}
+.preq .h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.preq .id{font-family:ui-monospace,Menlo,monospace;font-size:11px}
+.kv{display:flex;gap:44px;margin-bottom:12px}.kv small{display:block;color:var(--mute);font-size:8px;letter-spacing:.1em;margin-bottom:5px}.kv b{font-size:13px;font-weight:600}
+.preq .btn{height:36px;font-size:11px}
+.steps{display:flex;justify-content:space-between;margin:6px 6px 4px;position:relative}
+.steps:before{content:"";position:absolute;top:6px;left:14%;right:14%;height:2px;background:var(--line)}
+.steps div{position:relative;text-align:center;font-size:12px;color:var(--mute);flex:1}
+.steps i{display:block;width:12px;height:12px;border-radius:50%;background:#2a261a;margin:0 auto 7px;position:relative;border:2px solid var(--card)}
+.steps .done{color:var(--text)}.steps .done i{background:var(--gold)}
+.hint{font-size:11px;color:var(--mute);text-align:center;margin-top:10px}
+.modal{position:absolute;inset:0;background:#000b;display:none;align-items:center;padding:12px;z-index:5}
+.modal.show{display:flex}
+.sheet{width:100%;background:#15130d;border:1px solid var(--line);border-radius:18px;padding:17px 15px;max-height:92%;overflow:auto;animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+.sheet h2{font-size:17px;letter-spacing:.01em}
+.sheet .id{font-family:ui-monospace,Menlo,monospace;font-size:10px;color:var(--mute);margin:6px 0 16px}
+.amt{text-align:center;font-size:31px;font-weight:700;padding-bottom:12px;border-bottom:1px solid var(--line)}.amt s{text-decoration:none;color:var(--mute)}
+.avail{text-align:center;color:var(--mute);font-size:11px;margin:10px 0 16px}.avail b{color:var(--gold)}
+.pcts{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:#0d0c08;border-radius:9px;padding:3px}
+.pcts button{height:25px;border-radius:7px;border:0;background:none;color:var(--mute);font:inherit;font-size:11px;font-weight:600;cursor:pointer}
+.pcts button.on{background:var(--gold-bg);color:var(--gold)}
+input[type=range]{width:100%;margin:14px 0 4px;accent-color:var(--gold)}
+.mm{display:flex;justify-content:space-between;color:var(--mute);font-size:12px}
+select{width:100%;margin-top:8px;height:38px;padding:0 12px;background:#0d0c08;border:1px solid var(--gold-d);border-radius:9px;color:var(--text);font:inherit;font-size:13px}
+.locked{margin-top:8px;padding:12px;background:#0d0c08;border:1px solid var(--line);border-radius:9px;font-size:13px}.locked small{display:block;color:var(--mute);margin-top:4px;font-size:11px}
+.sheet .btn{width:100%;margin-top:16px;height:39px;flex:none}
+.cancel{display:block;text-align:center;color:var(--mute);margin-top:14px;font-size:12px;cursor:pointer}
+.spin{width:28px;height:28px;border-radius:50%;border:3px solid #333;border-top-color:var(--gold);margin:60px auto 12px;animation:r .8s linear infinite}@keyframes r{to{transform:rotate(360deg)}}
+.ok{width:70px;height:70px;border-radius:50%;border:3px solid var(--gold);display:grid;place-items:center;margin:8px auto 12px;font-size:32px;color:var(--gold)}
+.center{text-align:center}.center h2{font-size:20px}.center .sp{font-size:12px;color:var(--mute)}.big{font-size:28px;font-weight:700;color:var(--gold);margin:2px 0 16px}
+.summary{background:#0d0c08;border:1px solid var(--line);border-radius:10px;padding:2px 14px;margin-bottom:16px;text-align:left}
+.summary div{display:flex;justify-content:space-between;align-items:center;padding:12px 0;font-size:13px}.summary div+div{border-top:1px solid var(--line)}.summary small{color:var(--mute);letter-spacing:.1em;font-size:8px}
+.empty{color:var(--mute);text-align:center;padding:40px 10px;line-height:1.6;font-size:12px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="scroll" id="view"></div>
+  <nav class="nav" id="nav"></nav>
+  <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+</div>
+<script>
+// ---- EDIT THESE TO MAKE IT YOUR FIRM ----
+const CFG={firm:"Erouti",trader:"EROUTI TRADES",tagline:"Funded & loving it",broker:"Rithmic",platform:"Tradesea",plan:"FLEX 50K",
+  prefix:"LFF050",bank:"Demo Bank (xxxx0000)",maxPayout:2000,minPayout:500,level:1243,xp:1795,coins:250};
+// -----------------------------------------
+const rid=()=>Math.random().toString(36).slice(2,10).toUpperCase().replace(/[O0I1]/g,"7");
+let accts=[38,37,36,35,34].map(n=>({id:`${CFG.prefix}-${n==38?"Y7AYHA5W":rid()}-PRO0${n}`,type:"funded",status:"active",payout:"eligible",amount:0}));
+let tab="accounts",typeF="funded",statusF="all",bankLocked=false,sel=null,pct=100;
+const $=s=>document.querySelector(s),usd=n=>"$"+n.toLocaleString("en-US",{minimumFractionDigits:2});
+const ico={accounts:'<svg viewBox="0 0 26 26"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="15" y="3" width="8" height="8" rx="2"/><rect x="3" y="15" width="8" height="8" rx="2"/><rect x="15" y="15" width="8" height="8" rx="2"/></svg>',
+ payouts:'<svg viewBox="0 0 26 26"><path d="M13 2v22M18 7c-1-2-3-3-5-3-3 0-5 1.5-5 4s2 3 5 4 5 1.5 5 4-2 4-5 4c-2 0-4-1-5-3"/></svg>',
+ pass:'<svg viewBox="0 0 26 26"><rect x="4" y="11" width="18" height="12" rx="3"/><path d="M8 11V8a5 5 0 0110 0v3"/></svg>',
+ more:'<svg viewBox="0 0 26 26"><circle cx="13" cy="5" r="1.5"/><circle cx="13" cy="13" r="1.5"/><circle cx="13" cy="21" r="1.5"/></svg>'};
+function nav(){ $("#nav").innerHTML=[["accounts","Accounts",ico.accounts],["add","Add",'<span class="plus">+</span>'],["payouts","Payouts",ico.payouts],["pass","Prop Pass",ico.pass],["more","More",ico.more]]
+ .map(([k,l,i])=>`<button class="${tab==k?"on":""} ${k=="add"?"add":""}" data-t="${k}">${i}${l}</button>`).join("");
+ document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;render()}); }
+function render(){ nav(); const v=$("#view"); v.scrollTop=0;
+ if(tab=="accounts")v.innerHTML=accountsHTML(); else if(tab=="payouts")v.innerHTML=payoutsHTML(); else v.innerHTML=stubHTML();
+ bind(); }
+function accountsHTML(){
+ const types=[["evals","Evals"],["funded","Funded"],["direct","Direct"],["live","Live"],["all","All"]];
+ const sts=["active","breached","all"];
+ const list=accts.filter(a=>(typeF=="all"||a.type==typeF)&&(statusF=="all"||a.status==statusF));
+ return `<h1>WELCOME <b>${CFG.trader}</b></h1><p class="sub">Here’s an overview of your accounts</p>
+ <div class="profile"><div class="top"><div class="avatar">${CFG.trader[0]}</div><div><div class="name">${CFG.trader}</div><div class="tag">${CFG.tagline}</div></div></div>
+ <div class="bar"><span>LV ${CFG.level}</span><div class="xp"><i></i></div><span>${CFG.xp.toLocaleString()}</span><span>${CFG.coins}</span></div></div>
+ <div class="panel"><div class="row"><span class="lbl">TYPE</span>${types.map(([k,l])=>`<button class="chip ${typeF==k?"on":""}" data-type="${k}">${CFG.firm}${l}</button>`).join("")}</div><div class="hr"></div>
+ <div class="row"><span class="lbl">STATUS</span>${sts.map(k=>`<button class="chip ${statusF==k?"on":""}" data-st="${k}" style="flex:1">${k[0].toUpperCase()+k.slice(1)}</button>`).join("")}</div>
+ <div class="platform"><div><i class="sq"></i>${CFG.platform}</div><span>🔒</span><span>···</span></div></div>
+ <div class="collapse">Collapse all</div>
+ ${list.length?list.map(acctCard).join(""):'<div class="empty">No accounts match these filters.<br>Tap Add to start a new evaluation.</div>'}`;}
+function acctCard(a){
+ const st=a.payout=="eligible";
+ return `<div class="acct"><div class="broker"><i>◈</i> ${CFG.broker}</div>
+ <div class="title"><h3>LUCID${CFG.plan}</h3><span class="badge">FUNDED</span></div>
+ <div class="aid">${a.id}</div>
+ <div class="tags"><span class="badge">EOD DRAWDOWN</span><span class="badge gold">ACTIVE</span><span class="badge blue">DLL</span></div>
+ ${st?`<div class="elig"><span class="coin">$</span>You’re eligible to request a payout!</div>`:`<div class="elig" style="color:var(--mute)"><span class="coin">$</span>Payout ${a.payout}</div>`}
+ <div class="btns"><button class="btn gold" data-req="${a.id}" ${st?"":"disabled"}>Request Payout</button><button class="btn" data-tab="payouts">View Details</button></div></div>`;}
+function payoutsHTML(){
+ return `<div class="verified"><span class="badge gold">✓ VERIFIED</span></div>
+ <div class="panel"><div class="ph"><span style="color:var(--gold)">$</span>PAYOUT REQUESTS<em>${accts.length}</em></div>
+ ${accts.map(a=>`<div class="preq"><div class="h"><span class="id">${a.id}</span><span class="badge ${a.payout=="eligible"?"gold":a.payout=="paid"?"green":"blue"}">${a.payout.toUpperCase()}</span></div>
+ <div class="kv"><div><small>TYPE</small><b>Flex</b></div><div><small>${a.payout=="eligible"?"MAX PAYOUT":"AMOUNT"}</small><b>${usd(a.payout=="eligible"?CFG.maxPayout:a.amount)}</b></div></div>
+ ${a.payout=="eligible"?`<button class="btn gold" style="width:100%;flex:none" data-req="${a.id}">Request Payout</button>`:
+ `<div class="steps">${["requested","approved","paid"].map((s,i)=>`<div class="${i<=["requested","approved","paid"].indexOf(a.payout)?"done":""}"><i></i>${s[0].toUpperCase()+s.slice(1)}</div>`).join("")}</div>
+ ${a.payout!="paid"?`<div class="hint"><button class="btn" style="flex:none;padding:8px 14px;font-size:12px" data-adv="${a.id}">Demo: advance status</button></div>`:""}`}</div>`).join("")}</div>`;}
+function stubHTML(){
+ const t={add:["Add account","Choose an evaluation size, pick your platform and start trading. (Placeholder screen)"],pass:["Prop Pass","Perks, discounts and rewards for your funded traders. (Placeholder screen)"],more:["More","Settings, KYC, support and affiliate links live here. (Placeholder screen)"]}[tab];
+ return `<h1>${t[0].toUpperCase()}</h1><div class="empty">${t[1]}</div>`;}
+function bind(){
+ document.querySelectorAll("[data-type]").forEach(b=>b.onclick=()=>{typeF=b.dataset.type;render()});
+ document.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{statusF=b.dataset.st;render()});
+ document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render()});
+ document.querySelectorAll("[data-req]").forEach(b=>b.onclick=()=>openReq(b.dataset.req));
+ document.querySelectorAll("[data-adv]").forEach(b=>b.onclick=()=>{const a=accts.find(x=>x.id==b.dataset.adv);a.payout=a.payout=="requested"?"approved":"paid";render()});}
+function openReq(id){sel=accts.find(a=>a.id==id);pct=100;reqSheet();$("#modal").classList.add("show");}
+function reqSheet(){
+ const amt=Math.max(CFG.minPayout,Math.round(CFG.maxPayout*pct/100/50)*50);
+ $("#sheet").innerHTML=`<h2>REQUEST PAYOUT</h2><div class="id">${sel.id}</div>
+ <div class="amt"><s>$</s>${amt}</div><div class="avail">of <b>${usd(CFG.maxPayout)}</b> available</div>
+ <div class="pcts">${[25,50,75,100].map(p=>`<button class="${pct==p?"on":""}" data-p="${p}">${p==100?"Max":p+"%"}</button>`).join("")}</div>
+ <input type="range" min="${CFG.minPayout/CFG.maxPayout*100}" max="100" step="2.5" value="${pct}" id="rng">
+ <div class="mm"><span>Minimum $${CFG.minPayout}</span><span>${Math.round(pct)}% of balance</span></div>
+ <div class="lbl" style="margin:20px 0 0">PAYING TO</div>
+ ${bankLocked?`<div class="locked">${CFG.bank}<small>🔒 Locked to match your pending payout</small></div>`:
+ `<select id="bank"><option value="">Select an account</option><option>${CFG.bank}</option><option value="new">Add a new bank</option></select>`}
+ <button class="btn gold" id="go" ${bankLocked?"":"disabled"}>Request ${usd(amt)}</button><span class="cancel" id="cx">Cancel</span>`;
+ document.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{pct=+b.dataset.p;reqSheet()});
+ $("#rng").oninput=e=>{pct=+e.target.value;const k=$("#sheet").scrollTop;reqSheet();$("#sheet").scrollTop=k;$("#rng").focus()};
+ $("#cx").onclick=close; if(!bankLocked)$("#bank").onchange=e=>{$("#go").disabled=e.target.value!=CFG.bank;if(e.target.value=="new"){alert("Demo: bank linking flow would open here.");e.target.value=""}};
+ $("#go").onclick=()=>send(amt);}
+function send(amt){
+ $("#sheet").innerHTML=`<div class="center"><div class="spin"></div><p class="sp" style="margin-bottom:60px">Sending your request...</p></div>`;
+ setTimeout(()=>{sel.payout="requested";sel.amount=amt;bankLocked=true;
+ $("#sheet").innerHTML=`<div class="center"><button class="btn" style="width:36px;height:36px;margin:0;float:right;flex:none" id="x">✕</button><div class="ok">✓</div><h2>Payout requested</h2><div class="big">${usd(amt)}</div>
+ <div class="summary"><div><small>ACCOUNT</small><span>${sel.id}</span></div><div><small>PAYING TO</small><span>${CFG.bank}</span></div></div>
+ <div class="steps" style="margin-bottom:6px"><div class="done"><i></i>Requested</div><div><i></i>Approved</div><div><i></i>Paid</div></div>
+ <p class="hint" style="margin:14px 0 0">You can follow it under Payout Requests on this page.</p><button class="btn gold" id="done">Done</button></div>`;
+ $("#done").onclick=$("#x").onclick=()=>{close();tab="payouts";render()};},1400);}
+function close(){$("#modal").classList.remove("show")}
+render();
+</script>
+</body>
+</html>
