@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Campaigns</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;overflow-x:hidden}
+body{font-family:Helvetica,Arial,sans-serif;color:#1c1e21}
+#app{width:1840px;height:1100px;position:relative;transform-origin:0 0;background:#f2f3f5}
+.ico{width:26px;height:26px;stroke:#1c1e21;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#left{position:absolute;left:0;top:20px;width:62px;height:1070px;background:#fff;border-right:1px solid #dadde1}
+#left .i{position:absolute;left:14px}
+#right{position:absolute;right:0;top:20px;width:60px;height:1070px;background:#6e6e6e}
+#right .i{position:absolute;left:17px}
+#right .ico{stroke:#fff}
+#right .sel{position:absolute;left:5px;top:63px;width:50px;height:44px;background:#9a9a9a;border-radius:4px}
+.badge{position:absolute;background:#fa3e3e;color:#fff;font-size:13px;font-weight:700;border-radius:12px;min-width:24px;height:24px;line-height:24px;text-align:center;border:2px solid #fff}
+#main{position:absolute;left:63px;top:20px;width:1717px;height:1070px;background:#f2f3f5}
+#top{position:absolute;left:0;top:0;right:0;height:62px;background:#fff;border-bottom:1px solid #e4e6eb}
+#top h2{position:absolute;left:16px;top:16px;margin:0;font-size:22px;font-weight:700}
+#top .nm{padding:9px 14px;font-size:18px;white-space:nowrap;overflow:hidden;position:absolute;left:144px;top:8px;width:366px;height:44px;border:1px solid #e4e6eb;border-radius:6px;background:#fff}
+#top .upd{position:absolute;right:488px;top:19px;font-size:18px}
+.b{position:absolute;height:44px;top:8px;border:1px solid #dadde1;border-radius:6px;background:#f2f3f5;font:inherit;font-size:18px;color:#1c1e21;cursor:pointer}
+.b[disabled]{color:#a9adb3;cursor:default;background:#ebedf0}
+#search{position:absolute;left:10px;top:63px;width:1334px;height:43px;background:#fff;border:1px solid #e4e6eb;border-radius:6px;padding-left:55px;font:inherit;font-size:18px;color:#1c1e21}
+#search::placeholder{color:#8a8d91}
+#srcico{position:absolute;left:24px;top:73px}
+#drop{position:absolute;left:1346px;top:63px;width:362px;height:43px;background:#e4e6eb;border-radius:0 6px 6px 0}
+#drop:after{content:"";position:absolute;right:14px;top:18px;border:7px solid transparent;border-top:8px solid #1c1e21}
+.tab{position:absolute;top:123px;height:52px;background:#e9ebee;border:1px solid #dadde1;border-bottom:0;border-radius:6px 6px 0 0;font-size:20px;font-weight:700;padding:14px 0 0 55px;cursor:pointer;color:#4b4f56}
+.tab.on{background:#fff;color:#1877f2;height:56px;z-index:3}
+.tab svg{position:absolute;left:15px;top:12px;width:28px;height:28px;stroke:currentColor}
+#tool{position:absolute;left:19px;top:185px;right:12px;height:46px;z-index:5}
+#tool>*{position:absolute;top:0}
+.tb{height:44px;background:#e4e6eb;border:1px solid #dadde1;border-radius:4px;font:inherit;font-size:18px;color:#1c1e21;padding:0 14px;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.tb.g{background:#42b72a;border-color:#42b72a;color:#fff;font-weight:700}
+.tb.d{color:#9a9da3;cursor:default}
+.car:after{content:"";border:6px solid transparent;border-top:7px solid #1c1e21;margin-left:6px;margin-top:6px}
+#vs{width:46px;height:26px;border-radius:13px;background:#e4e6eb;top:10px}
+#vs:after{content:"";position:absolute;left:5px;top:3px;width:20px;height:20px;border-radius:50%;background:#1c1e21}
+#cols{display:none;position:absolute;left:1118px;top:236px;width:560px;background:#fff;border:1px solid #bec3c9;border-radius:6px;box-shadow:0 8px 24px #0004;z-index:9;padding:14px 18px;font-size:18px}
+#cols.show{display:block}
+#cols h4{margin:0 0 8px;font-size:18px}
+#cols label{display:inline-block;width:49%;padding:5px 0;cursor:pointer}
+#cols input{width:18px;height:18px;vertical-align:-3px;margin-right:8px}
+#cols .rs{margin-top:10px;color:#1877f2;cursor:pointer;font-weight:700}
+#tbl{position:absolute;left:12px;top:240px;width:1696px;height:830px;background:#fff;border:1px solid #dadde1;overflow:auto}
+table{border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:18px}
+th{height:78px;text-align:left;font-weight:700;padding:0 20px;border-right:1px solid #dadde1;border-bottom:1px solid #dadde1;background:#fff;white-space:nowrap;overflow:hidden;cursor:pointer;position:sticky;top:0;z-index:2}
+th.r,td.r{text-align:right}
+th.sel{color:#1877f2}
+th.f,td.f{padding:0;text-align:center}
+td{height:56.4px;padding:0 20px;border-right:1px solid #dadde1;border-bottom:1px solid #e4e6eb;white-space:nowrap;overflow:hidden;vertical-align:middle;line-height:1.5;background:#fff}
+tbody tr:nth-child(even) td{background:#f5f6f7}
+tbody tr.on td{background:#eceff3}
+td small{display:block;color:#8a8d91;font-size:16px;line-height:1.3;min-height:21px}
+tfoot td{position:sticky;bottom:0;font-weight:700;height:78px;border-top:2px solid #dadde1;background:#fff!important;z-index:2}
+.ed{border-radius:3px}.set .ed{cursor:text;outline:1px dashed #bec3c9;outline-offset:2px}.set .ed:hover{background:#e4e6eb}
+body:not(.set) .sw,body:not(.set) .cb,body:not(.set) #tool{pointer-events:none}
+body.set #pub{display:none}body:not(.set) #done{display:none}
+#left .i{cursor:pointer;padding:10px;margin:-10px 0 0 -10px}
+body.set .nm{display:none}#top h2{white-space:nowrap}.tb{white-space:nowrap}#srcico{z-index:3}
+td input.in{width:100%;font:inherit;font-size:18px;border:2px solid #1c1e21;border-radius:4px;padding:2px 6px;text-align:inherit;background:#fff;color:#1c1e21}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#bec3c9;margin-right:10px}
+.dot.a{background:#42b72a}
+.off{color:#8a8d91}
+.cb{width:30px;height:30px;border:1px solid #bec3c9;border-radius:6px;background:#fff;display:inline-block;vertical-align:middle;cursor:pointer}
+.cb.on{background:#1877f2;border-color:#1877f2;position:relative}
+.cb.on:after{content:"✓";color:#fff;position:absolute;left:6px;top:1px;font-size:20px}
+.sw{width:46px;height:26px;border-radius:13px;background:#e4e6eb;position:relative;cursor:pointer;display:inline-block;vertical-align:middle;border:0;padding:0}
+.sw:after{content:"";position:absolute;top:0;left:0;width:26px;height:26px;border-radius:50%;background:#1c1e21;transition:left .12s}
+.sw.on:after{left:20px;background:#1877f2}
+.sw.on{background:#cfe0fb}
+.ib{display:inline-block;width:16px;height:16px;background:#1877f2;border-radius:50%;margin-right:10px;vertical-align:-1px;position:relative}
+.ib:after{content:"i";position:absolute;inset:0;color:#fff;font-size:12px;text-align:center;line-height:16px;font-weight:700}
+.empty{padding:60px;text-align:center;color:#8a8d91;font-size:20px;white-space:normal}
+</style>
+</head>
+<body>
+<div id="app">
+ <div id="left"></div><div id="right"></div>
+ <div id="main">
+  <div id="top">
+   <h2>Campaigns</h2><div class="nm"></div>
+   <span class="upd">Updated just now</span>
+   <button class="b" id="ref" style="left:1250px;width:48px" title="Refresh"></button>
+   <button class="b" id="disc" style="left:1310px;width:144px" disabled>Discard drafts</button>
+   <button class="b" id="done" style="left:1465px;width:185px;background:#1877f2;border-color:#1877f2;color:#fff;font-weight:700">✓ Done</button>
+   <button class="b" id="pub" style="left:1465px;width:185px" disabled>Review and publish</button>
+   <button class="b" id="more" style="left:1660px;width:48px;font-weight:700" title="Reset all data">···</button>
+  </div>
+  <svg id="srcico" class="ico" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><path d="M15 15l6 6"/></svg>
+  <input id="search" placeholder="Search and filter" aria-label="Search and filter">
+  <div id="drop"></div>
+  <div class="tab on" data-t="c" style="left:19px;width:553px"><svg viewBox="0 0 24 24" fill="#1877f2" stroke="none"><path d="M2 5h8l2 2h10v13H2z"/></svg>Campaigns</div>
+  <div class="tab" data-t="s" style="left:582px;width:553px"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Ad sets</div>
+  <div class="tab" data-t="a" style="left:1145px;width:553px"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>Ads</div>
+  <div id="tool">
+   <div class="tb g" id="create" style="left:0;width:116px;font-size:19px">＋ Create</div>
+   <div class="tb" id="dup" title="Duplicate selected" style="left:127px;width:50px">▤</div><div class="tb car" style="left:177px;width:60px;padding:0 20px"></div>
+   <div class="tb" id="edit" style="left:250px;width:96px">✎ Edit</div><div class="tb car" style="left:346px;width:60px;padding:0 20px"></div>
+   <div class="tb" style="left:420px;width:128px">⚗ A/B Test</div>
+   <div class="tb" style="left:562px;width:54px">▯</div>
+   <div class="tb" id="undo" title="Undo" style="left:630px;width:54px">↶</div><div class="tb" id="del" title="Delete selected" style="left:684px;width:54px">🗑</div>
+   <div class="tb" style="left:738px;width:54px">⇪</div><div class="tb" style="left:792px;width:54px">◆</div>
+   <div class="tb car" style="left:858px;width:102px;padding:0 0 0 16px">Rules</div>
+   <span style="position:absolute;left:968px;top:12px;font-size:18px">View Setup</span><div id="vs" style="left:1084px"></div>
+   <div class="tb car" id="colbtn" style="left:1118px;width:262px;padding-left:16px">▥ Columns: Performance</div>
+   <div class="tb car" style="left:1392px;width:172px;padding-left:16px">☰ Breakdown</div>
+   <div class="tb car" style="left:1575px;width:122px;padding-left:16px">Reports</div>
+  </div>
+  <div id="cols"></div>
+  <div id="tbl"><table id="t"></table></div>
+ </div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const div=(a,b)=>b?a/b:null;
+const nf=v=>v==null?"–":v.toLocaleString(undefined,{maximumFractionDigits:0});
+const mf=v=>v==null?"–":"$"+v.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const pf=v=>v==null?"–":(v*100).toFixed(2)+"%";
+const xf=v=>v==null?"–":v.toFixed(2)+"x";
+const ff=v=>v==null?"–":v.toFixed(2);
+// col: h=header, w=width, a=align, f=edit field (num), c=calc, fmt, sum
+const C={
+ sw:{h:"Off / On",w:107,a:"l"},
+ name:{h:"Name",w:380,a:"l",f:"name",txt:1},
+ dl:{h:"Delivery",w:150,a:"l"},
+ bid:{h:"Bid strategy",w:190,a:"r",f:"bid",txt:1},
+ bud:{h:"Budget",w:164,a:"r",f:"bud",txt:1},
+ attr:{h:"Attribution setting",w:190,a:"l",f:"attr",txt:1},
+ res:{h:"Results",w:180,a:"r",f:"res",fmt:nf,info:1},
+ cpr:{h:"Cost per result",w:170,a:"r",c:r=>div(r.spend,r.res),fmt:mf},
+ reach:{h:"Reach",w:150,a:"r",f:"reach",fmt:nf,sm:"People"},
+ imp:{h:"Impressions",w:170,a:"r",f:"imp",fmt:nf,sm:"Total"},
+ freq:{h:"Frequency",w:150,a:"r",c:r=>div(r.imp,r.reach),fmt:ff},
+ spend:{h:"Amount spent",w:170,a:"r",f:"spend",fmt:mf},
+ clicks:{h:"Clicks (all)",w:150,a:"r",f:"clicks",fmt:nf},
+ cpc:{h:"CPC (all)",w:140,a:"r",c:r=>div(r.spend,r.clicks),fmt:mf},
+ ctr:{h:"CTR (all)",w:140,a:"r",c:r=>div(r.clicks,r.imp),fmt:pf},
+ cpm:{h:"CPM",w:130,a:"r",c:r=>div(r.spend*1000,r.imp),fmt:mf},
+ purch:{h:"Purchases",w:150,a:"r",f:"purch",fmt:nf},
+ cpa:{h:"CPA (cost per purchase)",w:240,a:"r",c:r=>div(r.spend,r.purch),fmt:mf},
+ val:{h:"Purchase conversion value",w:270,a:"r",f:"val",fmt:mf},
+ roas:{h:"Purchase ROAS",w:170,a:"r",c:r=>div(r.val,r.spend),fmt:xf},
+ aov:{h:"Avg order value",w:180,a:"r",c:r=>div(r.val,r.purch),fmt:mf},
+ atc:{h:"Adds to cart",w:150,a:"r",f:"atc",fmt:nf},
+ cpatc:{h:"Cost per add to cart",w:220,a:"r",c:r=>div(r.spend,r.atc),fmt:mf},
+ leads:{h:"Leads",w:120,a:"r",f:"leads",fmt:nf},
+ cpl:{h:"Cost per lead",w:160,a:"r",c:r=>div(r.spend,r.leads),fmt:mf},
+ lpv:{h:"Landing page views",w:210,a:"r",f:"lpv",fmt:nf},
+ cplpv:{h:"Cost per landing page view",w:270,a:"r",c:r=>div(r.spend,r.lpv),fmt:mf}
+};
+const DEF=["sw","name","dl","bid","bud","attr","res","cpr","spend","reach","imp","clicks","cpc","ctr","cpm","purch","cpa","val","roas"];
+const SRC=[
+["Highest volume","$3.00","Multiple attributi...",null,"Multiple conversions",52230,241485,1,1],
+["Using ad set bid...","Using ad set bu...","Multiple attributi...",null,"Post Engagement",150183,1212997,1,1],
+["Highest volume","$10.00","7-day click or 1-d...",879,"Website Leads",188237,610096,1,1],
+["Highest volume","$5.00","Multiple attributi...",2173,"Landing Page Views",81865,839584,1,1],
+["Highest volume","$5.00","28-day click or 1-...",52,"Landing Page Vi...",1608,13258,1,0],
+["Using ad set bid...","Using ad set bu...","28-day click or 1-...",2,"Website Compl...",421,5994,1,0],
+["Using ad set bid...","Using ad set bu...","7-day click or 1-d...",6,"Landing Page Vi...",519,9250,0,0],
+["Using ad set bid...","Using ad set bu...","7-day click",5,"Page Likes",1013,7914,0,0],
+["Highest volume","$10.00","28-day click or 1-...",null,"Website Complete...",728,1690,0,0],
+["Using ad set bid...","Using ad set bu...","28-day click or 1-...",2533,"ThruPlays",17552,21128,0,0],
+["Highest volume","$7.00","28-day click or 1-...",null,"Link Click",null,null,0,0],
+["Highest volume","$7.00","28-day click or 1-...",125,"",7775,14310,0,0]];
+let uid=0;
+// [daily budget, days, CPM, frequency, CTR, ROAS target(>=4), avg order value, bid strategy, switch on, active, spend factor]
+const PD=[[1500,10,11.47,1.93,.0192,5.62,89.95,"Highest volume",1,1,1.037],[2500,10,10.18,2.21,.0213,6.24,94.5,"Highest volume",1,1,.982],
+[1000,10,12.83,1.74,.0168,4.83,79.99,"Cost per result goal",1,1,1.061],[5000,10,9.64,2.38,.0241,7.13,101.95,"ROAS goal",1,1,.973],
+[750,8,13.41,1.62,.0149,4.31,69.95,"Highest volume",1,0,1.018],[1200,8,12.09,1.79,.0183,4.64,84.5,"Cost per result goal",1,0,.995],
+[800,6,14.02,1.53,.0141,4.12,72.99,"Highest volume",0,0,1.044],[600,6,13.17,1.58,.0158,4.42,64.95,"ROAS goal",0,0,.968],
+[3000,7,10.93,2.04,.0204,5.34,97.5,"Highest volume",0,0,1.029],[2000,7,11.81,1.92,.0176,4.91,88.99,"Cost per result goal",0,0,1.012],
+[1500,5,12.46,1.71,.0171,4.23,76.95,"Highest volume",0,0,.987],[900,5,13.88,1.64,.0152,4.21,69.5,"ROAS goal",0,0,1.053]];
+const NM={
+c:["Vellora | Broad | CBO","Glowvia | Interests | US/CA","Petsora | LAL 1% | US","Vellora | Winners Scale | CBO","Autonest | Test #1 | ABO","Glowvia | Retarget Video 30D","Zenvora | Cold | UK","Hydrova | Test #2 | ABO","Vellora | Retarget ATC + IC 7D","Glowvia | Retarget Visitors 30D","Lumenly | Broad | EU","Zenvora | LAL 2% | US"],
+s:["US | Broad 25-55","US/CA | Interest: Wellness","LAL 1% | Purchasers 180D","Winners | Advantage+ Audience","US | Women 25-45","Retarget | Video 50% 30D","UK | Broad 30-60","US | Interest: Fitness","ATC + IC | 7 Days","Web Visitors | 30 Days","EU | Broad 25-54","LAL 2% | Purchasers 90D"],
+a:["UGC Video 1 | Vellora","Static Lifestyle | Glowvia","Before/After | Petsora","UGC Testimonial | Vellora","Demo Video | Autonest","Reel Routine | Glowvia","Carousel | Zenvora","Unboxing | Hydrova","DPA Catalog | Vellora","Social Proof | Glowvia","Problem/Solution | Lumenly","UGC Video 2 | Zenvora"]};
+const ATT=["7-day click or 1-d...","7-day click","28-day click or 1-...","Multiple attributi..."];
+function seed(k,f,pd,nm){return pd.map((a,i)=>{const B=Math.max(50,Math.round(a[0]*f/50)*50),spend=(c=>(c%100?c:c+37)/100)(Math.round(B*a[1]*a[10]*100+((i+1)*7717)%997+(i%3)*1000)),imp=Math.round(spend/a[2]*1000),
+ reach=Math.round(imp/a[3]),clicks=Math.round(imp*a[4]),purch=Math.ceil(spend*a[5]/a[6]);
+ return{id:++uid,name:nm[k][i],bid:a[7],bud:"$"+B.toLocaleString()+".00",attr:ATT[i%4],res:purch,lbl:"Purchases",reach,imp,
+ sw:!!a[8],act:!!a[9],spend,clicks,purch,val:Math.round(purch*a[6]*100)/100,atc:Math.round(clicks*.11),leads:null,lpv:Math.round(clicks*.85)}})}
+const blank=n=>({id:++uid,name:n,bid:"Highest volume",bud:"$1,000.00",attr:"7-day click or 1-d...",res:null,lbl:"",reach:null,imp:null,sw:false,act:false,spend:null,clicks:null,purch:null,val:null,atc:null,leads:null,lpv:null});
+const KEY="ads-sim-v8";
+let S;
+const ACC=["Main Account","Scaling Account","Testing Account","EU Expansion","UK Store Group","Beauty Niche","Pet Niche","Gadgets Niche","Home & Kitchen","Fitness Niche","Black Friday","Evergreen Winners"];
+const TG=["Broad | CBO","Interests | US/CA","LAL 1% | US","Winners Scale | CBO","Test #1 | ABO","Retarget Video 30D","Cold | UK","Test #2 | ABO","Retarget ATC + IC 7D","Retarget Visitors 30D","Broad | EU","LAL 2% | US"];
+const CRE=["UGC Video 1","Static Lifestyle","Before/After","UGC Testimonial","Demo Video","Reel Routine","Carousel","Unboxing","DPA Catalog","Social Proof","Problem/Solution","UGC Video 2"];
+const PRE=["Vel","Glow","Pet","Auto","Zen","Hydro","Lumen","Nova","Kit","Urban","Aura","Pure","Luxe","Fit","Cozy","Tech","Bloom","Mint","Peak","Vibe","Sol","Orbit","Terra","Nimbus"];
+const SUF=["ora","via","sora","nest","vora","ly","ify","ica","ana","ova"];
+const SM=[0,1,2,0,3,1,4,5,0,1,6,4],SCALE=[1,.5,.8,1.4,2,.35,.7,1.8,1.1,2.6,.6,3];
+function rng(k){let a=k*2654435761+12345;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function jit(k){const r=rng(k+7);return PD.map(a=>[Math.max(50,Math.round(a[0]*SCALE[k]*(.7+r()*.6)/25)*25),Math.max(3,Math.round(a[1]*(.7+r()*.6))),
+ Math.round(a[2]*(.82+r()*.4)*100)/100,Math.round(a[3]*(.85+r()*.3)*100)/100,Math.round(a[4]*(.85+r()*.35)*10000)/10000,Math.round((4.05+r()*4.3)*100)/100,
+ Math.round(38+r()*110)-.05,["Highest volume","Cost per result goal","ROAS goal"][Math.floor(r()*3)],a[8],a[9],Math.round((.94+r()*.13)*1000)/1000])}
+function names(k){const r=rng(k+99),st=[];while(st.length<7){const n=PRE[Math.floor(r()*PRE.length)]+SUF[Math.floor(r()*SUF.length)];if(!st.includes(n))st.push(n)}
+ return{c:TG.map((t,i)=>st[SM[i]]+" | "+TG[(i+k)%12]),s:NM.s.map((_,i)=>NM.s[(i+k)%12]),a:CRE.map((_,i)=>CRE[(i+k)%12]+" | "+st[SM[i]])}}
+function mkSet(k){const pd=k?jit(k):PD,nm=k?names(k):NM;return{label:ACC[k],rows:{c:seed("c",1,pd,nm),s:seed("s",.6,pd,nm),a:seed("a",.3,pd,nm)},cols:{c:[...DEF],s:[...DEF],a:[...DEF]}}}
+function fresh(){const sets=[];for(let k=0;k<12;k++)sets.push(mkSet(k));return{p:0,sets,uid}}
+try{S=JSON.parse(localStorage.getItem(KEY));if(S)uid=S.uid}catch(e){S=null}
+if(!S||!S.sets)S=fresh();
+let mode="view";const E=()=>mode==="set"?"ed":"";
+let tab="c",sort=null,asc=true,sel=new Set(),hist=[],dirty=false;
+const save=()=>{S.uid=uid;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const snap=()=>{hist.push(JSON.stringify(S));if(hist.length>50)hist.shift();dirty=true};
+const cur=()=>S.sets[S.p],rows=()=>cur().rows[tab],cols=()=>cur().cols[tab];
+const NAME={c:"campaign",s:"ad set",a:"ad"};
+function val(r,k){const c=C[k];return k==="sw"||k==="dl"?(r.sw?1:0):c.c?c.c(r):c.f?r[c.f]:null}
+function tot(k,list){const c=C[k];
+ const s=f=>list.reduce((a,r)=>a+(r[f]||0),0);
+ if(c.f&&!c.txt)return c.fmt(list.some(r=>r[c.f]!=null)?s(c.f):null);
+ const T={spend:s("spend"),res:s("res"),imp:s("imp"),reach:s("reach"),clicks:s("clicks"),purch:s("purch"),val:s("val"),atc:s("atc"),leads:s("leads"),lpv:s("lpv")};
+ return c.c?c.fmt(c.c(T)):"";}
+function cell(r,k){const c=C[k];
+ if(k==="sw")return `<td class="f"><button class="sw ${r.sw?"on":""}" aria-label="Toggle"></button></td>`;
+ if(k==="dl")return `<td>${r.sw?(r.act?'<span class="dot a"></span>Active':'<span class="dot"></span>Ad set off'):'<span class="off">Off</span>'}</td>`;
+ const al=c.a==="r"?"r":"";
+ if(k==="bud")return `<td class="${al}"><span class="${E()}" data-f="bud" data-t="1">${r.bud||"–"}</span>${/^\$/.test(r.bud||"")?"<small>Daily</small>":""}</td>`;
+ if(k==="res")return `<td class="r"><span class="${E()}" data-f="res">${nf(r.res)}</span><small class="${E()}" data-f="lbl" data-t="1">${r.lbl||"&nbsp;"}</small></td>`;
+ if(c.txt)return `<td class="${al}"><span class="${E()}" data-f="${c.f}" data-t="1">${r[c.f]||"–"}</span></td>`;
+ if(c.f)return `<td class="r"><span class="${E()}" data-f="${c.f}">${c.fmt(r[c.f])}</span></td>`;
+ return `<td class="r">${c.fmt(c.c(r))}</td>`;}
+function render(){
+ const cs=cols(),q=$("#search").value.toLowerCase();
+ let rs=rows().filter(r=>r.name.toLowerCase().includes(q));
+ if(sort)rs=[...rs].sort((a,b)=>{const x=val(a,sort),y=val(b,sort);return((x??-Infinity)>(y??-Infinity)?1:(x??-Infinity)<(y??-Infinity)?-1:0)*(asc?1:-1)});
+ const W=56+cs.reduce((a,k)=>a+C[k].w,0);
+ const head=`<th class="f" style="width:56px"><span class="cb ${rs.length&&rs.every(r=>sel.has(r.id))?"on":""}" id="all"></span></th>`+
+  cs.map(k=>`<th class="${C[k].a==="r"?"r":""} ${sort===k?"sel":""}" data-k="${k}" style="width:${C[k].w}px">${C[k].info?'<span class="ib"></span>':""}${C[k].h}${sort===k?(asc?" ↑":" ↓"):""}</th>`).join("");
+ const body=rs.length?rs.map(r=>`<tr data-id="${r.id}" class="${sel.has(r.id)?"on":""}"><td class="f"><span class="cb ${sel.has(r.id)?"on":""}"></span></td>${cs.map(k=>cell(r,k)).join("")}</tr>`).join(""):
+  `<tr><td colspan="${cs.length+1}" class="empty">No ${NAME[tab]}s. Click “Create” to add one.</td></tr>`;
+ const foot=`<td></td>`+cs.map(k=>{const c=C[k];let t="";
+  if(k==="name")t=`Results from ${rs.length} ${NAME[tab]}${rs.length==1?"":"s"}`;else if(k==="attr")t="Multiple attributio...";else t=tot(k,rs);
+  return `<td class="${c.a==="r"?"r":""}">${t}${c.sm&&rs.length?`<small>${c.sm}</small>`:""}</td>`}).join("");
+ $("#t").style.width=W+"px";
+ $("#t").innerHTML=`<thead><tr>${head}</tr></thead><tbody>${body}</tbody><tfoot><tr>${foot}</tr></tfoot>`;
+ $(".nm").textContent=cur().label+"  ·  "+(S.p+1)+"/"+S.sets.length;
+ if(mode==="set")$(".upd").textContent="Settings · page "+(S.p+1)+"/"+S.sets.length+": changes save automatically";
+ $("#pub").disabled=$("#disc").disabled=!dirty;
+ $("#undo").classList.toggle("d",!hist.length);
+ document.querySelectorAll(".tb#del,#dup,#edit").forEach(e=>e.classList.toggle("d",!sel.size));
+ save();}
+// editing
+$("#t").addEventListener("click",e=>{
+ const tr=e.target.closest("tbody tr[data-id]");
+ if(tr){if(mode!=="set")return;const r=rows().find(x=>x.id==tr.dataset.id);
+  if(e.target.classList.contains("sw")){snap();r.sw=!r.sw;r.act=r.sw;render();return}
+  if(e.target.classList.contains("cb")){sel.has(r.id)?sel.delete(r.id):sel.add(r.id);render();return}
+  const ed=e.target.closest(".ed");if(ed&&!ed.querySelector("input"))edit(ed,r);return}
+ if(e.target.id==="all"&&mode==="set"){const vis=[...document.querySelectorAll("tbody tr[data-id]")].map(t=>+t.dataset.id);
+  vis.every(i=>sel.has(i))?vis.forEach(i=>sel.delete(i)):vis.forEach(i=>sel.add(i));render();return}
+ const th=e.target.closest("th[data-k]");
+ if(th){const k=th.dataset.k;sort===k?asc=!asc:(sort=k,asc=true);render()}
+});
+function edit(el,r){const f=el.dataset.f,txt=el.dataset.t,old=r[f];
+ const inp=document.createElement("input");inp.className="in";inp.value=old==null?"":old;
+ el.innerHTML="";el.appendChild(inp);inp.focus();inp.select();let done=false;
+ const fin=ok=>{if(done)return;done=true;
+  if(ok){let v=inp.value.trim();
+   if(!txt){v=v.replace(/[$,%x\s]/g,"");v=v===""||v==="-"||v==="–"?null:parseFloat(v);if(v!=null&&isNaN(v))v=old}
+   if(v!==old){snap();r[f]=v}}
+  render()};
+ inp.onkeydown=e=>{if(e.key==="Enter")fin(true);if(e.key==="Escape")fin(false);if(e.key==="Tab"){e.preventDefault();fin(true)}};
+ inp.onblur=()=>fin(true);}
+// toolbar
+$("#create").onclick=()=>{snap();const r=blank("New "+NAME[tab]);rows().unshift(r);sort=null;sel.clear();sel.add(r.id);$("#search").value="";render();
+ $("#tbl").scrollTop=0;const n=document.querySelector("tbody tr .ed[data-f=name]");if(n)n.click()};
+$("#del").onclick=()=>{if(!sel.size)return;snap();cur().rows[tab]=rows().filter(r=>!sel.has(r.id));sel.clear();render()};
+$("#dup").onclick=()=>{if(!sel.size)return;snap();const add=rows().filter(r=>sel.has(r.id)).map(r=>({...r,id:++uid,name:r.name+" - Copy"}));cur().rows[tab]=[...add,...rows()];sel.clear();render()};
+$("#edit").onclick=()=>{if(!sel.size)return;const t=document.querySelector("tbody tr.on .ed[data-f=name]");if(t)t.click()};
+$("#undo").onclick=()=>{if(!hist.length)return;S=JSON.parse(hist.pop());uid=Math.max(uid,S.uid||0);sel.clear();render()};
+$("#colbtn").onclick=e=>{e.stopPropagation();if(mode!=="set")return;buildCols();$("#cols").classList.toggle("show")};
+function buildCols(){$("#cols").innerHTML=`<h4>Choose columns for ${NAME[tab]}s</h4>`+Object.keys(C).filter(k=>k!=="sw").map(k=>
+ `<label><input type="checkbox" data-k="${k}" ${cols().includes(k)?"checked":""}>${C[k].h}</label>`).join("")+`<div class="rs" id="rsc">Reset to default columns</div>`}
+$("#cols").addEventListener("click",e=>e.stopPropagation());
+$("#cols").addEventListener("change",e=>{const k=e.target.dataset.k;if(!k)return;
+ const keep=Object.keys(C).filter(x=>x==="sw"||(x===k?e.target.checked:cols().includes(x)));cur().cols[tab]=keep;render()});
+$("#cols").addEventListener("click",e=>{if(e.target.id==="rsc"){cur().cols[tab]=[...DEF];buildCols();render()}});
+document.addEventListener("click",()=>$("#cols").classList.remove("show"));
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{tab=t.dataset.t;sel.clear();sort=null;
+ document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("on",x===t));title();buildCols();render()});
+$("#search").oninput=render;
+const clr=()=>{dirty=false;render()};
+$("#pub").onclick=clr;
+function twoStep(el,msg,fn){if(el.dataset.armed){clearTimeout(+el.dataset.armed);el.dataset.armed="";el.innerHTML=el._h;fn();return}
+ el._h=el.innerHTML;el.textContent=msg;el.dataset.armed=setTimeout(()=>{el.dataset.armed="";el.innerHTML=el._h},3000)}
+$("#disc").onclick=()=>twoStep($("#disc"),"Sure?",()=>{if(hist.length){S=JSON.parse(hist[0]);hist=[];dirty=false;sel.clear();render()}});
+$("#ref").onclick=()=>{$(".upd").textContent=mode==="set"?"Settings: changes save automatically":"Updated just now"};
+$("#more").onclick=()=>twoStep($("#more"),"OK?",()=>{hist=[];uid=0;S=fresh();sel.clear();dirty=false;render()});
+// icons
+const P=(d,s)=>`<svg class="ico" viewBox="0 0 24 24" style="${s||""}">${d}</svg>`;
+$("#left").innerHTML=
+ `<div class="i" style="top:16px">${P('<path d="M3 11l9-8 9 8v10h-6v-6H9v6H3z"/>')}</div>
+ <div class="i" style="top:72px">${P('<path d="M3 6h18M3 12h18M3 18h18"/>')}</div>
+ <div class="i" style="top:218px">${P('<circle cx="12" cy="12" r="9"/><path d="M8 14l4-5 4 5"/>')}<span class="badge" style="left:30px;top:-4px">3</span></div>
+ <div class="i" id="gridI" title="Campaigns" style="top:276px">${P('<rect x="3" y="4" width="18" height="16"/><path d="M3 10h18M3 15h18M9 4v16M15 4v16"/>','stroke:#1877f2')}</div>
+ <div class="i" style="top:860px">${P('<path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>')}</div>
+ <div class="i" style="top:905px">${P('<path d="M6 17V11a6 6 0 0112 0v6l2 2H4z"/>')}<span class="badge" style="left:24px;top:2px;min-width:30px">98</span></div>
+ <div class="i" style="top:950px">${P('<circle cx="10" cy="10" r="7"/><path d="M15 15l6 6"/>')}</div>
+ <div class="i" id="helpI" title="Next page" style="top:992px">${P('<circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 116 0c0 2-3 2-3 5M12 17v1"/>')}</div>
+ <div class="i" id="gearI" title="Settings" style="top:1036px">${P('<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18"/>')}</div>`;
+$("#right").innerHTML=`<div class="sel"></div>
+ <div class="i" style="top:0px">${P('<path d="M5 5l14 14M19 5L5 19"/>')}</div>
+ <div class="i" style="top:72px">${P('<path d="M5 20V10M12 20V4M19 20v-8"/>')}</div>
+ <div class="i" style="top:128px">${P('<path d="M4 20l1-5L16 4l4 4L9 19z"/>')}</div>
+ <div class="i" style="top:180px">${P('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>')}</div>
+ <div class="i" style="top:234px">${P('<circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/>')}</div>`;
+$("#ref").innerHTML=P('<path d="M20 12a8 8 0 11-3-6M20 4v5h-5"/>');
+const TN={c:"Campaigns",s:"Ad sets",a:"Ads"};
+function title(){$("#top h2").textContent=mode==="set"?"Settings: "+TN[tab]:TN[tab]}
+function setMode(m){mode=m;sel.clear();document.body.classList.toggle("set",m==="set");title();
+ $("#gridI svg").style.stroke=m==="view"?"#1877f2":"#1c1e21";$("#gearI svg").style.stroke=m==="set"?"#1877f2":"#1c1e21";
+ $(".upd").textContent=m==="set"?"Settings: changes save automatically":"Updated just now";$("#cols").classList.remove("show");render()}
+$("#done").onclick=()=>{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();setMode("view")};
+$("#helpI").onclick=()=>{S.p=(S.p+1)%S.sets.length;sel.clear();sort=null;$("#search").value="";buildCols();$("#tbl").scrollTop=0;render()};
+$("#gearI").onclick=()=>setMode("set");$("#gridI").onclick=()=>setMode("view");
+const app=$("#app");
+function fit(){const s=innerWidth/1840;app.style.transform=`scale(${s})`;document.body.style.height=(1100*s)+"px"}
+addEventListener("resize",fit);fit();buildCols();setMode("view");
+</script>
+</body>
+</html>
