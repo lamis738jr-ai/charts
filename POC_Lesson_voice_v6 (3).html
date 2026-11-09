@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>POC Lesson</title>
+<style>
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+:root{color-scheme:dark}
+html,body{height:100%;background:#000;color:#fff;font-family:-apple-system,"Segoe UI",Arial,sans-serif;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center;padding-top:8px}
+#app{position:relative;width:min(100vw,calc(84vh*9/16));height:min(84vh,calc(100vw*16/9));display:flex;flex-direction:column;background:#fff;overflow:hidden}
+#ppl{position:relative;flex:0 0 33%;background:#232733;overflow:hidden}
+#ppl svg{position:absolute;inset:0;width:100%;height:100%}
+#txt.pop{animation:pop .14s ease-out}
+@keyframes pop{from{transform:scale(1.18)}to{transform:scale(1)}}
+#tm{transform-box:fill-box;transform-origin:center}
+.talkT #tm{animation:mth .2s infinite alternate}
+@keyframes mth{from{transform:scaleY(.5)}to{transform:scaleY(1.7)}}
+#sh{transform-box:fill-box;transform-origin:center bottom}
+.talkS #sh{animation:nod .45s ease-in-out 2}
+@keyframes nod{50%{transform:translateY(5px) rotate(2deg)}}
+#tg{animation:sway 3s ease-in-out infinite alternate}
+@keyframes sway{to{transform:translateY(-2px)}}
+#st{transition:opacity .6s}.solo #st{opacity:0}
+#sm{display:none}.solo #sm{display:block}.solo #tm{display:none}
+.quiet.talkT #tm,.quiet.talkS #sh{animation:none}
+@media(prefers-reduced-motion:reduce){#tg,.talkT #tm,.talkS #sh,#txt.pop{animation:none}}
+
+#cw{position:relative;flex:1;min-height:0;background:#08090b;overflow:hidden;cursor:pointer}
+#cv{position:absolute;inset:0;width:100%;height:100%}
+#tb{position:absolute;left:0;top:0;bottom:0;width:36px;background:#1e222d;opacity:0;transition:opacity .25s;display:flex;flex-direction:column;gap:14px;align-items:center;padding-top:30px}
+#tb i{width:16px;height:16px;border:2px solid #7d8596;border-radius:4px}
+#menu{position:absolute;left:42px;top:30px;width:196px;background:#1e222d;border:1px solid #363c4a;border-radius:6px;padding:4px 0;opacity:0;transition:opacity .25s;font-size:12.5px;color:#d1d4dc;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+#menu h4{font-size:11.5px;font-weight:600;color:#8a92a3;padding:6px 10px 3px}
+#menu div{height:23px;line-height:23px;padding:0 10px;white-space:nowrap}
+#menu div.hl{background:#2a62ff;color:#fff}
+.on{opacity:1!important}
+#cur{position:absolute;left:0;top:0;width:22px;height:22px;opacity:0;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5));z-index:5}
+#end{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,#262a30,#08090b);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center;opacity:0;pointer-events:none;transition:opacity .5s}
+#end h2{font:900 clamp(24px,8vw,38px)/1.1 Impact,"Arial Black",sans-serif;color:#fff;text-transform:uppercase}
+#end .sr{display:flex;align-items:center;gap:10px;background:#2a2e38;border-radius:24px;padding:11px 20px;font-size:17px;min-width:60%}
+#end small{color:#8a92a3;font-size:12px;max-width:80%}
+#ctl{flex:0 0 36px;display:flex;align-items:center;gap:8px;padding:0 8px;background:#0e1117}
+#ctl button{background:#171b24;border:0;color:#e9ecf1;border-radius:6px;height:26px;min-width:34px;font-size:14px;cursor:pointer}
+#ctl button:focus-visible,#sc:focus-visible{outline:2px solid #f2b632}
+#sc{flex:1;accent-color:#f2b632}
+#set{position:absolute;left:8px;right:8px;bottom:44px;background:#14171f;border:1px solid #2c323c;border-radius:10px;padding:10px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20;color:#e9ecf1;display:flex;flex-direction:column;gap:8px}
+#set.on{pointer-events:auto}
+#set h3{font-size:14px;font-weight:700}
+#set .v{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:#1d2128;border:1px solid #2c323c;border-radius:8px;padding:9px 11px;color:#e9ecf1;cursor:pointer;font-size:14px}
+#set .v span{font-size:12px;color:#8a92a3}
+#set .v.a{border-color:#f2b632}
+#set .tg{font-size:13px;display:flex;gap:8px;align-items:center}
+#set small{color:#8a92a3;font-size:12px}
+.chartonly #ppl{display:none}
+#cap2{position:absolute;left:10px;right:10px;bottom:5%;text-align:center;font:600 15px/1.25 -apple-system,Arial,sans-serif;color:#222;opacity:0;transition:opacity .2s;pointer-events:none}
+#bar{flex:0 0 86px;display:flex;align-items:center;justify-content:center;background:#08090b;position:relative;padding:0 40px}
+#txt{font:700 clamp(15px,4.4vw,19px)/1.3 -apple-system,"Segoe UI",Arial,sans-serif;text-align:center;color:#fff;max-width:100%}
+#gr{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:#fff;opacity:.25;font-size:20px;cursor:pointer}
+#gr:focus-visible{opacity:1;outline:2px solid #f2b632}
+#set{left:0;right:0;top:0;bottom:0;border:0;border-radius:0;background:#0b0d12;padding:14px;overflow:auto;gap:12px}
+#set .hd{display:flex;justify-content:space-between;align-items:center}
+#set .row{display:flex;gap:8px}
+.btn{background:#171b24;border:1px solid #2c323c;color:#e9ecf1;border-radius:6px;height:34px;padding:0 14px;cursor:pointer;font-size:14px;flex:1}
+.btn.a{border-color:#f2b632}
+
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="ppl">
+    <svg viewBox="0 0 480 280" preserveAspectRatio="xMidYMax slice" aria-label="Student and teacher at a desk">
+      <rect width="480" height="280" fill="#232733"/>
+      <g id="st">
+        <path d="M48 232Q50 160 118 152Q186 160 188 232Z" fill="#3a4256"/>
+        <rect x="106" y="134" width="24" height="22" fill="#e0a98a"/>
+        <g id="sh">
+          <ellipse cx="118" cy="104" rx="32" ry="38" fill="#e8b596"/>
+          <path d="M84 100Q80 62 118 60Q156 60 152 100Q148 82 136 80Q126 90 110 82Q94 86 84 100Z" fill="#2a1a12"/>
+          <circle cx="92" cy="86" r="9" fill="#2a1a12"/><circle cx="108" cy="72" r="9" fill="#2a1a12"/><circle cx="128" cy="70" r="9" fill="#2a1a12"/><circle cx="145" cy="84" r="9" fill="#2a1a12"/>
+          <circle cx="106" cy="108" r="3" fill="#222"/><circle cx="130" cy="108" r="3" fill="#222"/>
+          <path d="M100 100l11-3M136 97l11 3M110 124Q118 129 126 124" stroke="#4a2a20" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        </g>
+      </g>
+      <g id="tg">
+        <path d="M282 232Q286 160 362 152Q438 160 442 232Z" fill="#2b3342"/>
+        <polygon points="348,154 376,154 362,198" fill="#f0f0f0"/>
+        <path d="M348 154L334 192L360 202ZM376 154L390 192L364 202Z" fill="#1c1c1c" stroke="#333"/>
+        <rect x="350" y="132" width="24" height="22" fill="#cf9878"/>
+        <ellipse cx="362" cy="104" rx="32" ry="38" fill="#d9a284"/>
+        <path d="M329 98Q328 60 364 58Q398 60 396 98Q386 74 362 74Q338 76 329 98Z" fill="#191919"/>
+        <rect x="337" y="96" width="21" height="15" rx="6" fill="#ff8c1a" fill-opacity=".9" stroke="#111" stroke-width="2"/>
+        <rect x="366" y="96" width="21" height="15" rx="6" fill="#ff8c1a" fill-opacity=".9" stroke="#111" stroke-width="2"/>
+        <path d="M358 102h8M337 100l-7-2M387 100l7-2" stroke="#111" stroke-width="2"/>
+        <path d="M347 122Q362 114 377 122Q368 130 362 126Q356 130 347 122Z" fill="#141414"/>
+        <ellipse id="tm" cx="362" cy="136" rx="7" ry="2.5" fill="#5a1d1d"/>
+        <path id="sm" d="M352 133Q362 144 372 133" stroke="#5a1d1d" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M300 198Q262 192 234 208" stroke="#2b3342" stroke-width="20" stroke-linecap="round" fill="none"/>
+        <circle cx="228" cy="210" r="9" fill="#cf9878"/>
+      </g>
+      <rect y="206" width="480" height="74" fill="#0d0f12"/><rect y="206" width="480" height="4" fill="#3a3f4a"/>
+      <rect x="196" y="156" width="96" height="52" rx="4" fill="#3a3a3a"/><rect x="186" y="204" width="116" height="5" rx="2" fill="#5a5a5a"/>
+      <rect x="14" y="170" width="24" height="38" rx="3" fill="#cfe9f7" fill-opacity=".75"/><rect x="18" y="182" width="8" height="8" fill="#fff" fill-opacity=".7"/><rect x="26" y="192" width="8" height="8" fill="#fff" fill-opacity=".7"/>
+      <path d="M30 170L36 148" stroke="#e5484d" stroke-width="3"/>
+      <polygon points="306,214 352,214 346,226 300,226" fill="#2b2b2b" stroke="#444"/>
+      <polygon points="60,216 108,214 102,230 54,230" fill="#f4f4f4"/><polygon points="74,222 120,222 114,236 68,236" fill="#e6e6e6"/>
+    </svg>
+      </div>
+  <div id="cw">
+    <canvas id="cv"></canvas>
+    <div id="tb"><i></i><i></i><i></i><i></i></div>
+    <div id="menu"></div>
+    <svg id="cur" viewBox="0 0 22 22"><path d="M3 2l14 8-6 1.5L8 18z" fill="#fff" stroke="#111" stroke-width="1.5" stroke-linejoin="round"/></svg>
+    <div id="end"><h2>Follow for more trading strategies</h2><div class="sr"><span>&#128269;</span><span id="hd"></span></div><small>Educational example on simulated candles. Not financial advice.</small></div>
+  </div>
+  <div id="bar"><div id="txt"></div><button id="gr" aria-label="Settings">&#8943;</button></div>
+<div id="set"><div class="hd"><h3>Settings</h3><button class="btn" id="cl" style="flex:0 0 auto">Close</button></div>
+  <div id="ctl"><button id="pp" aria-label="Play or pause">&#10074;&#10074;</button><button id="rp" aria-label="Replay">&#8634;</button><input id="sc" type="range" min="0" max="880" value="0" aria-label="Timeline"></div>
+  <h3>Speed</h3><div class="row" id="spd"></div>
+  <h3>Videos</h3><div id="vl" style="display:flex;flex-direction:column;gap:8px"></div>
+  <label class="tg"><input type="checkbox" id="vo" checked> Voice narration (AI voice)</label>
+  <div class="row"><button class="btn" id="ts">&#128266; Test sound</button></div><small id="tsm">No sound on iPhone? Switch off silent mode and turn the volume up. If you opened this inside another app, open it in Safari or Chrome instead.</small>
+  <label class="tg">Teacher voice <select id="vt" style="flex:1;min-width:0;background:#171b24;border:1px solid #2c323c;border-radius:6px;color:#e9ecf1;padding:8px"></select></label>
+  <label class="tg">Student voice <select id="vs" style="flex:1;min-width:0;background:#171b24;border:1px solid #2c323c;border-radius:6px;color:#e9ecf1;padding:8px"></select></label>
+  <label class="tg" style="flex-wrap:wrap">Studio voice files <input type="file" id="va" accept="audio/*" multiple style="flex:1;min-width:0;font-size:12px;color:#aab"><span id="vac" style="width:100%;font-size:11px;color:#8894a8">Name files L1_01.mp3, L1_02.mp3 ... (lesson number, line number)</span></label>
+  <label class="tg"><input type="checkbox" id="cp" checked> Show captions on chart-only videos</label>
+  <label class="tg">Your name on the end card <input id="hn" type="text" maxlength="30" placeholder="@yourpage" autocomplete="off" style="flex:1;min-width:0;background:#171b24;border:1px solid #2c323c;border-radius:6px;color:#e9ecf1;padding:8px 10px;font-size:14px"></label>
+  <small>Open this page: double-tap the chart, tap the faint dots in the text bar, or press S. To add another video, send me its breakdown.</small></div>
+</div>
+<script>
+const HANDLE="@yourpage";            // shown on the end card
+const $=id=>document.getElementById(id), B=21000;let END=88,HB="#d9d9d9";
+const fh=v=>{v=(v||"").trim();return v?(v[0]==="@"?v:"@"+v):HANDLE};
+let saved="";try{saved=localStorage.getItem("hn")||""}catch(e){}
+$("hd").textContent=fh(saved);$("hn").value=saved;
+$("hn").oninput=e=>{$("hd").textContent=fh(e.target.value);try{localStorage.setItem("hn",e.target.value.trim())}catch(x){}};
+
+/* ---------- candle data: built from rules, so the POC really is the biggest-volume price ---------- */
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function interp(w,i){if(i<=w[0][0])return w[0][1];for(let k=1;k<w.length;k++)if(i<=w[k][0]){const[a,p]=w[k-1],[b,q]=w[k];return p+(q-p)*(i-a)/(b-a||1)}return w[w.length-1][1]}
+function mk(r,w,i0,i1,nz,o,vf){const out=[];for(let i=i0;i<=i1;i++){const c=interp(w,i)+(r()-.5)*nz*2;out.push({o,c,h:Math.max(o,c)+r()*nz*.8,l:Math.min(o,c)-r()*nz*.8,v:(.5+r())*vf(i)});o=c}return out}
+function build(seed,bear){
+  const r=rng(seed),iA=12,iB=40,iT=58,N=84;
+  let c=mk(r,[[0,112],[5,108],[12,101],[18,128],[22,150],[34,158],[37,200],[40,238]].map(([i,p])=>[i,B+p]),0,iB,5,B+112,i=>i>=20&&i<=34?2.4:1);
+  let lo=1e9,hi=-1e9;for(const k of c){lo=Math.min(lo,k.l);hi=Math.max(hi,k.h)}
+  c[iA].l=lo-2;c[iB].h=hi+3;const Lp=c[iA].l,Hp=c[iB].h,nb=30,bs=(Hp-Lp)/nb,vol=Array(nb).fill(0);
+  for(let i=iA;i<=iB;i++){const k=c[i],bt=Math.max(k.o,k.c),bb=Math.min(k.o,k.c);
+    for(let j=0;j<nb;j++){const a=Lp+j*bs,b=a+bs;vol[j]+=k.v*(Math.max(0,Math.min(b,k.h)-Math.max(a,k.l))+2*Math.max(0,Math.min(b,bt)-Math.max(a,bb)))/(k.h-k.l||1)}}
+  let pj=0;vol.forEach((v,j)=>{if(v>vol[pj])pj=j});const poc=Lp+(pj+.5)*bs;
+  c=c.concat(mk(r,[[iB,c[iB].c],[48,poc+30],[54,poc+14],[iT,poc+3],[61,poc+28],[64,poc+20],[70,poc+(Hp-poc)*.55],[78,Hp-6],[83,Hp+28]],iB+1,N-1,4.5,c[iB].c,()=>1));
+  c[iT].l=Math.min(c[iT].l,poc-2);
+  let sc={c,iA,iB,iT,pA:Lp,pB:Hp,poc,vol:vol.slice(),bs,plo:Lp,dir:1,stop:Math.min(c[iT].l,c[iT+1].l)-10,target:Hp};
+  if(bear){const K=Lp+Hp,f=p=>K-p;
+    sc.c=c.map(k=>({o:f(k.o),c:f(k.c),h:f(k.l),l:f(k.h),v:k.v}));
+    sc.pA=f(Lp);sc.pB=f(Hp);sc.poc=f(poc);sc.vol.reverse();sc.dir=-1;sc.target=sc.pB;
+    sc.stop=Math.max(sc.c[iT].h,sc.c[iT+1].h)+10;}
+  sc.lo=Math.min(...sc.c.map(k=>k.l))-8;sc.hi=Math.max(...sc.c.map(k=>k.h))+22;
+  sc.R=Math.abs(sc.target-sc.poc)/Math.abs(sc.poc-sc.stop);
+  return sc}
+const S=[build(7,false),build(23,true)];
+/* schedules (seconds, relative to the scene start) */
+Object.assign(S[0],{t0:0,rev:[[0,0],[7,41],[33,41],[39,58],[40.5,60],[43.5,66],[47,66],[53,85]],sh:7.5,sl:9.5,sent:12.5,buy:15.8,m0:20,hl:22.2,vp0:24.5,vp1:29,poc0:30.5,pos:43.6,res:50.5});
+Object.assign(S[1],{t0:56,rev:[[0,41],[13,41],[18,59],[19.5,64],[21,66],[26,85]],sent:1.2,buy:4,m0:5.5,hl:7.2,vp0:8.8,vp1:11.5,poc0:12.2,pos:19.8,res:24.2});
+
+/* ---------- captions: [time, who(t=teacher,s=student), text] ---------- */
+const CAP=[[2.7,'t','Market structure'],[4,'t','higher highs'],[5.6,'s','okay'],[7.6,'t','Swing high'],[8.8,'t','right here'],[10,'t','Swing low'],[11.2,'s','got it'],[12.8,'t','Sentiment is'],[14.2,'t','bullish'],[15.8,'t','Look for buys'],[18,'t',"Where's the entry?"],[19.6,'s','hmm'],[20.6,'t','Open the menu'],[22.4,'t','Fixed range'],[23.6,'t','volume profile'],[25,'t','Drag low to high'],[27.4,'s','yeah'],[28.6,'t','Longest bar'],[30.6,'t',"That's the PoC"],[32.2,'t','Most volume'],[34,'t','Now wait'],[35.4,'t','for the pullback'],[37.5,'t','Price returns'],[38.8,'t','to the PoC'],[40.6,'t','Excellent'],[42,'t','The reaction'],[44,'t','Enter long'],[45.6,'t','Stop below'],[47.2,'t','Target: the high'],[51,'t','Target hit'],[52.6,'s','wow'],[55.2,'t',"We're bearish"],[57.2,'t','Sentiment down'],[59.8,'t','Look for sells'],[61.2,'s','got it'],[62.2,'t','Same menu'],[63.6,'t','Fixed range'],[65.6,'t','Drag high to low'],[67.4,'t','Mark the PoC'],[69.6,'t','Wait'],[70.6,'t','for the pullback'],[73.6,'s','okay'],[74.8,'t','Price returns'],[76.2,'t','Enter short'],[78,'t','Stop above'],[79.8,'t','Target hit'],[81.6,'s','nice'],[83.4,'t','Follow for more'],[85,'t','strategies']];
+
+/* ---------- chart ---------- */
+const cw=$("cw"),cv=$("cv"),ctx=cv.getContext("2d");let W=0,H=0;
+function resize(){const d=devicePixelRatio||1;W=cw.clientWidth;H=cw.clientHeight;cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0);frame(T)}
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)),pg=(t,a,b)=>clamp((t-a)/(b-a)),ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,lerp=(a,b,t)=>a+(b-a)*t;
+function ns(r){const e=10**Math.floor(Math.log10(r)),f=r/e;return(f<1.5?1:f<3.5?2:f<7.5?5:10)*e}
+const RED="#ff5a5f",CUP="#22c55e",CDN="#ef4444";
+function bgFill(){const g=ctx.createRadialGradient(W/2,H*.45,10,W/2,H*.45,Math.max(W,H)*.75);g.addColorStop(0,"#262a30");g.addColorStop(1,"#08090b");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);HB="#14161a"}
+function halo(txt,x,y,col,font,al){ctx.font=font;ctx.textAlign=al||"left";ctx.textBaseline="middle";ctx.lineWidth=4;ctx.strokeStyle=HB;ctx.strokeText(txt,x,y);ctx.fillStyle=col;ctx.fillText(txt,x,y)}
+function arrow(x1,y1,x2,y2,col,w){const a=Math.atan2(y2-y1,x2-x1);ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=w;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-11*Math.cos(a-.45),y2-11*Math.sin(a-.45));ctx.lineTo(x2-11*Math.cos(a+.45),y2-11*Math.sin(a+.45));ctx.closePath();ctx.fill()}
+let CP={show:0,x:0,y:0};
+function draw(sc,ts){
+  bgFill();
+  const c=sc.c,N=c.length,AX=58,PT=26,PB=22,pr=W-AX,bw=(pr-16)/(N+5),d=sc.dir;
+  const X=i=>8+(i+.5)*bw,Y=p=>PT+(sc.hi-p)/(sc.hi-sc.lo)*(H-PT-PB);
+  const st=ns((sc.hi-sc.lo)/9);ctx.lineWidth=1;
+  for(let p=Math.ceil(sc.lo/st)*st;p<=sc.hi;p+=st){const y=Math.round(Y(p))+.5;ctx.strokeStyle="rgba(255,255,255,.06)";ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(pr,y);ctx.stroke();ctx.font="13px -apple-system,Arial,sans-serif";ctx.textAlign="left";ctx.textBaseline="middle";ctx.fillStyle="#8b93a1";ctx.fillText(p.toFixed(2),pr+5,y)}
+  for(let i=0;i<N;i+=12){const x=Math.round(X(i))+.5,m=30+i;ctx.strokeStyle="rgba(255,255,255,.05)";ctx.beginPath();ctx.moveTo(x,PT-8);ctx.lineTo(x,H-PB);ctx.stroke();ctx.fillStyle="#8b93a1";ctx.font="12px -apple-system,Arial,sans-serif";ctx.textAlign="center";ctx.fillText(String(9+Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0"),x,H-PB+12)}
+  halo("NQ  1m",10,13,"#e8ebf0","600 15px -apple-system,Arial,sans-serif");
+  const n=interp(sc.rev,ts),A=[X(sc.iA),Y(sc.pA)],Bp=[X(sc.iB),Y(sc.pB)];
+  const hl=(p,i0,pgr,col,w,dash)=>{if(pgr<=0)return;ctx.save();ctx.strokeStyle=col;ctx.lineWidth=w;ctx.setLineDash(dash||[]);const y=Math.round(Y(p))+.5,x0=X(i0);ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x0+(pr-x0)*pgr,y);ctx.stroke();ctx.restore()};
+  /* swing lines (behind candles) */
+  if(sc.sh!=null){hl(sc.pB,sc.iB,ease(pg(ts,sc.sh,sc.sh+1.2)),RED,1.5);hl(sc.pA,sc.iA,ease(pg(ts,sc.sl,sc.sl+1.2)),RED,1.5)}
+  /* volume profile */
+  const vp=pg(ts,sc.vp0,sc.vp0+1.6),bars=ease(pg(ts,sc.vp0+1.4,sc.vp1)),xA=X(sc.iA),xB=X(sc.iB);
+  if(vp>0){const xe=lerp(xA,xB,ease(vp));ctx.save();ctx.strokeStyle="rgba(41,98,255,.9)";ctx.lineWidth=1.5;ctx.setLineDash([5,4]);ctx.fillStyle="rgba(41,98,255,.06)";
+    const yl=Y(Math.min(sc.pA,sc.pB)),yh=Y(Math.max(sc.pA,sc.pB));ctx.fillRect(xA,yh,xe-xA,yl-yh);ctx.strokeRect(xA,yh,xe-xA,yl-yh);ctx.restore();
+    const mx=Math.max(...sc.vol),ml=(xB-xA)*.92*bars;
+    sc.vol.forEach((v,j)=>{const y1=Y(sc.plo+(j+1)*sc.bs),y0=Y(sc.plo+j*sc.bs),L=v/mx*ml;ctx.fillStyle="rgba(66,133,244,.6)";ctx.fillRect(xA,y1+.5,L*.62,y0-y1-1);ctx.fillStyle="rgba(255,196,0,.75)";ctx.fillRect(xA+L*.62,y1+.5,L*.38,y0-y1-1)})}
+  /* POC line */
+  const pp=ease(pg(ts,sc.poc0,sc.poc0+1.3));if(pp>0){hl(sc.poc,sc.iA,pp,RED,2.5)}
+  /* candles */
+  const bwid=Math.max(2,Math.round(bw*.65));
+  for(let i=0;i<Math.ceil(n)&&i<N;i++){const k=c[i],f=clamp(n-i);let{o,c:cl,h,l}=k;
+    if(f<1){const c2=o+(cl-o)*f;h=Math.max(o,c2)+(h-Math.max(o,cl))*f;l=Math.min(o,c2)-(Math.min(o,cl)-l)*f;cl=c2}
+    const x=Math.round(X(i))+.5,yo=Y(o),yc=Y(cl);const cc2=cl>=o?CUP:CDN;ctx.strokeStyle=cc2;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(x,Y(h));ctx.lineTo(x,Y(l));ctx.stroke();
+    const top=Math.min(yo,yc),hg=Math.max(1,Math.abs(yc-yo));ctx.fillStyle=cc2;ctx.fillRect(Math.round(x-bwid/2),top,bwid,hg);}
+  /* swing arrows + labels */
+  if(sc.sh!=null){const a1=pg(ts,sc.sh,sc.sh+.7),a2=pg(ts,sc.sl,sc.sl+.7);ctx.globalAlpha=a1;arrow(xB+52,Y(sc.pB)-30,xB+6,Y(sc.pB)-5,RED,3);halo("RIGHT HERE",xB+54,Y(sc.pB)-38,RED,"800 15px -apple-system,Arial,sans-serif");
+    ctx.globalAlpha=a1*pg(ts,sc.sh+.8,sc.sh+1.4);halo("swing high",pr-8,Y(sc.pB)-9,RED,"600 12px -apple-system,Arial,sans-serif","right");
+    ctx.globalAlpha=a2;arrow(xA+52,Y(sc.pA)-34,xA+6,Y(sc.pA)-6,RED,3);halo("RIGHT HERE",xA+54,Y(sc.pA)-42,RED,"800 15px -apple-system,Arial,sans-serif");
+    ctx.globalAlpha=a2*pg(ts,sc.sl+.8,sc.sl+1.4);halo("swing low",pr-8,Y(sc.pA)+11,RED,"600 12px -apple-system,Arial,sans-serif","right");ctx.globalAlpha=1}
+  /* sentiment zig-zag */
+  if(sc.sent!=null&&ts>=sc.sent){const D=sc.iB-sc.iA,R=Math.abs(sc.pB-sc.pA),P=[[sc.iA,sc.pA],[sc.iA+.3*D,sc.pA+d*.62*R],[sc.iA+.42*D,sc.pA+d*.5*R],[sc.iB,sc.pB]].map(([i,p])=>[X(i)+(sc.dir<0?0:0),Y(p)]);
+    const seg=[];let tot=0;for(let i=1;i<P.length;i++){const l=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);seg.push(l);tot+=l}
+    let rem=ease(pg(ts,sc.sent,sc.sent+2.4))*tot;ctx.strokeStyle=RED;ctx.lineWidth=3.5;ctx.lineJoin="round";ctx.lineCap="round";ctx.beginPath();ctx.moveTo(...P[0]);let tip=P[0],prev=P[0];
+    for(let i=1;i<P.length&&rem>0;i++){const f=Math.min(1,rem/seg[i-1]);tip=[lerp(P[i-1][0],P[i][0],f),lerp(P[i-1][1],P[i][1],f)];prev=P[i-1];ctx.lineTo(...tip);rem-=seg[i-1]}ctx.stroke();
+    if(rem<=0){const a=Math.atan2(tip[1]-prev[1],tip[0]-prev[0]);ctx.fillStyle=RED;ctx.beginPath();ctx.moveTo(...tip);ctx.lineTo(tip[0]-14*Math.cos(a-.4),tip[1]-14*Math.sin(a-.4));ctx.lineTo(tip[0]-14*Math.cos(a+.4),tip[1]-14*Math.sin(a+.4));ctx.fill()}}
+  if(sc.buy!=null&&ts>=sc.buy){const s=ease(pg(ts,sc.buy,sc.buy+.35)),txt=d>0?"BUY":"SELL",tx=xB-70,ty=d>0?Y(sc.pB)-6:Y(sc.pB)+20;ctx.save();ctx.translate(tx,ty);ctx.scale(s,s);ctx.fillStyle=d>0?CUP:CDN;ctx.beginPath();ctx.roundRect(-24,-12,48,24,5);ctx.fill();ctx.fillStyle="#fff";ctx.font="800 14px -apple-system,Arial,sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(txt,0,1);ctx.restore()}
+  /* POC label */
+  if(pp>0.3){ctx.globalAlpha=pg(pp,.3,1);const lx=xB+16,ly=Y(sc.poc);arrow(lx+22,ly+(d>0?28:-28),lx+22,ly+(d>0?5:-5),RED,3);halo("PoC",lx,ly+(d>0?40:-40),RED,"800 18px -apple-system,Arial,sans-serif");ctx.globalAlpha=1}
+  /* long / short position */
+  if(ts>=sc.pos){const ph=ease(pg(ts,sc.pos,sc.pos+1.2)),x0=X(sc.iT),w=Math.min(bw*28,pr-x0),yE=Y(sc.poc),yT=lerp(yE,Y(sc.target),ph),yS=lerp(yE,Y(sc.stop),ph),G=CUP,Rr=CDN;
+    ctx.fillStyle="rgba(34,197,94,.22)";ctx.fillRect(x0,Math.min(yE,yT),w,Math.abs(yT-yE));ctx.fillStyle="rgba(239,68,68,.22)";ctx.fillRect(x0,Math.min(yE,yS),w,Math.abs(yS-yE));
+    ctx.lineWidth=1.5;ctx.strokeStyle=G;ctx.strokeRect(x0,Math.min(yE,yT),w,Math.abs(yT-yE));ctx.strokeStyle=Rr;ctx.strokeRect(x0,Math.min(yE,yS),w,Math.abs(yS-yE));ctx.strokeStyle="#cfd3da";ctx.beginPath();ctx.moveTo(x0,Math.round(yE)+.5);ctx.lineTo(x0+w,Math.round(yE)+.5);ctx.stroke();
+    if(ph>.8){halo((d>0?"LONG":"SHORT")+"  target  +"+sc.R.toFixed(1)+"R",x0+6,yT+(d>0?14:-14),G,"700 12px -apple-system,Arial,sans-serif");halo("stop",x0+6,yS+(d>0?-12:12),Rr,"700 12px -apple-system,Arial,sans-serif")}}
+  if(ts>=sc.res){const s=ease(pg(ts,sc.res,sc.res+.4));ctx.save();ctx.translate(pr/2,PT+24);ctx.scale(s,s);ctx.fillStyle=CUP;ctx.beginPath();ctx.roundRect(-82,-16,164,32,16);ctx.fill();ctx.fillStyle="#fff";ctx.font="800 15px -apple-system,Arial,sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("TARGET HIT  +"+sc.R.toFixed(1)+"R",0,1);ctx.restore()}
+  /* mouse cursor path: toward menu item, then to the low/high, then the drag */
+  CP.show=0;
+  if(ts>=sc.m0&&ts<sc.vp0+2.4){CP.show=1;
+    if(ts<sc.hl+.4){const it=$("fr").getBoundingClientRect(),cr=cw.getBoundingClientRect(),t=ease(pg(ts,sc.m0,sc.hl));CP.x=lerp(W*.7,it.left-cr.left+it.width*.7,t);CP.y=lerp(H*.7,it.top-cr.top+it.height/2,t)}
+    else if(ts<sc.vp0){const it=$("fr").getBoundingClientRect(),cr=cw.getBoundingClientRect(),t=ease(pg(ts,sc.hl+.4,sc.vp0));CP.x=lerp(it.left-cr.left+it.width*.7,A[0],t);CP.y=lerp(it.top-cr.top+it.height/2,A[1],t)}
+    else if(ts<sc.vp0+1.6){const t=ease(pg(ts,sc.vp0,sc.vp0+1.6));CP.x=lerp(A[0],Bp[0],t);CP.y=lerp(A[1],Bp[1],t)}
+    else{CP.x=Bp[0];CP.y=Bp[1];CP.show=1-pg(ts,sc.vp0+1.6,sc.vp0+2.4)}}
+}
+
+/* ---------- frame: everything is a pure function of time T, so scrubbing works ---------- */
+const MENU=[["h","Forecasting"],"Long position","Short position","Position forecast","Bars pattern","Ghost feed","Sector",["h","Volume-based"],"Anchored VWAP","\u2605 Fixed range volume profile","Anchored volume profile",["h","Measurers"],"Price range","Date range","Date and price range"];
+$("menu").innerHTML=MENU.map(m=>Array.isArray(m)?"<h4>"+m[1]+"</h4>":"<div"+(m.indexOf("Fixed")>0?' id="fr"':"")+">"+m+"</div>").join("");
+const cap=$("txt"),ppl=$("ppl");let lastCap=-2,hlOn=null,menuOn=null;
+function frame(t){
+  if(L===1){frame2(t);return}if(L===2){frame3(t);return}if(L>=3){frameG(t,G[L-3]);return}
+  const sc=t>=56?S[1]:S[0],ts=t-sc.t0;draw(sc,ts);
+  /* captions */
+  let ci=-1;for(let i=0;i<CAP.length;i++)if(CAP[i][0]<=t)ci=i;
+  const live=ci>=0&&(VON||t-CAP[ci][0]<1.7);
+  if(!live){cap.className="";cap.textContent="";if(lastCap!==-1){lastCap=-1;ppl.classList.remove("talkT","talkS")}}
+  else if(ci!==lastCap){lastCap=ci;cap.textContent=CAP[ci][2];cap.className=CAP[ci][1]+" pop";ppl.classList.remove("talkT","talkS");void ppl.offsetWidth;ppl.classList.add(CAP[ci][1]==="t"?"talkT":"talkS")}
+  ppl.classList.toggle("solo",t>=82.6);
+  /* menu */
+  const mo=ts>=sc.m0&&ts<sc.hl+1;if(mo!==menuOn){menuOn=mo;$("menu").classList.toggle("on",mo);$("tb").classList.toggle("on",mo)}
+  const h=ts>=sc.hl&&mo;if(h!==hlOn){hlOn=h;$("fr").classList.toggle("hl",h)}
+  const cu=$("cur");cu.style.opacity=CP.show;cu.style.transform="translate("+CP.x+"px,"+CP.y+"px)";
+  $("end").classList.toggle("on",t>=83.2);
+  $("sc").value=Math.round(t*10)
+}
+
+/* ================= VIDEO 2: liquidity sweep short (chart only) ================= */
+function build2(){
+  const r=rng(11),iNH=43,iT=66,N=86,E=B+140;
+  let c=mk(r,[[0,220],[8,132],[9,135],[14,148],[19,125],[24,146],[29,121],[34,148],[40,141],[41,150],[42,156],[43,158]].map(([i,p])=>[i,B+p]),0,iNH,3.5,B+222,()=>1);
+  let iRH=9,iSL=9;for(let i=9;i<=40;i++){if(c[i].h>c[iRH].h)iRH=i;if(c[i].l<c[iSL].l)iSL=i}
+  c[iSL].l-=3;c[iNH].h=Math.max(c[iNH].h,c[iRH].h+6);if(c[iNH].c<c[iNH].o)c[iNH].c=c[iNH].o+3;
+  c=c.concat(mk(r,[[43,158],[47,146],[52,134],[56,124],[59,128],[63,136],[66,141],[68,138],[72,128],[77,116],[82,106],[85,100]].map(([i,p])=>[i,B+p]),iNH+1,N-1,2.8,c[iNH].c,()=>1));
+  c[iT].h=Math.max(c[iT].h,E+2);
+  c[iNH].h=Math.max(c[iNH].h,...c.slice(44,70).map(k=>k.h))+2;
+  const SL=c[iSL].l,RH=c[iRH].h,NH=c[iNH].h,stop=NH+3,target=SL-14;
+  const sc={c,iRH,iSL,iNH,iE:50,iT,E,zlo:E-4,zhi:E+5,SL,RH,NH,stop,target,R:(E-target)/(stop-E)};
+  sc.lo=Math.min(...c.map(k=>k.l))-6;sc.hi=Math.max(...c.map(k=>k.h))+6;
+  Object.assign(sc,{rev:[[0,0],[5,41],[10.8,41],[13,44],[28,44],[35,57],[38,57],[43,67],[44.5,69],[47,69],[56,86]],quiz:[5.5,10.5],lnH:14,dot:16,lnL:18,sm:22,cv:[24,27.5],ent:32,zone:36,pos:45,res:55});
+  return sc}
+const S2=build2();
+const CAP2=[[1.6,"Price ranges after a sharp drop"],[5.6,"Which way next?"],[11,"It breaks above the range high"],[14.5,"Mark the new high and the swing low"],[22,"Only a small poke above the old high"],[24,"Expect a rejection toward the low"],[31.5,"Mark the entry level"],[36.5,"Wait for a pullback into the zone"],[45,"Short from the zone"],[48,"Stop above the high, target below the low"],[55,"Target hit and the low is broken"]];
+function draw2(sc,ts){
+  bgFill();
+  const c=sc.c,N=c.length,AX=52,PT=H*.17,PB=H*.17,pr=W-AX,bw=(pr-16)/(N+5),lo=sc.lo,hi=sc.hi,X=i=>8+(i+.5)*bw,Y=p=>PT+(hi-p)/(hi-lo)*(H-PT-PB);
+  const st=ns((hi-lo)/6);ctx.font="11px -apple-system,Arial,sans-serif";ctx.textAlign="left";ctx.textBaseline="middle";ctx.fillStyle="#6b7385";
+  for(let p=Math.ceil(lo/st)*st;p<=hi;p+=st)ctx.fillText(p.toFixed(0),pr+5,Y(p));
+  const hl=(p,i0,pgr,col,w,dash)=>{if(pgr<=0)return;ctx.save();ctx.strokeStyle=col;ctx.lineWidth=w;ctx.setLineDash(dash||[]);const y=Math.round(Y(p))+.5,x0=X(i0);ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x0+(pr-x0)*pgr,y);ctx.stroke();ctx.restore()};
+  /* gray zone (behind candles) */
+  const zf=ease(pg(ts,sc.zone,sc.zone+1.5));if(zf>0){ctx.fillStyle="rgba(200,205,220,"+.28*zf+")";ctx.fillRect(X(sc.iE)-bw*2,Y(sc.zhi),bw*28,Y(sc.zlo)-Y(sc.zhi))}
+  /* candles */
+  const n=interp(sc.rev,ts),bwid=Math.max(2,Math.round(bw*.62));
+  for(let i=0;i<Math.ceil(n)&&i<N;i++){const k=c[i],f=clamp(n-i);let{o,c:cl,h,l}=k;
+    if(f<1){const c2=o+(cl-o)*f;h=Math.max(o,c2)+(h-Math.max(o,cl))*f;l=Math.min(o,c2)-(Math.min(o,cl)-l)*f;cl=c2}
+    const x=Math.round(X(i))+.5,up=cl>=o,col=up?CUP:CDN,top=Math.min(Y(o),Y(cl)),hg=Math.max(1,Math.abs(Y(cl)-Y(o)));
+    ctx.strokeStyle=col;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,Y(h));ctx.lineTo(x,Y(l));ctx.stroke();ctx.fillStyle=col;ctx.fillRect(Math.round(x-bwid/2),top,bwid,hg)}
+  /* quiz: which way? */
+  const xl=X(40),yl=Y(c[40].c);
+  if(ts>=sc.quiz[0]&&ts<sc.quiz[1]){const a=pg(ts,sc.quiz[0],sc.quiz[0]+.4);ctx.globalAlpha=a;arrow(xl+24,yl-8,xl+24,yl-56,CUP,4);arrow(xl+24,yl+8,xl+24,yl+56,RED,4);
+    const cd="00:0"+Math.max(1,5-Math.floor(ts-sc.quiz[0]));ctx.fillStyle="#1f2229";ctx.strokeStyle="#3a3f4a";ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(xl+38,yl-12,62,24,5);ctx.fill();ctx.stroke();ctx.fillStyle="#cbd0d8";ctx.font="600 14px ui-monospace,Menlo,monospace";ctx.textAlign="center";ctx.fillText(cd,xl+69,yl+1);ctx.globalAlpha=1}
+  /* levels */
+  hl(sc.NH,sc.iNH,ease(pg(ts,sc.lnH,sc.lnH+1.6)),RED,1.5);
+  hl(sc.SL,sc.iSL,ease(pg(ts,sc.lnL,sc.lnL+1.6)),RED,1.5);
+  const dp=ease(pg(ts,sc.dot,sc.dot+1.4));if(dp>0){const y=Math.round(Y(sc.RH))+.5,x0=X(sc.iRH),x1=X(sc.iNH)+12;ctx.save();ctx.strokeStyle="#e8ebf0";ctx.lineWidth=1.5;ctx.setLineDash([2,3]);ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(lerp(x0,x1,dp),y);ctx.stroke();ctx.restore()}
+  /* small arrow at the new high */
+  const sa=pg(ts,sc.sm,sc.sm+.6);if(sa>0){ctx.globalAlpha=sa;arrow(X(sc.iNH)+38,Y(sc.NH)-28,X(sc.iNH)+6,Y(sc.NH)-4,"#e8ebf0",2.5);ctx.globalAlpha=1}
+  /* big curved arrow: high -> swing low */
+  const cp=ease(pg(ts,sc.cv[0],sc.cv[1]));if(cp>0){const x0=X(sc.iNH)+6,y0=Y(sc.NH)+2,x2=X(sc.iNH)+66,y2=Y(sc.SL)-3,x1=X(sc.iNH)+118,y1=(y0+y2)/2-24,P=t=>[(1-t)**2*x0+2*(1-t)*t*x1+t*t*x2,(1-t)**2*y0+2*(1-t)*t*y1+t*t*y2];
+    ctx.strokeStyle="#e8ebf0";ctx.fillStyle="#e8ebf0";ctx.lineWidth=3;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(x0,y0);for(let k=1;k<=30;k++){const q=P(cp*k/30);ctx.lineTo(q[0],q[1])}ctx.stroke();
+    if(cp>.98){const a=P(.96),b=P(1),g=Math.atan2(b[1]-a[1],b[0]-a[0]);ctx.beginPath();ctx.moveTo(b[0],b[1]);ctx.lineTo(b[0]-13*Math.cos(g-.45),b[1]-13*Math.sin(g-.45));ctx.lineTo(b[0]-13*Math.cos(g+.45),b[1]-13*Math.sin(g+.45));ctx.fill()}}
+  /* entry level */
+  const ef=pg(ts,sc.ent,sc.ent+.5);if(ef>0){ctx.strokeStyle="#e8ebf0";ctx.lineWidth=2.5;ctx.lineCap="butt";const y=Math.round(Y(sc.E))+.5;ctx.beginPath();ctx.moveTo(X(sc.iE),y);ctx.lineTo(X(sc.iE)+bw*10*ef,y);ctx.stroke()}
+  /* short position */
+  if(ts>=sc.pos){const ph=ease(pg(ts,sc.pos,sc.pos+1.2)),x0=X(sc.iT),w=Math.min(bw*20,pr-x0),yE=Y(sc.E),yS=lerp(yE,Y(sc.stop),ph),yT=lerp(yE,Y(sc.target),ph),G=CUP;
+    ctx.fillStyle="rgba(239,68,68,.25)";ctx.fillRect(x0,yS,w,yE-yS);ctx.fillStyle="rgba(34,197,94,.25)";ctx.fillRect(x0,yE,w,yT-yE);
+    ctx.lineWidth=1.5;ctx.strokeStyle=RED;ctx.strokeRect(x0,yS,w,yE-yS);ctx.strokeStyle=G;ctx.strokeRect(x0,yE,w,yT-yE);
+    if(ph>.8){halo("SHORT  target  +"+sc.R.toFixed(1)+"R",x0+6,yT-12,G,"700 12px -apple-system,Arial,sans-serif");halo("stop",x0+6,yS+12,RED,"700 12px -apple-system,Arial,sans-serif")}}
+  if(ts>=sc.res){const s=ease(pg(ts,sc.res,sc.res+.4));halo("low broken",pr-8,Y(sc.SL)-9,RED,"600 12px -apple-system,Arial,sans-serif","right");ctx.save();ctx.translate(pr/2,PT-26);ctx.scale(s,s);ctx.fillStyle=CUP;ctx.beginPath();ctx.roundRect(-82,-16,164,32,16);ctx.fill();ctx.fillStyle="#fff";ctx.font="800 15px -apple-system,Arial,sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("TARGET HIT  +"+sc.R.toFixed(1)+"R",0,1);ctx.restore()}
+}
+function frame2(t){
+  draw2(S2,t);
+  let ci=-1;for(let i=0;i<CAP2.length;i++)if(CAP2[i][0]<=t)ci=i;
+  const live=capsOn&&ci>=0&&(VON||t-CAP2[ci][0]<3);cap.textContent=live?CAP2[ci][1]:"";cap.className=live?"w":"";
+  $("end").classList.toggle("on",t>=60);$("sc").value=Math.round(t*10)}
+
+
+/* ================= VIDEO 3: top-down timeframes (chart only, off-white) ================= */
+function build3(){
+  const r=rng(5),KL=B+100,sh=a=>a.map(([i,p])=>[i,B+p]);
+  const h1=mk(r,sh([[0,20],[6,38],[9,32],[15,60],[18,52],[23,78],[26,70],[28,92],[29,97],[30,86],[31,78]]),0,31,4,B+20,()=>1);
+  h1.forEach((k,i)=>{if(i!==29&&k.h>KL-3)k.h=Math.max(KL-3,k.o,k.c)});h1[29].h=KL+6;
+  const m5=mk(r,sh([[0,40],[10,58],[14,50],[22,78],[26,70],[31,96],[32,99],[33,92],[38,78],[41,66],[43,70],[46,78],[48,72],[52,58],[55,36]]),0,55,3.2,B+40,()=>1);
+  m5.forEach((k,i)=>{if(i<32&&k.h>KL-2)k.h=Math.max(KL-2,k.o,k.c)});m5[32].h=KL+4;
+  const E=m5[46].c,stop=m5[32].h+3,target=B+40;m5[55].l=Math.min(m5[55].l,target-3);
+  const c4=[{o:B+20,c:B+68,h:B+72,l:B+16},{o:B+68,c:B+70,h:B+80,l:B+60},{o:B+70,c:B+24,h:B+76,l:B+18}];
+  const m15=mk(rng(9),sh([[0,22],[9,66],[10,70],[11,60],[12,34],[13,28]]),0,13,2.2,B+22,()=>1);
+  const rg=a=>[Math.min(...a.map(k=>k.l)),Math.max(...a.map(k=>k.h))];
+  return{KL,h1,m5,c4,m15,E,stop,target,R:(E-target)/(stop-E),rh:rg(h1),r5:rg(m5.concat([{l:target-4,h:stop+10}])),r4:rg(c4),r15:rg(m15)}}
+const S3=build3();
+const CAP3=[[.6,"One 4H candle holds many 15M candles"],[8.8,"HTF: where the key levels are"],[12.2,"LTF: where you enter"],[16.2,"Key level on H4? Enter on M15"],[21.4,"Key level on H1? Enter on M5"],[24.6,"Mark the key level on the 1H"],[31.6,"Price pokes above the level"],[33.8,"Expect a rejection"],[36.8,"Drop to the paired timeframe"],[44.8,"5M: price reaches the level"],[50.6,"It rejects and drops"],[54.4,"Wait for the pullback"],[56.2,"Short: stop above, target below"],[60.4,"Target hit"]];
+function cmap(rc,rg,N){const bw=rc.w/(N+1.5),lo=rg[0]-(rg[1]-rg[0])*.08,hi=rg[1]+(rg[1]-rg[0])*.08;return{bw,X:i=>rc.x+(i+.75)*bw,Y:p=>rc.y+(hi-p)/(hi-lo)*rc.h}}
+function cdraw(set,m,n,body){for(let i=0;i<Math.ceil(n)&&i<set.length;i++){const k=set[i],f=clamp(n-i);let{o,c:cl,h,l}=k;
+  if(f<1){const c2=o+(cl-o)*f;h=Math.max(o,c2)+(h-Math.max(o,cl))*f;l=Math.min(o,c2)-(Math.min(o,cl)-l)*f;cl=c2}
+  const x=Math.round(m.X(i))+.5,col=cl>=o?CUP:CDN;ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(x,m.Y(h));ctx.lineTo(x,m.Y(l));ctx.stroke();
+  ctx.fillRect(Math.round(x-body/2),Math.min(m.Y(o),m.Y(cl)),body,Math.max(1.5,Math.abs(m.Y(cl)-m.Y(o))))}}
+function btn(x,y,w,h,col,txt,s){ctx.save();ctx.translate(x+w/2,y+h/2);ctx.scale(s,s);ctx.fillStyle=col;ctx.beginPath();ctx.roundRect(-w/2,-h/2,w,h,h*.3);ctx.fill();ctx.fillStyle="#fff";ctx.font="800 "+Math.round(h*.4)+"px -apple-system,Arial,sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(txt,0,1);ctx.restore()}
+function dotted(x0,x1,y,p){if(p<=0)return;ctx.save();ctx.strokeStyle="#f1f3f7";ctx.lineWidth=2;ctx.setLineDash([2,5]);ctx.lineCap="round";ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(lerp(x0,x1,p),y);ctx.stroke();ctx.restore()}
+function curve(P0,P1,P2,p,col,w){if(p<=0)return;const P=t=>[(1-t)**2*P0[0]+2*(1-t)*t*P1[0]+t*t*P2[0],(1-t)**2*P0[1]+2*(1-t)*t*P1[1]+t*t*P2[1]];ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=w;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(...P0);for(let k=1;k<=30;k++){const q=P(p*k/30);ctx.lineTo(q[0],q[1])}ctx.stroke();
+  if(p>.98){const a=P(.95),b=P(1),g=Math.atan2(b[1]-a[1],b[0]-a[0]);ctx.beginPath();ctx.moveTo(...b);ctx.lineTo(b[0]-14*Math.cos(g-.45),b[1]-14*Math.sin(g-.45));ctx.lineTo(b[0]-14*Math.cos(g+.45),b[1]-14*Math.sin(g+.45));ctx.fill()}}
+function draw3(sc,ts){
+  bgFill();const k=W/380,G=CUP,RD=CDN,BL="#60a5fa",OL="#fbbf24",F="-apple-system,Arial,sans-serif";
+  const tl=(txt,x,y,sz,col,al)=>{ctx.font="800 "+Math.round(sz)+"px "+F;ctx.fillStyle=col;ctx.textAlign=al||"center";ctx.textBaseline="middle";ctx.fillText(txt,x,y)};
+  /* 1) concept: one 4H candle contains many 15M candles */
+  const a1=1-pg(ts,8,8.6);
+  if(a1>0){ctx.globalAlpha=a1;const r4={x:W*.05,y:H*.3,w:W*.4,h:H*.4},r15={x:W*.53,y:H*.3,w:W*.43,h:H*.4},m4=cmap(r4,sc.r4,3),m15=cmap(r15,sc.r15,14);
+    cdraw(sc.c4,m4,clamp((ts-.3)/.7*1,0,3)+0,m4.bw*.8);cdraw(sc.m15,m15,interp([[3.5,0],[7.5,14]],ts),Math.max(3,m15.bw*.7));
+    ctx.globalAlpha=a1*pg(ts,2.2,2.8);tl("4 hour",W*.25,H*.22,22*k,"#f1f3f7");ctx.globalAlpha=a1*pg(ts,3,3.6);tl("15 min",W*.745,H*.22,22*k,"#f1f3f7");
+    ctx.globalAlpha=a1;curve([W*.37,H*.2],[W*.5,H*.11],[W*.62,H*.2],ease(pg(ts,3.2,4.6)),"#f1f3f7",2.5);ctx.globalAlpha=1}
+  /* 2) top-down timeframe table */
+  const a2=pg(ts,8.5,9)*(1-pg(ts,23,24));
+  if(a2>0){ctx.globalAlpha=a2;const bh=Math.min(H*.095,62),gp=bh*.35,hd=bh*1.2,y0=(H-(hd+4*bh+3*gp))/2,cwid=W*.36,xL=W*.09,xR=W*.55,yr=i=>y0+hd+i*(bh+gp),L=["D","H4","H1","M15"],R=["H1","M15","M5","M1"];
+    const cl=i=>i===1?(ts>=16?RD:G):i===2?(ts>=21.5?RD:ts>=20?BL:G):i===0?(ts>=18&&ts<19.2?OL:G):G,cr=i=>(i===1&&ts>=16.6)||(i===2&&ts>=21.8)?RD:G;
+    ctx.globalAlpha=a2*pg(ts,8.8,9.4);tl("HTF",xL+cwid/2,y0+bh*.3,22*k,"#f1f3f7");tl("(key levels)",xL+cwid/2,y0+bh*.85,13*k,"#8a8a8a");
+    ctx.globalAlpha=a2*pg(ts,12.2,12.8);tl("LTF",xR+cwid/2,y0+bh*.3,22*k,"#f1f3f7");tl("(entry)",xR+cwid/2,y0+bh*.85,13*k,"#8a8a8a");
+    for(let i=0;i<4;i++){ctx.globalAlpha=a2;const s1=ease(pg(ts,9+.5*i,9.5+.5*i)),s2=ease(pg(ts,12.8+.5*i,13.3+.5*i));if(s1>0)btn(xL,yr(i),cwid,bh,cl(i),L[i],s1);if(s2>0)btn(xR,yr(i),cwid,bh,cr(i),R[i],s2)}
+    ctx.globalAlpha=a2;dotted(xL+cwid+4,xR-4,yr(1)+bh/2,ease(pg(ts,16.4,17.2)));dotted(xL+cwid+4,xR-4,yr(2)+bh/2,ease(pg(ts,21.8,22.6)));ctx.globalAlpha=1}
+  /* 3) 1H chart with the key level */
+  const a3=pg(ts,24,24.5)*(1-pg(ts,36,36.8));
+  if(a3>0){ctx.globalAlpha=a3;const rc={x:W*.05,y:H*.2,w:W*.84,h:H*.58},m=cmap(rc,sc.rh,sc.h1.length+4),n=interp([[24.5,0],[30,28],[31.5,28],[33,30],[35,30],[36,32]],ts);
+    tl("1H",W-14,H*.1,46*k,"#f1f3f7","right");
+    const lp=ease(pg(ts,30,31.5));if(lp>0){const y=Math.round(m.Y(sc.KL))+.5,x0=m.X(22);ctx.strokeStyle="#f1f3f7";ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(lerp(x0,W-12,lp),y);ctx.stroke()}
+    cdraw(sc.h1,m,n,Math.max(4,m.bw*.62));
+    curve([m.X(29)+8,m.Y(sc.KL+6)],[m.X(29)+120,m.Y(sc.KL)+H*.03],[m.X(29)+66,m.Y(sc.KL)+H*.24],ease(pg(ts,33.8,35.6)),RD,4);ctx.globalAlpha=1}
+  /* 4) switch to the paired timeframe */
+  const a4=pg(ts,36.4,37)*(1-pg(ts,43.6,44.4));
+  if(a4>0){ctx.globalAlpha=a4;const bw2=W*.26,bh2=Math.min(H*.09,60),yy=H*.46;btn(W*.12,yy,bw2,bh2,RD,"H1",ease(pg(ts,36.4,37)));const s=ease(pg(ts,38.6,39.2));dotted(W*.12+bw2+6,W*.62-6,yy+bh2/2,ease(pg(ts,38,38.8)));if(s>0)btn(W*.62,yy,bw2,bh2,RD,"M5",s);ctx.globalAlpha=1}
+  /* 5) 5M entry */
+  const a5=pg(ts,44,44.6);
+  if(a5>0){ctx.globalAlpha=a5;const rc={x:W*.05,y:H*.2,w:W*.84,h:H*.6},m=cmap(rc,sc.r5,sc.m5.length+4),n=interp([[44.5,0],[49.5,32],[50.5,33],[52.5,42],[54.5,46],[56,47],[60.5,56]],ts);
+    tl("5M",W-14,H*.1,46*k,"#f1f3f7","right");
+    const lp=ease(pg(ts,44.6,45.8));if(lp>0){const y=Math.round(m.Y(sc.KL))+.5,x0=m.X(0);ctx.strokeStyle="#f1f3f7";ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(lerp(x0,W-12,lp),y);ctx.stroke()}
+    cdraw(sc.m5,m,n,Math.max(3,m.bw*.62));
+    if(ts>=56){const ph=ease(pg(ts,56,57.2)),x0=m.X(46),w=Math.min(m.bw*14,W-12-x0),yE=m.Y(sc.E),yS=lerp(yE,m.Y(sc.stop),ph),yT=lerp(yE,m.Y(sc.target),ph);
+      ctx.fillStyle="rgba(239,68,68,.25)";ctx.fillRect(x0,yS,w,yE-yS);ctx.fillStyle="rgba(34,197,94,.25)";ctx.fillRect(x0,yE,w,yT-yE);ctx.lineWidth=1.5;ctx.strokeStyle=RD;ctx.strokeRect(x0,yS,w,yE-yS);ctx.strokeStyle=CUP;ctx.strokeRect(x0,yE,w,yT-yE)}
+    if(ts>=60.3){const s=ease(pg(ts,60.3,60.7));ctx.save();ctx.translate(W*.34,H*.1);ctx.scale(s,s);ctx.fillStyle=CUP;ctx.beginPath();ctx.roundRect(-82,-16,164,32,16);ctx.fill();tl("TARGET HIT  +"+sc.R.toFixed(1)+"R",0,1,15*k,"#fff");ctx.restore()}
+    ctx.globalAlpha=1}
+}
+function frame3(t){
+  draw3(S3,t);let ci=-1;for(let i=0;i<CAP3.length;i++)if(CAP3[i][0]<=t)ci=i;
+  const live=capsOn&&ci>=0&&(VON||t-CAP3[ci][0]<3);cap.textContent=live?CAP3[ci][1]:"";cap.className=live?"w":"";
+  $("end").classList.toggle("on",t>=63);$("sc").value=Math.round(t*10)}
+
+
+/* ================= GENERIC LESSON ENGINE (videos 4-8) ================= */
+const RD2="#e0252f";
+const GS={
+  clean:{bg:"#fff",up:"#2fbf4a",dn:"#111",ol:0,grid:0,ax:"#b5b5b5",tx:"#111",ln:"#111"},
+  prac:{bg:"#d9d9d9",up:"#fff",dn:"#0c0c0c",ol:1,grid:1,ax:"#222",tx:"#111",ln:"#111"},
+  dark:{bg:"#08090b",up:"#22c55e",dn:"#ef4444",ol:0,grid:2,ax:"#6b7385",tx:"#f1f3f7",ln:"#60a5fa"},
+  cream:{bg:"#f6f4ef",up:"#2fbf4a",dn:"#111",ol:0,grid:0,ax:"#b0aca2",tx:"#111",ln:"#111"},
+  paper:{bg:"#fbfbf8",up:"#2b6cb0",dn:"#c0392b",ol:0,grid:0,ax:"#b5b5b5",tx:"#111",ln:"#2b6cb0"}};
+const AUTO={hl:"Mark this level.",ln:"Draw this line.",arr:"Look right here.",zone:"Mark this zone.",pos:"Here is the entry, the stop, and the target.",pill:"And the target is hit. Follow for more.",dot:"Mark this point.",cur:"Watch this move.",poly:"This shape is the pattern."};
+const DEFS=[
+{n:"Ascending triangle (Part 5)",custom:true,d:"Flat top, rising lows, long on the breakout",st:"dark",title:"15M",seed:41,N:58,noise:1.4,
+ path:[[0,60],[3,52],[6,76],[7,80],[11,57],[16,79],[17,80],[21,64],[26,79],[27,80],[30,71],[34,79],[35,80],[36,78],[38,84],[40,90],[44,98],[47,95],[52,108],[57,111]],
+ clip:[[0,36,"h",80.4]],fix:[[3,"l",50],[11,"l",56.3],[21,"l",64.1],[30,"l",71.2],[38,"h",85],[52,"h",111.5]],
+ steps:[
+  {to:8,sec:3.5,cap:"Price keeps hitting the same flat ceiling",say:"This is the ascending triangle, a bullish continuation pattern. First, look at the top. Price keeps hitting the same flat level.",more:[[3.6,"Draw a horizontal line right there. That is your resistance."]],ann:[{k:"hl",p:80,i:5,col:"#fbbf24",w:3},{k:"txt",pt:[9,80],dy:-14,lab:"Resistance line",col:"#fbbf24"}],hold:2},
+  {to:18,sec:3.5,cap:"But the lows keep rising: that is the support line",say:"Now look at the bottom. Every pullback is higher than the last one. These are higher lows.",more:[[3.6,"Connect those lows with a rising line. That is the support. The area between the two lines is the triangle."]],ann:[{k:"ln",a:[3,50],b:[35,75],col:"#fbbf24",w:3},{k:"poly",pts:[[3,50],[35,75],[35,80],[3,80]],col:"rgba(255,170,0,.2)"},{k:"txt",pt:[14,57],dy:22,lab:"Support",col:"#fbbf24"}],hold:3},
+  {to:36,sec:4.5,cap:"Between the lines: an ascending triangle",say:"Price keeps bouncing between support and resistance, and every swing gets tighter. Buyers are pushing harder each time.",more:[[4.6,"Every touch of the ceiling tests the sellers. Sooner or later, that ceiling breaks."]],ann:[{k:"ln",a:[7,80],b:[11,56.3],dash:[5,5],col:"#fff",w:1.8},{k:"ln",a:[11,56.3],b:[17,80],dash:[5,5],col:"#fff",w:1.8},{k:"ln",a:[17,80],b:[21,64.1],dash:[5,5],col:"#fff",w:1.8},{k:"ln",a:[21,64.1],b:[27,80],dash:[5,5],col:"#fff",w:1.8},{k:"ln",a:[27,80],b:[30,71.2],dash:[5,5],col:"#fff",w:1.8},{k:"ln",a:[30,71.2],b:[35,80],dash:[5,5],col:"#fff",w:1.8}],hold:2.5},
+  {to:40,sec:2.5,cap:"Price breaks above the resistance",say:"And then it happens. Price breaks above the resistance.",more:[[2.6,"This breakout is your signal to buy. Wait for a candle to close above the line."]],ann:[{k:"dot",pt:[38,85],col:"#fbbf24"},{k:"arr",pt:[38,86],dx:-34,dy:-32,col:"#fbbf24"}],hold:1.5},
+  {to:41,sec:1,cap:"Target: project the triangle height up from the breakout",say:"To set the target, measure the widest part of the triangle.",more:[[1.1,"Take that height, and project it upward from the breakout. That is the target distance."]],ann:[{k:"ln",a:[38,82],b:[38,110],col:"#60a5fa",w:3},{k:"txt",pt:[38,96],dx:-8,lab:"Target distance",col:"#60a5fa",al:"right"}],hold:2.5},
+  {to:42,sec:1,cap:"Enter long. Stop under the last higher low",say:"Enter long right here, on the breakout.",more:[[1.1,"Put your stop loss under the last higher low, so a fake out cannot hurt you much."],[2.1,"And take profit at the projected distance, almost three times your risk."]],ann:[{k:"txt",pt:[38,82],dx:-8,dy:34,lab:"Entry LONG",col:"#fbbf24",al:"right"},{k:"hl",p:110,i:38,col:"#60a5fa",w:2},{k:"hl",p:72,i:38,col:"#ef4444",w:2},{k:"pos",i:38,e:82,s:72,tg:110,dir:1,w:18}],hold:3},
+  {to:58,sec:5,cap:"Target hit",say:"Now let the trade play out. Price climbs steadily through the green zone.",more:[[5.1,"And the target is hit. That is the ascending triangle breakout. Follow for more."]],ann:[{k:"pill",lab:"TARGET HIT"}]}]}
+];
+function compile(d){
+  const r=rng(d.seed),N=d.N,c=mk(r,d.path.map(([i,p])=>[i,B+p]),0,N-1,d.noise||2.2,B+d.path[0][1],()=>1);
+  (d.clip||[]).forEach(([a,b,k,p])=>{for(let i=a;i<=b;i++){const q=c[i];if(k==="h")q.h=Math.min(q.h,Math.max(B+p,q.o,q.c));else q.l=Math.max(q.l,Math.min(B+p,q.o,q.c))}});
+  (d.fix||[]).forEach(([i,k,p])=>{const q=c[i];if(k==="h")q.h=Math.max(B+p,q.o,q.c);else q.l=Math.min(B+p,q.o,q.c)});
+  let t=0,pn=0,R=0;const rev=[[0,0]],ann=[],caps=[],vx=[];
+  d.steps.forEach(s=>{caps.push([t,s.cap,s.say]);(s.more||[]).forEach(m=>vx.push([t+m[0],m[1]]));const sec=s.sec||0;if(s.to!=null){rev.push([t,pn]);pn=s.to;rev.push([t+sec,pn])}t+=sec;
+    const as=s.ann||[];as.forEach((a0,k)=>{const a=Object.assign({},a0);a.t=t+(a.at!=null?a.at:k*.9);a.d=a.d||1.1;
+      ["p","p0","p1","e","s","tg"].forEach(q=>{if(typeof a[q]==="number")a[q]+=B});["a","b","c","pt"].forEach(q=>{if(a[q])a[q]=[a[q][0],a[q][1]+B]});if(a.pts)a.pts=a.pts.map(q=>[q[0],q[1]+B]);
+      if(a.k==="pos")R=Math.abs(a.tg-a.e)/Math.abs(a.e-a.s);if(!d.custom&&k===0&&a.say===undefined&&AUTO[a.k])vx.push([a.t,AUTO[a.k]]);ann.push(a)});
+    t+=s.hold!=null?s.hold:as.length*.9+1.4});
+  ann.forEach(a=>{if(a.k==="pill")a.R=R});
+  let lo=Math.min(...c.map(k=>k.l)),hi=Math.max(...c.map(k=>k.h));
+  ann.forEach(a=>{["p","p0","p1","e","s","tg"].forEach(q=>{if(typeof a[q]==="number"){lo=Math.min(lo,a[q]);hi=Math.max(hi,a[q])}});["a","b","c"].forEach(q=>{if(a[q]){lo=Math.min(lo,a[q][1]);hi=Math.max(hi,a[q][1])}})});
+  const pad=(hi-lo)*.07;
+  return Object.assign({},d,{c,vx,rev:rev.concat([[t,pn]]),ann,caps,lo:lo-pad,hi:hi+pad,endT:t+.3,end:Math.ceil(t+4.5),start:.3,R});
+}
+const G=DEFS.map(compile);
+function drawG(g,ts){
+  const st=GS[g.st],k=W/380,c=g.c,N=c.length,AX=48,PT=H*.15,PB=H*.15,pr=W-AX,bw=(pr-14)/(N+5),X=i=>8+(i+.5)*bw,Y=p=>PT+(g.hi-p)/(g.hi-g.lo)*(H-PT-PB),FN=" -apple-system,Arial,sans-serif";
+  bgFill();
+  const step=ns((g.hi-g.lo)/6);ctx.font="11px"+FN;ctx.textAlign="left";ctx.textBaseline="middle";
+  for(let p=Math.ceil(g.lo/step)*step;p<=g.hi;p+=step){const y=Math.round(Y(p))+.5;if(st.grid){ctx.strokeStyle=st.grid===1?"rgba(255,255,255,.55)":"rgba(255,255,255,.05)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(pr,y);ctx.stroke()}ctx.fillStyle=st.ax;ctx.fillText(p.toFixed(0),pr+5,y)}
+  ctx.font="800 "+Math.round(40*k)+"px"+FN;ctx.fillStyle=st.tx;ctx.textAlign="right";ctx.fillText(g.title,W-14,H*.085);
+  const pa=a=>ease(pg(ts,a.t,a.t+a.d));
+  g.ann.forEach(a=>{const p=pa(a);if(p<=0)return;
+    if(a.k==="zone"){ctx.fillStyle=a.col||"rgba(120,120,120,.25)";ctx.globalAlpha=p;const x0=X(a.i0)-bw/2,x1=X(a.i1)+bw/2;ctx.fillRect(x0,Y(a.p1),x1-x0,Y(a.p0)-Y(a.p1));ctx.globalAlpha=1}
+    else if(a.k==="hl"){const y=Math.round(Y(a.p))+.5,x0=X(a.i);ctx.save();ctx.strokeStyle=a.col||st.ln;ctx.lineWidth=a.w||1.6;ctx.setLineDash(a.dash||[]);ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(lerp(x0,W-12,p),y);ctx.stroke();ctx.restore()}
+    else if(a.k==="poly"){ctx.globalAlpha=p;ctx.fillStyle=a.col;ctx.beginPath();a.pts.forEach((q,i)=>ctx[i?"lineTo":"moveTo"](X(q[0]),Y(q[1])));ctx.closePath();ctx.fill();ctx.globalAlpha=1}
+    else if(a.k==="ln"){const x0=X(a.a[0]),y0=Y(a.a[1]);let x1=X(a.b[0]),y1=Y(a.b[1]);if(a.ext){const f=(W-14-x0)/(x1-x0);x1=x0+(x1-x0)*f;y1=y0+(y1-y0)*f}ctx.save();ctx.strokeStyle=a.col||st.ln;ctx.lineWidth=a.w||2;ctx.setLineDash(a.dash||[]);ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(lerp(x0,x1,p),lerp(y0,y1,p));ctx.stroke();ctx.restore()}});
+  const n=interp(g.rev,ts),body=Math.max(2,Math.round(bw*.64));
+  for(let i=0;i<Math.ceil(n)&&i<N;i++){const q=c[i],f=clamp(n-i);let{o,c:cl,h,l}=q;
+    if(f<1){const c2=o+(cl-o)*f;h=Math.max(o,c2)+(h-Math.max(o,cl))*f;l=Math.min(o,c2)-(Math.min(o,cl)-l)*f;cl=c2}
+    const x=Math.round(X(i))+.5,up=cl>=o,col=up?st.up:st.dn,top=Math.min(Y(o),Y(cl)),hg=Math.max(1.5,Math.abs(Y(cl)-Y(o)));
+    ctx.strokeStyle=st.ol?"#111":col;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(x,Y(h));ctx.lineTo(x,Y(l));ctx.stroke();ctx.fillStyle=col;ctx.fillRect(Math.round(x-body/2),top,body,hg);if(st.ol&&up)ctx.strokeRect(Math.round(x-body/2)+.5,top+.5,body-1,Math.max(.5,hg-1))}
+  g.ann.forEach(a=>{const p=pa(a);if(p<=0)return;
+    if(a.k==="dot"){ctx.fillStyle=a.col||RD2;ctx.beginPath();ctx.arc(X(a.pt[0]),Y(a.pt[1]),5*p,0,7);ctx.fill()}
+    else if(a.k==="arr"){const tx=X(a.pt[0]),ty=Y(a.pt[1]);ctx.globalAlpha=p;arrow(tx+a.dx,ty+a.dy,tx,ty,a.col||st.tx,3);ctx.globalAlpha=1}
+    else if(a.k==="cur"){curve([X(a.a[0]),Y(a.a[1])],[X(a.c[0]),Y(a.c[1])],[X(a.b[0]),Y(a.b[1])],p,a.col||RD2,3.5)}
+    else if(a.k==="txt"){ctx.globalAlpha=p;halo(a.lab,X(a.pt[0])+(a.dx||0),Y(a.pt[1])+(a.dy||0),a.col||st.tx,"800 "+Math.round((a.sz||14)*k)+"px"+FN,a.al||"left");ctx.globalAlpha=1}
+    else if(a.k==="pos"){const x0=X(a.i),w=Math.min(bw*(a.w||14),W-12-x0),yE=Y(a.e),yT=lerp(yE,Y(a.tg),p),yS=lerp(yE,Y(a.s),p),GN="#27b34b",RR="#e5322d";
+      ctx.fillStyle="rgba(47,191,74,.3)";ctx.fillRect(x0,Math.min(yE,yT),w,Math.abs(yT-yE));ctx.fillStyle="rgba(229,50,45,.3)";ctx.fillRect(x0,Math.min(yE,yS),w,Math.abs(yS-yE));
+      ctx.lineWidth=1.5;ctx.strokeStyle=GN;ctx.strokeRect(x0,Math.min(yE,yT),w,Math.abs(yT-yE));ctx.strokeStyle=RR;ctx.strokeRect(x0,Math.min(yE,yS),w,Math.abs(yS-yE));
+      if(p>.8)halo((a.dir>0?"LONG":"SHORT")+"  target +"+g.R.toFixed(1)+"R",x0+5,yT+(a.dir>0?13:-13),GN,"700 "+Math.round(11.5*k)+"px"+FN)}
+    else if(a.k==="pill"){ctx.save();ctx.translate(W*.36,H*.085);ctx.scale(p,p);ctx.fillStyle="#27b34b";ctx.beginPath();ctx.roundRect(-84,-16,168,32,16);ctx.fill();ctx.fillStyle="#fff";ctx.font="800 "+Math.round(15*k)+"px"+FN;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(a.lab+"  +"+g.R.toFixed(1)+"R",0,1);ctx.restore()}});
+}
+function frameG(t,g){
+  drawG(g,t);let ci=-1;for(let i=0;i<g.caps.length;i++)if(g.caps[i][0]<=t)ci=i;
+  cap.textContent=capsOn&&ci>=0?g.caps[ci][1]:"";cap.className=capsOn&&ci>=0?"w":"";
+  $("end").classList.toggle("on",t>=g.endT);$("sc").value=Math.round(t*10)}
+
+/* ================= video list / settings ================= */
+const LS=[{n:"Volume profile POC",d:"Teacher + student, long and short",end:88,start:2.6,mode:"p"},{n:"Liquidity sweep short",d:"Chart only: quiz, sweep, short",end:64,start:1.5,mode:"c"},{n:"Top-down timeframes",d:"Chart only: HTF key levels, LTF entries",end:67,start:.2,mode:"c",bg:"o"}];
+let L=0,capsOn=true;G.forEach(g=>LS.push({n:g.n,d:g.d,end:g.end,start:g.start,mode:"c"}));
+function renderSet(){$("vl").innerHTML=LS.map((l,i)=>'<button class="btn v'+(i===L?' a':'')+'" data-i="'+i+'" style="height:auto;text-align:left;padding:9px 11px"><b>'+l.n+'</b><br><span style="font-size:12px;color:#8a92a3">'+l.d+'</span></button>').join("");$("spd").innerHTML=[1,1.5,2,3].map(v=>'<button class="btn'+(v===speed?' a':'')+'" data-s="'+v+'">'+v+'x</button>').join("")}
+function setLesson(i){L=i;END=LS[i].end;$("app").classList.toggle("chartonly",LS[i].mode==="c");$("app").classList.toggle("offw",LS[i].bg==="o");$("sc").max=END*10;T=LS[i].start;lastCap=-2;menuOn=hlOn=null;["menu","tb","end"].forEach(k=>$(k).classList.remove("on"));$("cur").style.opacity=0;cap.className="";ppl.classList.remove("talkT","talkS","solo");cap.textContent="";renderSet();setPlay(true);resize()}
+$("set").onclick=e=>{const b=e.target.closest("button.v"),sb=e.target.closest("button[data-s]");if(b){$("set").classList.remove("on");setLesson(+b.dataset.i)}else if(sb){speed=+sb.dataset.s;renderSet()}else if(e.target.id==="cp")capsOn=e.target.checked};
+let wasPlaying=true;
+function openSet(){if($("set").classList.contains("on"))return;wasPlaying=playing;setPlay(false);renderSet();$("set").classList.add("on")}
+function closeSet(){$("set").classList.remove("on");if(wasPlaying)setPlay(true)}
+$("gr").onclick=openSet;$("cl").onclick=closeSet;
+addEventListener("keydown",e=>{if(e.target.tagName==="INPUT")return;if(e.key==="s"||e.key==="S")openSet();else if(e.key==="Escape")closeSet()});
+
+/* ---------- transport ---------- */
+let T=LS[0].start,playing=true,speed=1.5,last=0;
+function tick(now){const dt=Math.min(.1,(now-last)/1000);last=now;if(playing){T+=dt*(SPDOV||speed);if(HOLD!=null&&T>HOLD)T=Math.max(HOLD,LS[L].start);if(T>=END){T=END;playing=false;$("pp").innerHTML="&#9654;"}frame(T)}requestAnimationFrame(tick)}
+function setPlay(p){playing=p;if(p&&T>=END)T=LS[L].start;$("pp").innerHTML=p?"&#10074;&#10074;":"&#9654;"}
+$("pp").onclick=()=>setPlay(!playing);cw.onclick=()=>setPlay(!playing);
+$("rp").onclick=()=>{T=LS[L].start;lastCap=-2;setPlay(true)};
+cw.ondblclick=openSet;
+$("sc").oninput=e=>{T=e.target.value/10;lastCap=-2;frame(T)};
+addEventListener("resize",resize);resize();requestAnimationFrame(n=>{last=n;tick(n)});
+
+/* ================= VOICE NARRATION: the voice drives the clock =================
+   Each caption's line must START before the video passes that caption, and must FINISH before the next
+   caption is allowed to start. So text + sound begin together and no line is ever cut or skipped. */
+var VON=true,HOLD=null;
+const SS=window.speechSynthesis;let VT=null,VS=null,vList=[];
+const AUD={};                                          /* optional studio files: "lesson_line" -> url */
+function vScore(v){const n=v.name,l=v.lang;let s=0;
+  if(/natural|neural|online/i.test(n))s+=50;if(/premium|enhanced|siri|studio/i.test(n))s+=40;if(/google/i.test(n))s+=22;
+  if(/aria|jenny|guy|davis|christopher|eric|ava|andrew|brian|emma|samantha|daniel|allison|nathan|evan|zoe|oliver|alex/i.test(n))s+=12;
+  if(/en[-_]US/i.test(l))s+=4;else if(/en[-_]GB/i.test(l))s+=3;
+  if(/espeak|compact|novelty|bad news|whisper|zarvox|trinoids|bells|bubbles|cellos|jester|organ|boing|albert|fred|junior|ralph|kathy/i.test(n))s-=80;
+  if(v.localService)s+=2;return s}
+function loadVoices(){if(!SS)return;
+  vList=SS.getVoices().filter(v=>/^en/i.test(v.lang)).sort((x,y)=>vScore(y)-vScore(x));
+  const opts=vList.map((v,i)=>'<option value="'+i+'">'+v.name+' ('+v.lang+')</option>').join("");
+  const a=$("vt"),b=$("vs"),pa=a.value,pb=b.value;a.innerHTML=opts;b.innerHTML=opts;
+  const best=re=>{const i=vList.findIndex(v=>re.test(v.name));return i>=0?i:-1};
+  const mi=best(/guy|christopher|eric|davis|andrew|brian|daniel|alex|aaron|evan|nathan|oliver|david|mark|male/i),fi=best(/aria|jenny|ava|emma|samantha|allison|zoe|karen|libby|sonia|zira|female/i);
+  a.value=pa||(mi>=0?mi:0);b.value=pb||(fi>=0?fi:Math.min(1,vList.length-1));VT=vList[+a.value]||null;VS=vList[+b.value]||null}
+if(SS){loadVoices();SS.onvoiceschanged=loadVoices;
+  $("vt").onchange=e=>{VT=vList[+e.target.value]};$("vs").onchange=e=>{VS=vList[+e.target.value]}}
+$("va").onchange=e=>{let n=0;for(const f of e.target.files){const m=f.name.match(/(\d+)\D+(\d+)/);if(m){AUD[(+m[1])+"_"+(+m[2])]=URL.createObjectURL(f);n++}}
+  $("vac").textContent=n+" voice file"+(n===1?"":"s")+" loaded. They replace the AI voice for those lines."};
+$("vo").onchange=e=>{VON=e.target.checked;stopVoice();resync()};
+
+function prep(s){return s
+  .replace(/\bP\.?O\.?C\b/gi,"P O C").replace(/\bNQ\b/g,"N Q")
+  .replace(/\bHTF\b/g,"higher timeframe").replace(/\bLTF\b/g,"lower timeframe")
+  .replace(/\b(\d+)\s?H\b/g,"$1 hour").replace(/\b(\d+)\s?M\b/g,"$1 minute")
+  .replace(/\bH(\d+)\b/g,"$1 hour").replace(/\bM(\d+)\b/g,"$1 minute").replace(/[:;]/g,",")}
+
+function capList(){let a;
+  if(L===0)a=CAP.map(c=>({t:c[0],who:c[1],text:c[2]}));
+  else if(L===1)a=CAP2.map(c=>({t:c[0],who:"t",text:c[1]}));
+  else if(L===2)a=CAP3.map(c=>({t:c[0],who:"t",text:c[1]}));
+  else{const g=G[L-3];a=g.caps.map(c=>({t:c[0],who:"t",text:c[2]||c[1]})).concat(g.vx.map(v=>({t:v[0],who:"t",text:v[1]})));a.sort((x,y)=>x.t-y.t)}
+  return a}
+
+/* ---- state ---- */
+let sT=-1e9,CL=[],CLfor=-1,idx=0,starting=false,busy=false,curIdx=-1,replay=-1,TOK=0,LAT=.25,lastCancel=0,wd1=0,wd2=0,curA=null;
+function stopVoice(){sT=-1e9;TOK++;clearTimeout(wd1);clearTimeout(wd2);if(busy||starting)replay=curIdx;starting=false;busy=false;lastCancel=performance.now();
+  if(curA){try{curA.pause()}catch(e){}curA=null}if(SS)SS["cancel"]()}
+function resync(){                                    /* after a seek / new video: skip lines already behind us */
+  sT=-1e9;CL=capList();{let k=0;CL.forEach(c=>{if(!c.silent)c.n=++k})}CLfor=L;idx=CL.length;const base=T<=LS[L].start+.05?-1e9:T-.05;for(let i=0;i<CL.length;i++)if(CL[i].t>=base){idx=i;break}replay=-1;
+  HOLD=VON&&idx<CL.length?Math.max(CL[idx].t-.001,LS[L].start):null}   /* refresh the hold now, or the clock snaps back */
+function startLine(i){
+  const c=CL[i],text=prep(c.text),stu=c.who==="s",tok=++TOK,called=performance.now();
+  starting=true;curIdx=i;
+  const onStart=()=>{if(tok!==TOK||!starting)return;starting=false;busy=true;idx=Math.max(idx,i+1);sT=T;replay=-1;
+    const m=(performance.now()-called)/1000;LAT=Math.min(.8,Math.max(.05,LAT*.6+m*.4));          /* learn the engine's start-up delay */
+    clearTimeout(wd2);wd2=setTimeout(()=>onEnd(),Math.max(5000,text.length*260))};
+  const onEnd=()=>{if(tok!==TOK)return;busy=false;starting=false;clearTimeout(wd1);clearTimeout(wd2)};
+  const go=()=>{if(tok!==TOK)return;
+    if(c.silent){setTimeout(()=>{if(tok===TOK){onStart();setTimeout(onEnd,0)}},c.delay||0);return}
+    const url=AUD[(L+1)+"_"+c.n];
+    if(url){const a=new Audio(url);curA=a;a.playbackRate=Math.min(1.35,1+(speed-1)*.25);a.onplaying=onStart;a.onended=onEnd;a.onerror=onEnd;a.play().catch(onEnd);return}
+    if(SS&&SS.getVoices){const u=new SpeechSynthesisUtterance(text),v=stu?VS:VT;
+      if(v){u.voice=v;u.lang=v.lang}else u.lang="en-US";
+      u.rate=Math.min(1.35,1+(speed-1)*.25);u.pitch=stu?1.2:.95;u.volume=1;
+      u.onstart=onStart;u.onend=onEnd;u.onerror=onEnd;SS.speak(u);return}
+    onStart();setTimeout(onEnd,text.length*70)};         /* no speech engine at all: still run the timeline */
+  clearTimeout(wd1);wd1=setTimeout(()=>{if(tok===TOK&&starting){starting=false;busy=false;idx=Math.max(idx,i+1)}},busy?9000:2000);   /* never freeze if the browser blocks speech */
+  const wait=90-(performance.now()-lastCancel);          /* speaking right after cancel() swallows the first words */
+  if(wait>0)setTimeout(go,wait);else go()}
+function voiceLoop(){
+  if(L!==CLfor){stopVoice();resync()}
+  ppl.classList.toggle('quiet',VON&&!busy);
+  if(!VON){HOLD=null}
+  else{
+    if(idx<CL.length&&T>CL[idx].t+.05&&replay<0)resync();                       /* seeked forward */
+    else if(idx>0&&T<sT-.2)resync();                   /* seeked back */
+    CATCH=(VON&&playing&&idx<CL.length&&!busy&&!starting&&T<CL[idx].t-LAT*speed-.05)?1:0;
+    if(playing&&idx<CL.length&&!starting&&(!busy||!CL[idx].silent)&&T>=CL[idx].t-LAT*speed)startLine(idx);   /* start a touch early to cancel the engine delay */
+    HOLD=idx<CL.length?Math.max(CL[idx].t-.001,LS[L].start):null}                /* the clock cannot pass a line that has not started */
+  requestAnimationFrame(voiceLoop)}
+requestAnimationFrame(voiceLoop);
+let pT=-1;
+const _sp=setPlay;setPlay=function(p){
+  if(!p&&playing){stopVoice();pT=T}
+  if(p&&!playing&&replay>=0&&CL[replay]&&Math.abs(T-pT)<.05){idx=replay;T=Math.max(LS[L].start,CL[replay].t-.001)}   /* resume re-reads the interrupted line */
+  if(p)replay=replay>=0&&Math.abs(T-pT)>=.05?-1:replay;
+  _sp(p)};
+/* scrubbing / restart must take effect at once, before the clock hold can snap time back */
+$("sc").addEventListener("input",()=>{stopVoice();resync()});
+$("rp").addEventListener("click",()=>{stopVoice();resync()});
+const _sl=setLesson;setLesson=function(i){stopVoice();replay=-1;_sl(i);CLfor=-1};
+
+/* browsers only allow sound after a tap, so wait for one instead of starting silent */
+(function(){const act=navigator.userActivation&&navigator.userActivation.hasBeenActive;if(act)return;
+  setPlay(false);const d=document.createElement("div");
+  d.style.cssText="position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;background:rgba(6,10,24,.72);color:#fff;font:800 20px -apple-system,Arial,sans-serif;text-align:center;cursor:pointer;padding:24px";
+  d.innerHTML="&#9654;&nbsp; Tap to start<br><span style='font-weight:500;font-size:13px;opacity:.7'>(browsers need one tap before they allow sound)</span>";
+  d.onclick=e=>{e.stopPropagation();d.remove();setPlay(true)};$("app").appendChild(d)})();
+
+/* ================= PART 1: RISING THREE METHODS (vertical, neon candle-pattern lesson) ================= */
+const P1C=[ /* open, close, high, low */
+[40,46,48,38],[46,52,54,44],[52,49,55,47],[49,58,60,48],[58,64,66,56],[64,62,67,60],
+[62,86,88,60],[85,81,87,79],[81,77,83,75],[77,73,79,71],[73,92,94,71],[92,96,98,90],[96,99,101,94]];
+const P1R=[0,1,2,3,4,5,6,7,8,9].map(i=>.15+i*.16).concat([11.6,41.6,42.2]);   /* when each candle grows in */
+/* caption shown, then the sentence the voice says (a little fuller, so there are no dead gaps) */
+const CD0=3.5,CD1=8.5,SH=CD1-5.2+.8,P1T=[
+ [0,   "BUY OR SELL?",        "Price just rallied. Buy or sell? You have five seconds."],
+ [5.5+SH, "THERE IS NO CHANGE",  "Most traders see nothing here. Small candles. No change."],
+ [11+SH,  "THIS PATTERN",        "Look closer. This is the Rising Three Methods pattern."],
+ [16.5+SH,"CONTINUATION",        "It signals continuation. The uptrend is not over."],
+ [22+SH,  "CANDLESTICKS",        "Count them. One big green, three small reds, one big green."],
+ [27.5+SH,"BEARISH",             "The red candles are bearish, but small. Just a pause."],
+ [33+SH,  "AND FINALLY",         "Then buyers step back in with a big green candle."],
+ [38.5+SH,"THE FIRST",           "Mark the high of candle one. Candle five closes above it. Confirmed."]];
+const P1K=[{t:0,a:-1.2,b:12.6,lo:34,hi:102},{t:5.5,a:-3,b:15,lo:22,hi:108},{t:11,a:3,b:13.2,lo:50,hi:104},
+ {t:27.5,a:5.3,b:10.7,lo:58,hi:100},{t:33,a:7.2,b:11.8,lo:62,hi:101},{t:38.5,a:4.6,b:13.4,lo:58,hi:104}];
+const P1S=(()=>{const r=rng(77),a=[];for(let i=0;i<46;i++)a.push({x:r(),y:r(),r:.6+r()*1.4,sp:.4+r()*1.6,ph:r()*6.28});return a})();
+const UPC="#22c55e",DNC="#ef4444",PNK="#f87171",BLU="#60a5fa",MAG="#fbbf24",GRN="#4ade80",TQ="#4ade80";
+const bk=p=>{p=clamp(p);const q=p-1;return p>=1?1:1+2.7*q*q*q+1.7*q*q};        /* pop with a little overshoot */
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function gtxt(s,x,y,col,font,al,blur){ctx.save();ctx.globalAlpha=clamp(al);ctx.font=font;ctx.textAlign="center";ctx.textBaseline="middle";ctx.shadowColor=col;ctx.shadowBlur=blur==null?14:blur;ctx.fillStyle=col;ctx.fillText(s,x,y);ctx.restore()}
+function p1cam(t){let k=0;for(let i=0;i<P1K.length;i++)if(P1K[i].t<=t)k=i;
+  const c=P1K[k],p=P1K[Math.max(0,k-1)],e=k?ease(pg(t,c.t,c.t+1.4)):1;
+  return{a:lerp(p.a,c.a,e),b:lerp(p.b,c.b,e),lo:lerp(p.lo,c.lo,e),hi:lerp(p.hi,c.hi,e)}}
+const P1U=t=>t<CD0?t:(t<CD1?CD0:t-SH);        /* hook is frozen while the countdown runs */
+function drawP1(t,ct){
+  const cm=p1cam(t),bw=W/(cm.b-cm.a),X=i=>(i-cm.a+.5)*bw,Y=p=>H*.2+(cm.hi-p)/(cm.hi-cm.lo)*H*.62,FN=" -apple-system,Arial,sans-serif",k=W/360;
+  bgFill();
+  gtxt("PART 1",34*k,18*k,"#8fa8ff","800 "+Math.round(11*k)+"px"+FN,.55,0);
+
+  /* candles (dim the ones not being talked about) */
+  const dA=ease(pg(t,27.5,28.1))-ease(pg(t,33,33.6)),dB=ease(pg(t,33,33.6))-ease(pg(t,38.5,39.1));
+  const al=i=>clamp(1-.75*((i>=7&&i<=9?0:dA)+((i===9||i===10)?0:dB)));
+  const bodyW=Math.max(4,bw*.6);
+  for(let i=0;i<P1C.length;i++){const gr=ease(pg(t,P1R[i],P1R[i]+.45));if(gr<=0)continue;
+    const[o,c,h,l]=P1C[i],cc=o+(c-o)*gr,hh=lerp(Math.max(o,cc),h,gr),ll=lerp(Math.min(o,cc),l,gr),col=c>=o?UPC:DNC,x=X(i);
+    ctx.save();ctx.globalAlpha=al(i);ctx.shadowBlur=0;ctx.strokeStyle=col;ctx.fillStyle=col;
+    ctx.lineWidth=Math.max(1.5,bw*.07);ctx.beginPath();ctx.moveTo(x,Y(hh));ctx.lineTo(x,Y(ll));ctx.stroke();
+    const yt=Y(Math.max(o,cc)),yb=Y(Math.min(o,cc));ctx.fillRect(x-bodyW/2,yt,bodyW,Math.max(2,yb-yt));ctx.restore()}
+
+  /* 1) hook: countdown, arrows, BUY / SELL */
+  const hk=pg(t,.2,.6)*(1-pg(t,5.2,5.7));
+  if(hk>0){const ck=pg(ct,CD0-.3,CD0)*(1-pg(ct,CD1,CD1+.4)),sec=clamp(ct-CD0,0,4.999),n=clamp(5-Math.floor(sec),1,5),fr=sec%1,cx=W/2,cy=H*.1,r=W*.075;
+    ctx.save();ctx.globalAlpha=ck;ctx.shadowColor="#fff";ctx.shadowBlur=10*k;ctx.strokeStyle="rgba(255,255,255,.22)";ctx.lineWidth=5*k;ctx.beginPath();ctx.arc(cx,cy,r,0,6.283);ctx.stroke();
+    ctx.strokeStyle="#fff";ctx.beginPath();ctx.arc(cx,cy,r,-1.5708,-1.5708+6.283*(1-fr));ctx.stroke();ctx.restore();
+    gtxt(String(n),cx,cy+1,"#e8fff8","900 "+Math.round(r*1.15)+"px"+FN,ck,12*k);
+    const px=X(9)+bodyW/2+6*k,py=Y(75),aw=pg(t,1.2,2.2)*hk;
+    if(aw>0){ctx.save();ctx.globalAlpha=aw;ctx.shadowColor="#fff";ctx.shadowBlur=8*k;arrow(px,py,px+bw*1.1,py-H*.13*aw,"#fff",3*k);arrow(px,py,px+bw*1.1,py+H*.13*aw,"#fff",3*k);ctx.restore()}
+    const bp=bk((t-.9)/.45)*hk,bwid=W*.36,bh=H*.062,by=H*.9;
+    [["BUY",W*.06,UPC,"#04261d"],["SELL",W*.94-bwid,DNC,"#2a0510"]].forEach(([lab,bx,col,tc])=>{ctx.save();ctx.globalAlpha=clamp(bp);const s=Math.max(.01,bp);ctx.translate(bx+bwid/2,by);ctx.scale(s,s);
+      ctx.shadowColor=col;ctx.shadowBlur=22*k;ctx.fillStyle=col;rr(-bwid/2,-bh/2,bwid,bh,bh*.3);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle=tc;ctx.font="900 "+Math.round(bh*.5)+"px"+FN;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(lab,0,1);ctx.restore()})}
+
+  const fl=pg(ct,CD1,CD1+.05)*(1-pg(ct,CD1+.05,CD1+.6));if(fl>0){ctx.fillStyle="rgba(255,60,90,"+(.3*fl)+")";ctx.fillRect(0,0,W,H)}   /* alarm flash at zero */
+  /* 2) "no change" */
+  gtxt("no change?",X(8),Y(98),"#ffffff","700 "+Math.round(15*k)+"px"+FN,pg(t,6.3,6.9)*(1-pg(t,10.5,11.1))*.85,6);
+
+  /* 3) the pattern box */
+  const bxA=pg(t,12.6,13.3)*(1-pg(t,22,22.6));
+  if(bxA>0){ctx.save();ctx.globalAlpha=bxA;ctx.shadowColor="#9ad";ctx.shadowBlur=10*k;ctx.strokeStyle="#fff";ctx.lineWidth=1.8*k;ctx.setLineDash([7*k,6*k]);
+    rr(X(5.5),Y(97),X(10.5)-X(5.5),Y(57)-Y(97),10*k);ctx.stroke();ctx.restore();
+    gtxt("5-CANDLE PATTERN",X(8),Y(97)-13*k,"#fff","800 "+Math.round(12*k)+"px"+FN,bxA,8*k)}
+
+  /* 4) continuation: dashed path, $ and a strength badge */
+  const cA=1-pg(t,27.5,28.1);
+  if(t>16.6&&cA>0){const pr=ease(pg(t,16.8,18.4)),sx=X(6),sy=Y(90),qx=X(8),qy=Y(103),ex=X(10),ey=Y(97);
+    ctx.save();ctx.globalAlpha=cA;ctx.shadowColor="#60a5fa";ctx.shadowBlur=14*k;ctx.strokeStyle="#60a5fa";ctx.lineWidth=3*k;ctx.setLineDash([10*k,7*k]);ctx.lineDashOffset=-t*30*k;
+    ctx.beginPath();ctx.moveTo(sx,sy);for(let s=1;s<=40;s++){const u=s/40*pr,a=(1-u)*(1-u),b=2*u*(1-u),c=u*u;ctx.lineTo(a*sx+b*qx+c*ex,a*sy+b*qy+c*ey)}ctx.stroke();ctx.restore();
+    const dp=bk((t-18.2)/.5);if(dp>0){ctx.save();ctx.translate(X(8),Y(108));ctx.scale(dp,dp);gtxt("$",0,0,GRN,"900 "+Math.round(bw*1.5)+"px"+FN,cA,26*k);ctx.restore()}
+    const sp=bk((t-18.6)/.5)*cA*(1-pg(t,22,22.6)),sxx=W*.91,syy=Y(80);
+    if(sp>0){ctx.save();ctx.globalAlpha=clamp(sp);ctx.translate(sxx,syy);ctx.scale(Math.max(.01,sp),Math.max(.01,sp));ctx.shadowColor=TQ;ctx.shadowBlur=14*k;ctx.strokeStyle=TQ;ctx.lineWidth=4*k;ctx.lineCap="round";ctx.lineJoin="round";
+      for(let j=0;j<3;j++){const y=-16*k+j*13*k;ctx.beginPath();ctx.moveTo(-13*k,y+8*k);ctx.lineTo(0,y-4*k);ctx.lineTo(13*k,y+8*k);ctx.stroke()}ctx.restore();
+      gtxt("STRONG",sxx,syy+36*k,TQ,"900 "+Math.round(10.5*k)+"px"+FN,sp,8*k)}}
+
+  /* 5) numbers 1-5 */
+  for(let n=0;n<5;n++){const p=bk((t-(22.3+n*.5))/.3);if(p<=0)continue;const i=6+n,col=n===4?BLU:PNK,x=X(i),y=Y(P1C[i][2])-20*k,r=Math.max(11,W*.04),a=clamp(p)*al(i);
+    ctx.save();ctx.globalAlpha=a;ctx.translate(x,y);ctx.scale(Math.max(.01,p),Math.max(.01,p));ctx.shadowColor=col;ctx.shadowBlur=16*k;ctx.fillStyle="rgba(8,12,30,.85)";ctx.strokeStyle=col;ctx.lineWidth=2.4*k;
+    ctx.beginPath();ctx.arc(0,0,r,0,6.283);ctx.fill();ctx.stroke();ctx.fillStyle=col;ctx.font="900 "+Math.round(r*1.15)+"px"+FN;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(String(n+1),0,1);ctx.restore()}
+
+  /* 6) BEARISH: ring the three small reds */
+  const rA=pg(t,28.2,28.9)*(1-pg(t,33,33.6));
+  if(rA>0){ctx.save();ctx.globalAlpha=rA;ctx.shadowColor=PNK;ctx.shadowBlur=16*k;ctx.strokeStyle=PNK;ctx.lineWidth=2.4*k;rr(X(6.55),Y(90),X(9.45)-X(6.55),Y(68)-Y(90),12*k);ctx.stroke();ctx.restore();
+    gtxt("SMALL PULLBACK",X(8),Y(90)-16*k,PNK,"900 "+Math.round(13*k)+"px"+FN,rA,10*k)}
+
+  /* 7) AND FINALLY: marker under the last red, arrow to the breakout */
+  const fA=pg(t,33.8,34.4)*(1-pg(t,38.5,39.1));
+  if(fA>0){const mx=X(9),my=Y(71)+18*k,mp=bk((t-33.8)/.4);ctx.save();ctx.globalAlpha=fA;ctx.shadowColor=TQ;ctx.shadowBlur=14*k;ctx.fillStyle=TQ;ctx.translate(mx,my);ctx.scale(Math.max(.01,mp),Math.max(.01,mp));
+    ctx.beginPath();ctx.moveTo(0,-9*k);ctx.lineTo(9*k,7*k);ctx.lineTo(-9*k,7*k);ctx.closePath();ctx.fill();ctx.restore();
+    const ap=ease(pg(t,35,36.2));if(ap>0){const x1=X(9)+bodyW*.7,y1=Y(73),x2=X(10)-bodyW*.7,y2=Y(87);ctx.save();ctx.globalAlpha=fA;ctx.shadowColor=TQ;ctx.shadowBlur=10*k;
+      arrow(x1,y1,lerp(x1,x2,ap),lerp(y1,y2,ap),TQ,3*k);ctx.restore()}
+    gtxt("buyers return",X(9),my+22*k,TQ,"700 "+Math.round(12*k)+"px"+FN,fA*pg(t,34.6,35.2),6*k)}
+
+  /* 8) THE FIRST: magenta line at the high of candle 1, candle 5 closes above it */
+  if(t>39){const lp=ease(pg(t,39.2,40.4)),y=Y(88),x0=X(6);ctx.save();ctx.shadowColor=MAG;ctx.shadowBlur=14*k;ctx.strokeStyle=MAG;ctx.lineWidth=2.6*k;ctx.setLineDash([9*k,7*k]);
+    ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(lerp(x0,W,lp),y);ctx.stroke();ctx.restore();
+    gtxt("HIGH OF",X(4.9),y+14*k,MAG,"800 "+Math.round(10.5*k)+"px"+FN,pg(t,40,40.6),6*k);gtxt("CANDLE 1",X(4.9),y+27*k,MAG,"800 "+Math.round(10.5*k)+"px"+FN,pg(t,40,40.6),6*k);
+    const cp=bk((t-41)/.45);if(cp>0){const w=Math.min(W*.58,190*k),h=26*k,cx=X(8),cy=Y(94)-64*k;ctx.save();ctx.globalAlpha=clamp(cp);ctx.translate(cx,cy);ctx.scale(Math.max(.01,cp),Math.max(.01,cp));
+      ctx.shadowColor=TQ;ctx.shadowBlur=16*k;ctx.fillStyle="rgba(8,40,34,.9)";ctx.strokeStyle=TQ;ctx.lineWidth=2*k;rr(-w/2,-h/2,w,h,h/2);ctx.fill();ctx.stroke();
+      ctx.shadowBlur=0;ctx.fillStyle=TQ;ctx.font="900 "+Math.round(12.5*k)+"px"+FN;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("CANDLE 5 CLOSES ABOVE",0,1);ctx.restore()}
+    gtxt("PATTERN CONFIRMED",W/2,H*.1,GRN,"900 "+Math.round(23*k)+"px"+FN,bk((t-43)/.5),22*k)}
+}
+function frameP1(t){
+  drawP1(P1U(t),t);let ci=-1;for(let i=0;i<P1T.length;i++)if(P1T[i][0]<=t)ci=i;
+  const want=capsOn&&ci>=0?P1T[ci][1]:"";if(cap.textContent!==want){cap.textContent=want;cap.className=want?"t pop":""}
+  $("end").classList.toggle("on",t>=48.9);$("sc").value=Math.round(t*10)}
+LS.push({n:"Candle patterns, Part 1",d:"Rising Three Methods: 5-candle continuation",end:53.3,start:0,mode:"c"});
+const P1=LS.length-1;
+const _fr=frame;frame=function(t){if(L===P1){frameP1(t);return}_fr(t)};
+const _cl=capList;capList=function(){if(L!==P1)return _cl();
+  const a=P1T.map(c=>({t:c[0],who:"t",text:c[2]}));a.splice(1,0,{t:CD0,who:"t",text:"",silent:true,delay:350});return a};   /* gate: the countdown cannot start until "five seconds" has been said */
+
+
+
+/* ================= PART 2: HAMMER (vertical, wood texture, white captions) ================= */
+const P2C=[ /* open, close, high, low */
+[100,92,101,90],[92,85,94,83],[85,79,86,77],[79,72,80,70],[72,66,73,64],[60,64,64.8,48],
+[64,76,78,62],[76,81,83,74],[81,86,88,79],[86,91,93,84],[91,96,98,89]];
+const P2R=[0,1,2,3,4,5].map(i=>.15+i*.3).concat([5.6,5.95,6.3,6.65,7.0]);
+const D0=3.4,D1=D0+4,SH2=D1-4.4+.8;      /* hook is frozen while the 4-second countdown runs; story time resumes after the alarm */
+const P2U=t=>t<D0?t:(t<D1?D0:t-SH2);
+const P2T=[
+ [0,         "BUY OR SELL?",    "Price has been falling. Buy or sell? You have four seconds."],
+ [D1+.2,     "PRICE WILL RISE", "The answer? Price goes up. The sellers ran out of steam, and the buyers took over from one small candle at the bottom."],
+ [10.2+SH2,  "HAMMER",          "This candle is called a hammer. Remember this shape, because it appears after every drop."],
+ [15.4+SH2,  "LONG LOWER WICK", "Small body on top. Long lower wick, at least twice the body, and almost no wick on top."],
+ [20.6+SH2,  "BUYERS WIN",      "Sellers pushed it down, but buyers pushed it back up. That means selling pressure is fading fast."],
+ [26.2+SH2,  "CONFIRM FIRST",   "Wait for the next candle to close higher, then buy. Stop below the low."],
+ [29.4+SH2,  "THEN BUY",        "Buy there, and put your stop just under the hammer's low."],
+ [32.2+SH2,  "FOLLOW FOR MORE", "Follow for more candle patterns."]];
+const P2K=[{t:0,a:-1.3,b:8.4,lo:40,hi:108},{t:5.2,a:-1.3,b:11.6,lo:40,hi:106},{t:10.2,a:3.4,b:7.8,lo:42,hi:72},
+ {t:15.4,a:4.2,b:6.9,lo:44,hi:68},{t:26.2,a:3.6,b:8.6,lo:42,hi:80}];
+let P2BG=null,P2BGk="";
+function woodBG(w,h){const key=w+"x"+h;if(P2BGk===key&&P2BG)return P2BG;
+  const c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d"),r=rng(33);
+  const g=x.createLinearGradient(0,0,w,h);g.addColorStop(0,"#0a0705");g.addColorStop(.5,"#15100b");g.addColorStop(1,"#080605");x.fillStyle=g;x.fillRect(0,0,w,h);
+  for(let n=0;n<150;n++){const y0=r()*h,amp=2+r()*7,f=.004+r()*.012,ph=r()*6.28,al=.05+r()*.10;
+    x.strokeStyle="rgba("+(130+r()*50|0)+","+(92+r()*35|0)+","+(58+r()*25|0)+","+al+")";x.lineWidth=.4+r()*1.6;x.beginPath();
+    for(let px=0;px<=w;px+=10){const py=y0+Math.sin(px*f+ph)*amp+Math.sin(px*f*2.7+ph*2)*amp*.4;if(px)x.lineTo(px,py);else x.moveTo(px,py)}x.stroke()}
+  for(let n=0;n<3;n++){const kx=r()*w,ky=r()*h;x.strokeStyle="rgba(0,0,0,.5)";for(let q=1;q<=5;q++){x.lineWidth=1;x.beginPath();x.ellipse(kx,ky,q*7,q*3.6,0,0,6.283);x.stroke()}}
+  const v=x.createRadialGradient(w/2,h/2,Math.min(w,h)*.3,w/2,h/2,Math.max(w,h)*.7);v.addColorStop(0,"rgba(0,0,0,0)");v.addColorStop(1,"rgba(0,0,0,.6)");x.fillStyle=v;x.fillRect(0,0,w,h);
+  P2BG=c;P2BGk=key;return c}
+function gloss(cx,cy,w,h,c1,c2,label,sc,al){ctx.save();ctx.globalAlpha=clamp(al);ctx.translate(cx,cy);ctx.scale(Math.max(.01,sc),Math.max(.01,sc));
+  const g=ctx.createLinearGradient(0,-h/2,0,h/2);g.addColorStop(0,c1);g.addColorStop(1,c2);
+  ctx.shadowColor="rgba(0,0,0,.65)";ctx.shadowBlur=14;ctx.shadowOffsetY=5;ctx.fillStyle=g;rr(-w/2,-h/2,w,h,h*.32);ctx.fill();ctx.shadowColor="transparent";
+  const sh=ctx.createLinearGradient(0,-h/2,0,0);sh.addColorStop(0,"rgba(255,255,255,.6)");sh.addColorStop(1,"rgba(255,255,255,.05)");ctx.fillStyle=sh;rr(-w/2+4,-h/2+3,w-8,h*.5,h*.28);ctx.fill();
+  ctx.fillStyle="#fff";ctx.font="900 "+Math.round(h*.52)+"px Impact,'Arial Black',sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(label,0,2);ctx.restore()}
+function cartoonHammer(cx,cy,ang,s,al){ctx.save();ctx.globalAlpha=clamp(al);ctx.translate(cx,cy);ctx.rotate(ang);ctx.scale(s,s);
+  let g=ctx.createLinearGradient(-8,0,8,0);g.addColorStop(0,"#d97706");g.addColorStop(.5,"#fbbf24");g.addColorStop(1,"#b45309");
+  ctx.fillStyle=g;ctx.strokeStyle="#7c2d12";ctx.lineWidth=2.5;rr(-8,-40,16,122,7);ctx.fill();ctx.stroke();
+  g=ctx.createLinearGradient(0,-80,0,-42);g.addColorStop(0,"#e5e7eb");g.addColorStop(.5,"#9ca3af");g.addColorStop(1,"#6b7280");
+  ctx.fillStyle=g;ctx.strokeStyle="#374151";rr(-34,-80,68,38,9);ctx.fill();ctx.stroke();
+  ctx.fillStyle="rgba(255,255,255,.55)";rr(-28,-75,56,7,3);ctx.fill();ctx.restore()}
+function ltxt(sx,x,y,col,font,al,align){ctx.save();ctx.globalAlpha=clamp(al);ctx.font=font;ctx.textAlign=align;ctx.textBaseline="middle";ctx.fillStyle=col;ctx.fillText(sx,x,y);ctx.restore()}
+function p2cam(t){let k=0;for(let i=0;i<P2K.length;i++)if(P2K[i].t<=t)k=i;
+  const c=P2K[k],p=P2K[Math.max(0,k-1)],e=k?ease(pg(t,c.t,c.t+1.4)):1;
+  return{a:lerp(p.a,c.a,e),b:lerp(p.b,c.b,e),lo:lerp(p.lo,c.lo,e),hi:lerp(p.hi,c.hi,e)}}
+function drawP2(t,ct){
+  const cm=p2cam(t),bw=W/(cm.b-cm.a),X=i=>(i-cm.a+.5)*bw,Y=p=>H*.2+(cm.hi-p)/(cm.hi-cm.lo)*H*.58,k=W/360,FN=" -apple-system,Arial,sans-serif",IMP="Impact,'Arial Black',sans-serif";
+  bgFill();
+  const bodyW=Math.max(5,bw*.58),UP="#22c55e",DN="#ef4444";
+  /* candles; after the answer, everything but the hammer (and later its confirmation candle) is dimmed */
+  const dm=ease(pg(t,10,10.6)),dc=ease(pg(t,26.2,26.8));
+  const al=i=>i===5?1:i===6?clamp(1-.78*dm*(1-dc)):clamp(1-.78*dm);
+  for(let i=0;i<P2C.length;i++){const gr=ease(pg(t,P2R[i],P2R[i]+.4));if(gr<=0)continue;
+    const[o,c,h,l]=P2C[i],cc=o+(c-o)*gr,hh=lerp(Math.max(o,cc),h,gr),ll=lerp(Math.min(o,cc),l,gr),col=c>=o?UP:DN,x=X(i);
+    ctx.save();ctx.globalAlpha=al(i);if(i===5&&t>=10){ctx.shadowColor=UP;ctx.shadowBlur=18*k}
+    ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=Math.max(1.6,bw*.05);ctx.beginPath();ctx.moveTo(x,Y(hh));ctx.lineTo(x,Y(ll));ctx.stroke();
+    const yt=Y(Math.max(o,cc)),yb=Y(Math.min(o,cc));ctx.fillRect(x-bodyW/2,yt,bodyW,Math.max(2,yb-yt));ctx.restore()}
+
+  /* 1) hook: glossy BUY / SELL at the top, countdown ring between them, arrows from the last candle */
+  const hk=pg(t,.3,.7)*(1-pg(t,4.4,4.9));
+  if(hk>0){const bp=bk((t-.3)/.4),bwid=W*.31,bh=H*.062,by=H*.075;
+    gloss(W*.19,by,bwid,bh,"#4ade80","#15803d","BUY",bp,hk);gloss(W*.81,by,bwid,bh,"#f87171","#b91c1c","SELL",bp,hk);
+    const px=X(5)+bodyW/2+6*k,py=Y(62),aw=pg(t,1.4,2.3)*hk;
+    if(aw>0){ctx.save();ctx.globalAlpha=aw;ctx.shadowColor="#fff";ctx.shadowBlur=6*k;arrow(px,py,px+bw*1.0,py-H*.12*aw,"#fff",3*k);arrow(px,py,px+bw*1.0,py+H*.12*aw,"#fff",3*k);ctx.restore()}}
+  const ck=pg(ct,D0-.3,D0)*(1-pg(ct,D1,D1+.4));
+  if(ck>0){const sec=clamp(ct-D0,0,3.999),n=clamp(4-Math.floor(sec),1,4),fr=sec%1,cx=W/2,cy=H*.075,r=W*.068;
+    ctx.save();ctx.globalAlpha=ck;ctx.shadowColor="#fff";ctx.shadowBlur=10*k;ctx.strokeStyle="rgba(255,255,255,.25)";ctx.lineWidth=5*k;ctx.beginPath();ctx.arc(cx,cy,r,0,6.283);ctx.stroke();
+    ctx.strokeStyle="#fff";ctx.beginPath();ctx.arc(cx,cy,r,-1.5708,-1.5708+6.283*(1-fr));ctx.stroke();ctx.restore();
+    gtxt(String(n),cx,cy+1,"#fff","900 "+Math.round(r*1.15)+"px"+FN,ck,8*k)}
+  const fl=pg(ct,D1,D1+.05)*(1-pg(ct,D1+.05,D1+.6));if(fl>0){ctx.fillStyle="rgba(255,60,60,"+(.3*fl)+")";ctx.fillRect(0,0,W,H)}   /* alarm flash at zero */
+
+  /* 2) the answer: huge up arrow while price rallies */
+  const aa=bk((t-5.2)/.5)*(.92-.66*ease(pg(t,6.4,8.6)))*(1-pg(t,9.6,10.2));
+  if(aa>0.01){const cx=W*.64,top=H*.25,bot=H*.77,sw=W*.17,hw=W*.44,hh=H*.2;ctx.save();ctx.globalAlpha=clamp(aa);ctx.shadowColor="rgba(255,255,255,.7)";ctx.shadowBlur=24*k;ctx.fillStyle="#fff";
+    ctx.beginPath();ctx.moveTo(cx,top);ctx.lineTo(cx+hw/2,top+hh);ctx.lineTo(cx+sw/2,top+hh);ctx.lineTo(cx+sw/2,bot);ctx.lineTo(cx-sw/2,bot);ctx.lineTo(cx-sw/2,top+hh);ctx.lineTo(cx-hw/2,top+hh);ctx.closePath();ctx.fill();ctx.restore()}
+
+  /* 3) HAMMER: title + two crossing cartoon hammers */
+  const tA=bk((t-10.2)/.5)*(1-pg(t,15.2,15.7));
+  if(tA>0){ctx.save();ctx.translate(W/2,H*.115);ctx.scale(Math.max(.01,tA),Math.max(.01,tA));gtxt("HAMMER",0,0,"#fff","900 "+Math.round(46*k)+"px "+IMP,tA,22*k);ctx.restore()}
+  const hA=pg(t,10.8,11.1)*(1-pg(t,15.2,15.7));
+  if(hA>0){const e=bk((t-10.8)/.8),s=k*.74,cx=W/2,cy=H*.885;
+    cartoonHammer(cx+lerp(-W*.55,0,e),cy,lerp(-2.4,-.62,e),s,hA);cartoonHammer(cx+lerp(W*.55,0,e),cy,lerp(2.4,.62,e),s,hA)}
+
+  /* 4) zoom: small body, long lower wick */
+  const zA=pg(t,15.8,16.4)*(1-pg(t,20.4,20.9)),hx=X(5),bt=Y(64),bb=Y(60),wl=Y(48);
+  if(zA>0){ctx.save();ctx.globalAlpha=zA;ctx.strokeStyle="#fff";ctx.fillStyle="#fff";ctx.lineWidth=2*k;ctx.lineCap="round";
+    const xr=hx+bodyW/2+12*k;ctx.beginPath();ctx.moveTo(xr-5*k,bt);ctx.lineTo(xr,bt);ctx.lineTo(xr,bb);ctx.lineTo(xr-5*k,bb);ctx.stroke();
+    const xw=xr;ctx.beginPath();ctx.moveTo(xw-5*k,bb+3*k);ctx.lineTo(xw,bb+3*k);ctx.lineTo(xw,wl);ctx.lineTo(xw-5*k,wl);ctx.stroke();ctx.restore();
+    ltxt("SMALL BODY",xr+8*k,(bt+bb)/2,"#fff","800 "+Math.round(12*k)+"px"+FN,zA,"left");
+    ltxt("NO UPPER WICK",xr+8*k,bt-16*k,"#b6c2d6","700 "+Math.round(11*k)+"px"+FN,zA*pg(t,17.4,18),"left");
+    ltxt("LONG LOWER WICK",xw+8*k,(bb+wl)/2-8*k,"#fff","800 "+Math.round(12*k)+"px"+FN,zA,"left");
+    ltxt("2x THE BODY OR MORE",xw+8*k,(bb+wl)/2+9*k,"#fbbf24","700 "+Math.round(10.5*k)+"px"+FN,zA*pg(t,17,17.6),"left")}
+
+  /* 5) why it works: sellers push down, buyers push back */
+  const eA=pg(t,20.9,21.4)*(1-pg(t,26,26.5));
+  if(eA>0){const dx=bw*.24,rp=ease(pg(t,21,22)),gp=ease(pg(t,22.3,23.3));ctx.save();ctx.globalAlpha=eA;
+    ctx.shadowColor=DN;ctx.shadowBlur=10*k;arrow(hx-dx,Y(59),hx-dx,lerp(Y(59),Y(49),rp),DN,4*k);
+    ctx.shadowColor=UP;arrow(hx+dx,Y(49),hx+dx,lerp(Y(49),Y(60),gp),UP,4*k);ctx.restore();
+    ltxt("SELLERS",hx-bw*.56,Y(54),DN,"900 "+Math.round(13*k)+"px"+FN,eA*rp,"center");ltxt("push down",hx-bw*.56,Y(54)+15*k,"#f3a5a5","600 "+Math.round(10.5*k)+"px"+FN,eA*rp,"center");
+    ltxt("BUYERS",hx+bw*.56,Y(54),UP,"900 "+Math.round(13*k)+"px"+FN,eA*gp,"center");ltxt("push back up",hx+bw*.56,Y(54)+15*k,"#a7f3c4","600 "+Math.round(10.5*k)+"px"+FN,eA*gp,"center")}
+
+  /* 6) confirmation: next candle closes higher, stop below the low, then BUY */
+  if(t>26.6){const sp=ease(pg(t,27.4,28.4)),y=Y(48),x0=X(4.4);ctx.save();ctx.shadowColor=DN;ctx.shadowBlur=10*k;ctx.strokeStyle=DN;ctx.lineWidth=2.4*k;ctx.setLineDash([9*k,7*k]);
+    ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(lerp(x0,W,sp),y);ctx.stroke();ctx.restore();
+    ltxt("STOP BELOW THE LOW",W*.97,y+15*k,DN,"800 "+Math.round(11*k)+"px"+FN,pg(t,28,28.6),"right");
+    const cp=bk((t-27)/.45);if(cp>0){const w=150*k,h=26*k,cx=X(6),cy=Y(P2C[6][2])-26*k;ctx.save();ctx.globalAlpha=clamp(cp);ctx.translate(cx,cy);ctx.scale(Math.max(.01,cp),Math.max(.01,cp));
+      ctx.shadowColor=UP;ctx.shadowBlur=12*k;ctx.fillStyle="rgba(8,40,20,.92)";ctx.strokeStyle=UP;ctx.lineWidth=2*k;rr(-w/2,-h/2,w,h,h/2);ctx.fill();ctx.stroke();
+      ctx.shadowBlur=0;ctx.fillStyle="#bbf7d0";ctx.font="900 "+Math.round(12.5*k)+"px"+FN;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("CLOSES HIGHER",0,1);ctx.restore()}
+    const bp=bk((t-29.4)/.45);if(bp>0)gloss(W/2,H*.9,W*.34,H*.064,"#4ade80","#15803d","BUY",bp,bp)}
+}
+function frameP2(t){
+  drawP2(P2U(t),t);let ci=-1;for(let i=0;i<P2T.length;i++)if(P2T[i][0]<=t)ci=i;
+  const want=capsOn&&ci>=0?P2T[ci][1]:"";if(cap.textContent!==want){cap.textContent=want;cap.className=want?"pop":""}   /* plain white caption style */
+  $("end").classList.toggle("on",t>=32.2+SH2);$("sc").value=Math.round(t*10)}
+LS.push({n:"Candle patterns, Part 2",d:"Hammer: bullish reversal candle",end:36.5+SH2,start:0,mode:"c"});
+const P2=LS.length-1;
+const _fr2=frame;frame=function(t){if(L===P2){frameP2(t);return}_fr2(t)};
+const _cl2=capList;capList=function(){if(L!==P2)return _cl2();
+  const a=P2T.map(c=>({t:c[0],who:"t",text:c[2]}));a.splice(1,0,{t:D0,who:"t",text:"",silent:true,delay:350});return a};   /* gate: no countdown until "four seconds" has been said */
+
+
+/* ================= PART 3: FLAT TOP PATTERN (vertical, charcoal, white captions) ================= */
+const P3C0=4.0,P3C1=P3C0+5,SH3=P3C1-P3C0;          /* story is frozen at P3C0 during the 5-second countdown */
+const P3U=t=>t<P3C0?t:(t<P3C1?P3C0:t-SH3);
+const P3D=(()=>{const r=rng(61),c=[];let p=30;
+  const add=(cl,wk)=>{const o=p,h=Math.max(o,cl)+r()*wk,l=Math.min(o,cl)-r()*wk;c.push([o,cl,h,l]);p=cl};
+  for(let i=0;i<26;i++)add(clamp(30+(r()-.5)*8,26,34),1.4);                                 /* 0-25 sideways range */
+  [41,49,55,61,66,70,73.5,76.5,77.6].forEach((v,i)=>add(v,i===8?1.2:.9));                    /* 26-34 spike */
+  let S=-1e9,T=-1e9;for(let i=0;i<26;i++)S=Math.max(S,c[i][2]);for(let i=26;i<35;i++)T=Math.max(T,c[i][2]);
+  for(let i=0;i<16;i++){add(clamp(76+(r()-.5)*2.8,74.6,77.2),.7);const q=c[c.length-1];q[2]=Math.min(Math.max(q[2],q[0],q[1]),T-.15)}   /* 35-50 flat top */
+  let B=1e9;for(let i=35;i<51;i++)B=Math.min(B,c[i][3]);
+  [72.5,68,63.5,58,53,50,46,42.5,40,38,36.2,S+.3].forEach(v=>add(v,.8));                    /* 51-62 drop */
+  c[c.length-1][3]=S-.2;
+  return{c,S,T,B,E:B-.35,SL:T+9}})();
+const P3R=i=>i<26?.05+i*.05:i<35?1.8+(i-26)*.2:i<51?18.5+(i-35)*.34:48+(i-51)*.45;
+const P3T=[
+ [0,           "BUY OR SELL?",      "Price was flat, then shot straight up. Buy or sell? You have five seconds."],
+ [P3C1+.1,     "THE MOVE ENDS",     "The move ends. Now price has three options: up, sideways, or down. Which one is it?"],
+ [9+SH3,       "PRICE PUSHES UP",   "First, look where it started. The top of that flat range is support, and price pushed far above it."],
+ [14+SH3,      "THE MOVE DIES",     "Then the move dies. Buyers run out of energy, and price stops dead at the top."],
+ [18.5+SH3,    "A NEW RANGE",       "Price goes sideways again, forming a small new range at the very top. It looks strong."],
+ [24+SH3,      "NO FALL BACK",  "Bulls think price cannot fall back, and that it will keep going up from here."],
+ [28.5+SH3,    "KEY LEVELS",        "This top line is resistance, and the bottom line is support."],
+ [32+SH3,      "BUT LOOK",          "But look at the shape. A flat head on top of a tall neck. This is the Flat Top pattern, and it often reverses."],
+ [38+SH3,      "THE LAST SPIKE",    "Mark the last spike. Sell when price breaks below the bottom of the top range."],
+ [42.5+SH3,    "STOP ABOVE",        "Put your stop loss just above resistance, so a fake out cannot hurt you much."],
+ [47+SH3,      "TARGET: SUPPORT",   "Take profit at the original support line, where the spike started."],
+ [50.5+SH3,    "PRICE FALLS",       "Price breaks the entry and falls hard."],
+ [53+SH3,      "TARGET HIT",        "And the target is hit. Back to where the move began."],
+ [56.5+SH3,    "FOLLOW FOR MORE",   "Follow for more patterns like this."]];
+const P3K=[{t:0,a:-1,b:44},{t:9,a:-1,b:50},{t:14,a:-1,b:54},{t:18.5,a:-1,b:58},{t:44,a:-1,b:66}];
+function p3cam(t){let k=0;for(let i=0;i<P3K.length;i++)if(P3K[i].t<=t)k=i;
+  const c=P3K[k],p=P3K[Math.max(0,k-1)],e=k?ease(pg(t,c.t,c.t+1.6)):1;return{a:lerp(p.a,c.a,e),b:lerp(p.b,c.b,e)}}
+function flatHead(cx,cy,r,al){ctx.save();ctx.globalAlpha=clamp(al);ctx.lineWidth=Math.max(2,r*.06);ctx.strokeStyle="#15161a";
+  ctx.fillStyle="#e9b877";ctx.fillRect(cx-r*.3,cy+r*.8,r*.6,r*.9);                                   /* tall neck */
+  ctx.beginPath();ctx.arc(cx,cy,r,0,6.283);ctx.fill();ctx.stroke();
+  ctx.fillStyle="#2b2d33";rr(cx-r*.9,cy-r*1.3,r*1.8,r*.62,r*.1);ctx.fill();ctx.stroke();            /* flat-top hair */
+  [-1,1].forEach(d=>{ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(cx+d*r*.36,cy-r*.12,r*.2,0,6.283);ctx.fill();ctx.stroke();ctx.fillStyle="#111";ctx.beginPath();ctx.arc(cx+d*r*.36+d*r*.04,cy-r*.1,r*.08,0,6.283);ctx.fill()});
+  ctx.strokeStyle="#7a2d1a";ctx.beginPath();ctx.moveTo(cx-r*.4,cy+r*.42);ctx.quadraticCurveTo(cx,cy+r*.78,cx+r*.42,cy+r*.34);ctx.stroke();ctx.restore()}
+function drawP3(s,ct){
+  const cm=p3cam(s),bw=W/(cm.b-cm.a),X=i=>(i-cm.a+.5)*bw,Y=p=>H*.2+(92-p)/72*H*.58,k=W/360,FN=" -apple-system,Arial,sans-serif";
+  const{c,S,T,B,E,SL}=P3D,UPG="#22c55e",DNR="#ef4444",bodyW=Math.max(2.5,bw*.5);
+  const g=ctx.createRadialGradient(W/2,H*.45,10,W/2,H*.45,Math.max(W,H)*.75);g.addColorStop(0,"#262a30");g.addColorStop(1,"#08090b");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  const hline=(p,i0,pr,col,w,dash,al)=>{if(pr<=0)return;ctx.save();ctx.globalAlpha=al==null?1:al;ctx.strokeStyle=col;ctx.lineWidth=w*k;ctx.setLineDash(dash||[]);const y=Math.round(Y(p))+.5,x0=X(i0);ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x0+(W-x0)*pr,y);ctx.stroke();ctx.restore()};
+  /* SL / TP boxes (behind candles) */
+  const bx=X(50.5),bwid=W-bx;
+  const sp=ease(pg(s,42.5,43.6));if(sp>0){const y0=Y(E),y1=lerp(y0,Y(SL),sp);ctx.fillStyle="rgba(239,68,68,.22)";ctx.fillRect(bx,y1,bwid,y0-y1);ctx.strokeStyle=DNR;ctx.lineWidth=1.6*k;ctx.strokeRect(bx,y1,bwid,y0-y1);
+    if(sp>.8)ltxt("SL",bx+6*k,y1+12*k,"#fecaca","800 "+Math.round(12*k)+"px"+FN,1,"left")}
+  const tp=ease(pg(s,47,48.4));if(tp>0){const y0=Y(E),y1=lerp(y0,Y(S),tp);ctx.fillStyle="rgba(34,197,94,.2)";ctx.fillRect(bx,y0,bwid,y1-y0);ctx.strokeStyle=UPG;ctx.lineWidth=1.6*k;ctx.strokeRect(bx,y0,bwid,y1-y0);
+    if(tp>.8)ltxt("TP",bx+6*k,y1-12*k,"#bbf7d0","800 "+Math.round(12*k)+"px"+FN,1,"left")}
+  /* levels */
+  hline(S,0,ease(pg(s,9.5,10.7)),"#fff",1.2,[],.85);
+  if(s>=10.2)ltxt("support",X(1),Y(S)-9*k,"#fff","600 "+Math.round(10.5*k)+"px"+FN,pg(s,10.2,10.8),"left");
+  hline(T,26,ease(pg(s,14.5,15.7)),"#fff",1.2,[],.85);
+  hline(T,26,ease(pg(s,14.5,15.7))*ease(pg(s,19.5,20.5)),DNR,1.8,[],1);
+  if(s>=28.5)ltxt("resistance",X(26)-5*k,Y(T)-1*k,DNR,"700 "+Math.round(10.5*k)+"px"+FN,pg(s,28.5,29.2),"right");
+  hline(E,35,ease(pg(s,38.5,39.6)),"#fff",1.2,[6*k,5*k],.9);
+  if(s>=38.6)ltxt("entry",X(35)+2*k,Y(E)+12*k,"#fff","600 "+Math.round(10.5*k)+"px"+FN,pg(s,38.6,39.2),"left");
+  if(sp>0){hline(SL,50.5,sp,DNR,1.4,[],1)}
+  /* candles */
+  for(let i=0;i<c.length;i++){const gr=ease(pg(s,P3R(i),P3R(i)+.25));if(gr<=0)continue;
+    const[o,cl,h,l]=c[i],cc=o+(cl-o)*gr,hh=lerp(Math.max(o,cc),h,gr),ll=lerp(Math.min(o,cc),l,gr),col=cl>=o?UPG:DNR,x=X(i);
+    ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=Math.max(1.2,bw*.07);ctx.beginPath();ctx.moveTo(x,Y(hh));ctx.lineTo(x,Y(ll));ctx.stroke();
+    const yt=Y(Math.max(o,cc)),yb=Y(Math.min(o,cc));ctx.fillRect(x-bodyW/2,yt,bodyW,Math.max(1.5,yb-yt))}
+  /* hook + answer arrows at the spike top */
+  const px=X(34)+bodyW/2+4*k,py=Y(76),af=(1-pg(s,8.6,9.2));
+  const ga=pg(s,3,3.6)*af;if(ga>0){ctx.save();ctx.globalAlpha=ga;arrow(px,py-4*k,px+40*k,py-46*k,UPG,3*k);arrow(px,py+4*k,px+40*k,py+46*k,DNR,3*k);ctx.restore()}
+  const wa=pg(s,4.5,5.1)*af;if(wa>0){ctx.save();ctx.globalAlpha=wa;arrow(px+6*k,py,px+52*k,py,"#fff",3*k);ctx.restore()}
+  /* countdown ring */
+  const ck=pg(ct,P3C0-.3,P3C0)*(1-pg(ct,P3C1,P3C1+.4));
+  if(ck>0){const sec=clamp(ct-P3C0,0,4.999),n=5-Math.floor(sec),fr=sec%1,cx=W/2,cy=H*.46,r=W*.14;
+    ctx.save();ctx.globalAlpha=ck;ctx.shadowColor="#fff";ctx.shadowBlur=12*k;ctx.strokeStyle="rgba(255,255,255,.22)";ctx.lineWidth=7*k;ctx.beginPath();ctx.arc(cx,cy,r,0,6.283);ctx.stroke();
+    ctx.strokeStyle="#fff";ctx.lineCap="round";ctx.beginPath();ctx.arc(cx,cy,r,-1.5708,-1.5708+6.283*(1-fr));ctx.stroke();ctx.restore();
+    gtxt(String(n),cx,cy+2,"#fff","900 "+Math.round(r*1.2)+"px"+FN,ck,10*k)}
+  /* cannot-fall-back: small green arrows + diagonal */
+  const ua=pg(s,24,24.7)*(1-pg(s,28,28.8));
+  if(ua>0){ctx.save();ctx.globalAlpha=ua;[38,43,48].forEach(i=>arrow(X(i),Y(B-9),X(i),Y(B-3),UPG,2.4*k));arrow(X(39),Y(B-11),X(53),Y(T+4),"#fff",3*k);ctx.restore()}
+  /* zig-zag outline + generic flat-top head */
+  const zf=ease(pg(s,32.2,36.2)),zo=1-pg(s,47.5,49);
+  if(zf>0){const P=[[25.5,S],[34,T],[38,T+.5],[42,T-1.2],[46,T],[50.5,T-.6],[60,S]].map(([i,p])=>[X(i),Y(p)]),sg=[];let tot=0;
+    for(let i=1;i<P.length;i++){const l=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);sg.push(l);tot+=l}
+    let rem=zf*tot;ctx.save();ctx.globalAlpha=zo;ctx.strokeStyle="#fff";ctx.lineWidth=2.4*k;ctx.lineJoin="round";ctx.lineCap="round";ctx.shadowColor="#fff";ctx.shadowBlur=6*k;
+    for(let i=1;i<P.length&&rem>0;i++){const f=Math.min(1,rem/sg[i-1]);ctx.setLineDash(i===P.length-1?[2*k,7*k]:[]);ctx.beginPath();ctx.moveTo(...P[i-1]);ctx.lineTo(lerp(P[i-1][0],P[i][0],f),lerp(P[i-1][1],P[i][1],f));ctx.stroke();rem-=sg[i-1]}ctx.restore();
+    const hp=bk((s-34.6)/.5),dim=1-.78*ease(pg(s,37.6,38.6));if(hp>0)flatHead(X(41),Y(56),W*.085*Math.max(.01,hp),hp*dim*zo)}
+  /* last-spike marker */
+  const lm=pg(s,38,38.5)*(1-pg(s,42,42.5));
+  if(lm>0){const x=X(50),y=Y(E)+7*k;ctx.save();ctx.globalAlpha=lm;ctx.fillStyle="#fff";ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-6*k,y+9*k);ctx.lineTo(x+6*k,y+9*k);ctx.closePath();ctx.fill();ctx.restore();ltxt("last spike",x,y+21*k,"#fff","700 "+Math.round(10.5*k)+"px"+FN,lm,"center")}
+  /* title "Buy or Sell ?" */
+  const ta=pg(s,.1,.5)*(1-pg(s,9,9.6));
+  if(ta>0){const f=Math.round(30*k),parts=[["Buy",UPG],[" or ","#fff"],["Sell",DNR],[" ?","#fff"]];ctx.save();ctx.globalAlpha=ta;ctx.font="800 "+f+"px"+FN;ctx.textAlign="left";ctx.textBaseline="middle";
+    const w=parts.reduce((a,p)=>a+ctx.measureText(p[0]).width,0);let x=W/2-w/2;parts.forEach(p=>{ctx.fillStyle=p[1];ctx.fillText(p[0],x,H*.085);x+=ctx.measureText(p[0]).width});ctx.restore()}
+  /* TARGET HIT + call to action */
+  const th=bk((s-53.4)/.45)*(1-pg(s,60,60.4));
+  if(th>0.01){ctx.save();ctx.translate(W/2,H*.12);ctx.scale(Math.max(.01,th),Math.max(.01,th));ctx.fillStyle=DNR;ctx.shadowColor=DNR;ctx.shadowBlur=14*k;rr(-W*.2,-14*k,W*.4,28*k,14*k);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle="#fff";ctx.font="900 "+Math.round(15*k)+"px"+FN;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("TARGET HIT",0,1);ctx.restore()}
+  const cb=bk((s-56.6)/.45)*(1-pg(s,60,60.4));
+  if(cb>0.01){ctx.save();ctx.translate(W/2,H*.88);ctx.scale(Math.max(.01,cb),Math.max(.01,cb));ctx.shadowColor=UPG;ctx.shadowBlur=14*k;ctx.fillStyle="rgba(8,40,20,.92)";ctx.strokeStyle=UPG;ctx.lineWidth=3*k;rr(-W*.3,-17*k,W*.6,34*k,17*k);ctx.fill();ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle="#bbf7d0";ctx.font="900 "+Math.round(15*k)+"px"+FN;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("FOLLOW FOR MORE",0,1);ctx.restore()}
+  /* your handle, bottom centre */
+  ltxt($("hd").textContent,W/2,H-12*k,"#9aa0aa","600 "+Math.round(11*k)+"px"+FN,.75,"center");
+}
+function frameP3(t){
+  drawP3(P3U(t),t);let ci=-1;for(let i=0;i<P3T.length;i++)if(P3T[i][0]<=t)ci=i;
+  const want=capsOn&&ci>=0?P3T[ci][1]:"";if(cap.textContent!==want){cap.textContent=want;cap.className=want?"pop":""}
+  $("end").classList.toggle("on",t>=60.4+SH3);$("sc").value=Math.round(t*10)}
+LS.push({n:"Candle patterns, Part 3",d:"Flat Top pattern: spike, flat top, sell the reversal",end:64.8+SH3,start:0,mode:"c"});
+const P3=LS.length-1;
+const _fr3=frame;frame=function(t){if(L===P3){frameP3(t);return}_fr3(t)};
+const _cl3=capList;capList=function(){if(L!==P3)return _cl3();
+  const a=P3T.map(c=>({t:c[0],who:"t",text:c[2]}));a.splice(1,0,{t:P3C0,who:"t",text:"",silent:true,delay:350});return a};   /* gate: no countdown until "five seconds" has been said */
+
+
+/* ================= PART 4: LIQUIDITY GRAB LONG (vertical, black, ONE chart annotated step by step, captions at the TOP) ================= */
+const P4C0=3.6,P4C1=P4C0+3,SH4=P4C1-P4C0;          /* story is frozen at P4C0 during the 3-second countdown */
+const P4U=t=>t<P4C0?t:(t<P4C1?P4C0:t-SH4);
+const P4D=(()=>{const r=rng(88),c=[];let p=15;
+  const add=(cl,wk)=>{const o=p,h=Math.max(o,cl)+r()*wk,l=Math.min(o,cl)-r()*wk;c.push([o,cl,h,l]);p=cl};
+  for(let i=0;i<18;i++)add(15+i*.3+(r()-.5)*1.6,.9);                                          /* 0-17 small candles at the bottom */
+  [22.5,25.5,28.5,32,43,45,46.5,47.5,48.5].forEach(v=>add(v,.8));                              /* 18-26 strong rise, impulse = 22 */
+  for(let i=0;i<14;i++){const am=3.4*(1-i/17)+.5;add(47+Math.sin(i*1.5)*am+(r()-.5)*.8,.7)}    /* 27-40 pennant consolidation */
+  let CT=-1e9,CL=1e9;for(let i=27;i<41;i++){CT=Math.max(CT,c[i][2]);CL=Math.min(CL,c[i][3])}
+  [CT+2,CT+4.5,CT+7,CT+9,CT+10.5,CT+11.5,CT+12.5,CT+13.5].forEach(v=>add(v,.7));              /* 41-48 break of structure */
+  for(let i=0;i<14;i++)add(p+.5+(r()-.5)*2,.8);                                                /* 49-62 continuation */
+  {const o=p;c.push([o,o-14,o+1,CL-3.5]);p=o-14}                                               /* 63 big red, long lower wick below the consolidation */
+  c.push([p,p+3,p+3.4,p-6.5]);p+=3;                                                            /* 64 hammer-type rejection */
+  const G=c[63][3],E=p,ST=G-1.5,R=E-ST,TP=E+3*R;
+  for(let i=0;i<16;i++){const f=(i+1)/16,e=f<.5?2*f*f:1-Math.pow(-2*f+2,2)/2;add(E+(TP+6-E)*(.15*f+.85*e)+(r()-.5)*2,1.4)}   /* 65-80 the rally */
+  return{c,CT,CL,G,E,ST,R,TP}})();
+const P4R=i=>i<65?.05+i*.02:107.5+(i-65)*.35;
+const P4T=[ /* [story time, caption on screen, sentence the voice says] */
+ [0,    "You have three seconds to decide.", "Look at this chart. You have three seconds to decide. Buy, or sell?"],
+ [3.7,  "All right, let's break this chart down.", "All right, let's break this chart down step by step and see what price is really doing."],
+ [8.5,  "Price already made a strong bullish move.", "Price already made a strong bullish impulse. Buyers were clearly in control."],
+ [13,   "Buyers were in control, and the market created a small consolidation.", "After that impulse, the market paused and created a small consolidation, a tight pennant."],
+ [17.5, "During this move, the market also created a strong bullish break of structure.", "Price then broke above that consolidation with strong, impulsive green candles."],
+ [21,   "A break of structure, with impulsive green candles.", "That is a break of structure, marked here as B O S."],
+ [25,   "Then a bearish candle with a long lower wick.", "Then comes a big bearish candle with a long lower wick."],
+ [28.5, "This candle shows that sellers pushed price down fast.", "This candle shows sellers pushed price down fast, but look at what happened next."],
+ [33,   "Buyers absorbed that selling pressure.", "Buyers stepped in and absorbed all of that selling pressure, leaving a very long lower wick."],
+ [38,   "During this drop, price went back into the old consolidation.", "During this drop, price went right back into the earlier consolidation zone, where traders had their stops."],
+ [43.5, "So when those stops were triggered, the market grabbed liquidity.", "When those stops were triggered, the market grabbed that liquidity below the consolidation."],
+ [48,   "That sweep is a liquidity grab.", "That sweep below the lows is called a liquidity grab. Stops were taken out right here."],
+ [52.5, "The market also moved into the previous imbalance.", "At the same time, price moved back into the previous imbalance, and filled that zone."],
+ [57,   "Which is very common before continuation.", "This combination is very common before continuation. Sweep the lows, fill the imbalance, then go higher."],
+ [64,   "After the sweep and imbalance mitigation...", "After the sweep and the imbalance mitigation, look closely at the very next candle."],
+ [68.5, "The market formed a hammer type rejection.", "It is a hammer type rejection candle, which shows buyers are defending this level."],
+ [73,   "Its long wick shows lower prices being rejected.", "The long lower wick shows lower prices are being rejected."],
+ [77,   "But it did not create a confirmed change of character.", "Importantly, this did not create a confirmed change of character."],
+ [81,   "The major bullish higher low is still intact.", "The major bullish higher low is still intact, so the trend is not broken."],
+ [85,   "Structure has not been broken. This is a pullback inside the uptrend.", "Structure has not been broken, and this is just a pullback inside the uptrend."],
+ [90,   "Based on this logic, we look for a long.", "Based on this logic, we can plan a long position from here."],
+ [94,   "Place the stop loss below this zone.", "Place the stop loss below this zone, under the liquidity grab."],
+ [98,   "Target three times the risk.", "Then target three times your risk, a three to one reward."],
+ [102,  "For additional confirmation, wait for a strong bullish candle, or a break of structure on the lower timeframe.", "For extra confirmation, wait for a strong bullish candle, or a break of structure on a lower timeframe."],
+ [107.5,"Then let the next chapter of the market play out.", "Then let the market do the rest, and price starts to rally into the target."],
+ [113.5,"And our target has been perfectly achieved.", "And just like that, our target has been perfectly achieved."],
+ [118,  "Don't forget to like.", "If this helped, don't forget to like and follow for more."]
+].map(a=>[a[0]===0?0:a[0]+SH4,a[1],a[2]]);
+
+/* camera: every teaching step zooms in on just the candles being talked about. Each key = window of candle numbers + price range fitted to them */
+const P4F=(t,a,b,i0,i1,ex)=>{const c=P4D.c;let lo=1e9,hi=-1e9;for(let i=i0;i<=i1;i++){lo=Math.min(lo,c[i][3]);hi=Math.max(hi,c[i][2])}
+  (ex||[]).forEach(v=>{lo=Math.min(lo,v);hi=Math.max(hi,v)});const rg=hi-lo;return{t,a,b,lo:lo-rg*.14-1,hi:hi+rg*.2+1}};
+const P4K=(()=>{const{CT,CL,G,E,ST,R,TP}=P4D;return[
+ P4F(0,-1,67,0,64),                       /* the whole setup */
+ P4F(8,12,34,14,28),                      /* impulse */
+ P4F(12.8,19,46,20,44),                   /* pennant */
+ P4F(17.2,24,54,25,50,[CT+16]),           /* break of structure */
+ P4F(24.6,45,68,46,64),                   /* big red candle */
+ P4F(32.6,55,68,60,64),                   /* long lower wick */
+ P4F(37.6,25,68,27,64),                   /* wick goes back into the old consolidation */
+ P4F(51.6,53,68,55,64,[CL]),              /* the sweep + imbalance zone */
+ P4F(56.6,53,72,58,64,[E+12]),            /* continuation arrow */
+ P4F(63.4,53,68,58,64),                   /* the hammer-type candle */
+ P4F(89.4,56,78,62,64,[ST,E+R*1.25]),     /* plan the long: entry and stop */
+ P4F(97.4,55,83,62,80,[ST,TP+R*.15]),     /* 3R target + rally */
+ P4F(112.6,44,83,50,80,[ST,TP+R*.15])]})(); /* result */
+function p4cam(t){let k=0;for(let i=0;i<P4K.length;i++)if(P4K[i].t<=t)k=i;
+  const c=P4K[k],p=P4K[Math.max(0,k-1)],e=k?ease(pg(t,c.t,c.t+1.8)):1;return{a:lerp(p.a,c.a,e),b:lerp(p.b,c.b,e),lo:lerp(p.lo,c.lo,e),hi:lerp(p.hi,c.hi,e)}}
+function wrapTxt(str,x,y,maxW,lh,font,col,al){ctx.save();ctx.globalAlpha=clamp(al);ctx.font=font;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillStyle=col;
+  const ws=str.split(" "),ls=[];let ln="";ws.forEach(w=>{const t=ln?ln+" "+w:w;if(ctx.measureText(t).width>maxW&&ln){ls.push(ln);ln=w}else ln=t});ls.push(ln);
+  ls.forEach((l,i)=>ctx.fillText(l,x,y+(i-(ls.length-1)/2)*lh));ctx.restore()}
+function p4pill(x,y,label,dot,al,k){ctx.save();ctx.globalAlpha=clamp(al);const w=54*k,h=18*k;ctx.fillStyle="#16181d";ctx.strokeStyle="rgba(255,255,255,.18)";ctx.lineWidth=1;rr(x-w,y-h/2,w,h,h/2);ctx.fill();ctx.stroke();
+  ctx.fillStyle=dot;ctx.beginPath();ctx.arc(x-w+10*k,y,4*k,0,6.283);ctx.fill();ctx.fillStyle="#fff";ctx.font="700 "+Math.round(9.5*k)+"px -apple-system,Arial,sans-serif";ctx.textAlign="left";ctx.textBaseline="middle";ctx.fillText(label,x-w+19*k,y+.5);ctx.restore()}
+/* small dark label with a coloured outline, always kept fully on screen so it never sits half-hidden */
+function p4lab(txt,x,y,col,al,k,align){if(al<=.01||x<-20||x>W+20)return;ctx.save();ctx.globalAlpha=clamp(al);ctx.font="800 "+Math.round(10.5*k)+"px -apple-system,Arial,sans-serif";
+  const w=ctx.measureText(txt).width+14*k,h=19*k;let x0=align==="right"?x-w:align==="left"?x:x-w/2;x0=Math.max(4,Math.min(W-w-4,x0));
+  ctx.fillStyle="rgba(10,12,16,.92)";ctx.strokeStyle=col;ctx.lineWidth=1.2*k;rr(x0,y-h/2,w,h,h*.4);ctx.fill();ctx.stroke();
+  ctx.fillStyle=col;ctx.textAlign="left";ctx.textBaseline="middle";ctx.fillText(txt,x0+7*k,y+.5);ctx.restore()}
+function p4star(x,y,R,al){ctx.save();ctx.globalAlpha=clamp(al);ctx.fillStyle="#fbbf24";ctx.shadowColor="#f59e0b";ctx.shadowBlur=R;ctx.beginPath();
+  for(let i=0;i<8;i++){const a=i*Math.PI/4-Math.PI/2,r=i%2?R*.32:R;ctx[i?"lineTo":"moveTo"](x+Math.cos(a)*r,y+Math.sin(a)*r)}ctx.closePath();ctx.fill();ctx.restore()}
+function drawP4(s,ct){
+  const cm=p4cam(s),bw=W/(cm.b-cm.a),X=i=>(i-cm.a+.5)*bw,Y=p=>H*.2+(cm.hi-p)/(cm.hi-cm.lo)*H*.6,k=W/360,FN=" -apple-system,Arial,sans-serif";
+  const{c,CT,CL,G,E,ST,R,TP}=P4D,UPG="#22c55e",DNR="#ef4444",bodyW=Math.max(1.6,Math.min(bw*.5,18*k)),wkW=Math.max(1,Math.min(bw*.1,2.2*k));
+  const win=(a,b)=>pg(s,a,a+.5)*(1-pg(s,b,b+.5)),mid=i=>(c[i][0]+c[i][1])/2,hb=bodyW/2+4*k;
+  bgFill();
+  const hl=(p,i0,i1,pr,col,w,dash,al)=>{if(pr<=0)return;ctx.save();ctx.globalAlpha=al==null?1:al;ctx.strokeStyle=col;ctx.lineWidth=w*k;ctx.setLineDash(dash||[]);const y=Math.round(Y(p))+.5,x0=X(i0),x1=X(i1);ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(lerp(x0,x1,pr),y);ctx.stroke();ctx.restore()};
+  const ln=(x0,y0,x1,y1,pr,col,w,al)=>{if(pr<=0)return;ctx.save();ctx.globalAlpha=al==null?1:al;ctx.strokeStyle=col;ctx.lineWidth=w*k;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(lerp(x0,x1,pr),lerp(y0,y1,pr));ctx.stroke();ctx.restore()};
+  /* zones behind the candles */
+  const cz=ease(pg(s,40,41.2)),czA=cz*(1-pg(s,50,51.5));
+  if(cz>0){const x0=X(27)-bw/2,x1=X(41)+bw/2,yt=Y(CT+2.5),yb=Y(CL);ctx.globalAlpha=cz;ctx.fillStyle="rgba(21,128,61,.28)";ctx.fillRect(x0,yt,x1-x0,yb-yt);ctx.strokeStyle="rgba(34,197,94,.6)";ctx.lineWidth=k;ctx.strokeRect(x0,yt,x1-x0,yb-yt);
+    ctx.fillStyle="rgba(185,28,28,.55)";ctx.fillRect(x0,Y(CL+3),x1-x0,Y(CL)-Y(CL+3));ctx.globalAlpha=1;
+    p4lab("old consolidation",(x0+x1)/2,yt-14*k,"#86efac",czA,k,"center");p4lab("stops sit here",(x0+x1)/2,yb+14*k,"#fca5a5",czA*pg(s,43.5,44.1),k,"center")}
+  const iz=ease(pg(s,52.5,53.7));
+  if(iz>0){const x0=X(56),x1=X(66.5),yt=Y(CL+1.5),yb=Y(G-1.5);ctx.globalAlpha=iz;ctx.fillStyle="rgba(21,128,61,.34)";ctx.fillRect(x0,yt,x1-x0,yb-yt);ctx.strokeStyle="rgba(34,197,94,.65)";ctx.lineWidth=k;ctx.strokeRect(x0,yt,x1-x0,yb-yt);ctx.globalAlpha=1;
+    p4lab("imbalance",x0-4*k,(yt+yb)/2,"#86efac",iz,k,"right")}
+  /* long position boxes */
+  const pb=ease(pg(s,90,91)),se=ease(pg(s,94,95.6)),te=ease(pg(s,98,100)),pl=pb*(1-pg(s,107.5,108.3));
+  if(pb>0){const x0=X(64.5),x1=X(81.5),yS=lerp(E-R*.3,ST,se),yT=lerp(E+R*.9,TP,te);ctx.globalAlpha=pb;
+    ctx.fillStyle="rgba(21,128,61,.4)";ctx.fillRect(x0,Y(yT),x1-x0,Y(E)-Y(yT));ctx.fillStyle="rgba(153,27,27,.5)";ctx.fillRect(x0,Y(E),x1-x0,Y(yS)-Y(E));
+    ctx.strokeStyle="rgba(255,255,255,.55)";ctx.lineWidth=k;ctx.beginPath();ctx.moveTo(x0,Math.round(Y(E))+.5);ctx.lineTo(x1,Math.round(Y(E))+.5);ctx.stroke();ctx.globalAlpha=1;
+    ltxt("LONG",x0+5*k,Y(E)-9*k,"#fff","800 "+Math.round(10*k)+"px"+FN,pl,"left");ltxt("SL",x0+5*k,Y(yS)-9*k,"#fecaca","800 "+Math.round(10*k)+"px"+FN,pb,"left");ltxt("TP",x0+5*k,Y(yT)+10*k,"#bbf7d0","800 "+Math.round(10*k)+"px"+FN,pb,"left");
+    if(te>.7)ltxt("1 : 3",x1-5*k,Y(E)-9*k,"#fde68a","800 "+Math.round(10.5*k)+"px"+FN,pg(te,.7,1)*pl,"right")}
+  /* pennant lines, BOS line, liquidity line */
+  const pn=ease(pg(s,13.5,15.5));ln(X(27),Y(CT+.4),X(41),Y(CT-3),pn,"#fff",1.3);ln(X(27),Y(CL-.4),X(41),Y(CL+2.5),pn,"#fff",1.3);
+  hl(CT,27,52,ease(pg(s,17.8,19.6)),"#fff",1.2,[4*k,4*k],.9);
+  hl(CL,27,64,ease(pg(s,44,46)),"#fff",1.2,[4*k,4*k],.9);
+  /* candles */
+  for(let i=0;i<c.length;i++){const gr=ease(pg(s,P4R(i),P4R(i)+.3));if(gr<=0)continue;
+    const[o,cl,h,l]=c[i],cc=o+(cl-o)*gr,hh=lerp(Math.max(o,cc),h,gr),ll=lerp(Math.min(o,cc),l,gr),col=cl>=o?UPG:DNR,x=X(i);
+    ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=wkW;ctx.beginPath();ctx.moveTo(x,Y(hh));ctx.lineTo(x,Y(ll));ctx.stroke();
+    const yt=Y(Math.max(o,cc)),yb=Y(Math.min(o,cc));ctx.fillRect(x-bodyW/2,yt,bodyW,Math.max(1.2,yb-yt))}
+  /* arrows: the tip always touches the candle from the empty side, the label sits at the tail */
+  const ra=(tx,ty,dx,dy,a,b,col)=>{const p=win(a,b);if(p>0){ctx.save();ctx.globalAlpha=p;arrow(tx+dx,ty+dy,tx,ty,col,2.6*k);ctx.restore()}};
+  {const tx=X(22)-hb,ty=Y(mid(22));ra(tx,ty,-34*k,-34*k,8.8,13,DNR);p4lab("strong impulse",tx-34*k,ty-34*k-16*k,"#fca5a5",win(8.8,13),k,"center")}
+  p4lab("BOS",X(33),Y(CT)-12*k,"#fff",pg(s,21,21.6)*(1-pg(s,39,39.6)),k,"center");
+  {const tx=X(44)+hb,ty=Y(mid(44));ra(tx,ty,34*k,34*k,21,25,UPG);p4lab("closes above",tx+34*k,ty+34*k+16*k,"#86efac",win(21,25),k,"center")}
+  {const tx=X(63)+hb,ty=Y(c[63][0]-3);ra(tx,ty,34*k,-30*k,25.2,38,DNR);p4lab("big red candle",tx+34*k,ty-30*k-16*k,"#fca5a5",win(25.2,38),k,"center")}
+  {const tx=X(63)-3*k,ty=Y(G+.6);ra(tx,ty,-34*k,30*k,33.2,52,DNR);p4lab("long lower wick",tx-34*k,ty+30*k+16*k,"#fca5a5",win(33.2,52),k,"center")}
+  p4star(X(63)+16*k,Y(G)-8*k,9*k,win(44.4,52));
+  p4lab("Liquidity grab",X(63)-8*k,Y(CL)+13*k,"#fff",pg(s,48,48.8)*(1-pg(s,88.5,89.2)),k,"right");
+  /* zigzag: continuation expected */
+  const zz=ease(pg(s,57.2,59.8))*(1-pg(s,63,63.6));
+  if(zz>0){const P=[[65,E-8],[66.2,E-3],[65.8,E-5],[67.8,E+3],[67.4,E+1],[69.8,E+11]].map(([i,p])=>[X(i),Y(p)]),sg=[];let tot=0;for(let i=1;i<P.length;i++){const l=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);sg.push(l);tot+=l}
+    let rem=ease(pg(s,57.2,59.8))*tot;ctx.save();ctx.globalAlpha=Math.min(1,zz*1.2);ctx.strokeStyle="#fff";ctx.fillStyle="#fff";ctx.lineWidth=2.4*k;ctx.lineJoin="round";ctx.lineCap="round";ctx.beginPath();ctx.moveTo(...P[0]);let tip=P[0],pr=P[0];
+    for(let i=1;i<P.length&&rem>0;i++){const f=Math.min(1,rem/sg[i-1]);tip=[lerp(P[i-1][0],P[i][0],f),lerp(P[i-1][1],P[i][1],f)];pr=P[i-1];ctx.lineTo(...tip);rem-=sg[i-1]}ctx.stroke();
+    const a=Math.atan2(tip[1]-pr[1],tip[0]-pr[0]);ctx.beginPath();ctx.moveTo(...tip);ctx.lineTo(tip[0]-12*k*Math.cos(a-.45),tip[1]-12*k*Math.sin(a-.45));ctx.lineTo(tip[0]-12*k*Math.cos(a+.45),tip[1]-12*k*Math.sin(a+.45));ctx.fill();ctx.restore()}
+  /* hammer-type candle: ellipse hugging just that candle, badge + green arrow outside it */
+  const hc=pg(s,64.6,65.2)*(1-pg(s,88.5,89.2)),hx=X(64),hy=Y((c[64][2]+c[64][3])/2),rx=Math.max(10*k,bw*.7),ry=Math.max(rx*1.2,(Y(c[64][3])-Y(c[64][2]))/2*1.25);
+  if(hc>0){ctx.save();ctx.globalAlpha=hc;ctx.strokeStyle="#fff";ctx.lineWidth=2.2*k;ctx.beginPath();ctx.ellipse(hx,hy,rx,ry,0,0,6.283);ctx.stroke();
+    const bx=hx+rx*.78,by=hy+ry*.78;ctx.fillStyle=DNR;ctx.beginPath();ctx.arc(bx,by,8*k,0,6.283);ctx.fill();ctx.strokeStyle="#fff";ctx.lineWidth=2*k;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(bx+3.5*k,by);ctx.lineTo(bx-3.5*k,by);ctx.moveTo(bx-1*k,by-3*k);ctx.lineTo(bx-3.5*k,by);ctx.lineTo(bx-1*k,by+3*k);ctx.stroke();ctx.restore()}
+  const gc=bk((s-68.6)/.4)*(1-pg(s,88.5,89.2));
+  if(gc>0.01){ctx.save();ctx.translate(hx+rx*.78,hy-ry*.78);ctx.scale(gc,gc);ctx.fillStyle=UPG;ctx.beginPath();ctx.arc(0,0,11*k,0,6.283);ctx.fill();ctx.strokeStyle="#000";ctx.lineWidth=2.6*k;ctx.lineCap="round";ctx.lineJoin="round";ctx.beginPath();ctx.moveTo(0,5*k);ctx.lineTo(0,-5*k);ctx.moveTo(-4*k,-1*k);ctx.lineTo(0,-5.5*k);ctx.lineTo(4*k,-1*k);ctx.stroke();ctx.restore()}
+  ra(hx,Y(c[64][3])+2*k,0,44*k,73,88.5,DNR);
+  /* structure-intact chips: stacked in the empty area under the old candles, left of the red candle */
+  [["No CHoCH",77,"#fde68a"],["Higher low intact",81,"#86efac"],["Pullback, not reversal",85,"#93c5fd"]].forEach(([t,a,col],i)=>p4lab(t,8*k,Y(58)+i*26*k,col,pg(s,a,a+.5)*(1-pg(s,88.5,89.2)),k,"left"));
+  /* BUY / SELL pills: their own row under the chart, never on top of candles */
+  const th=bk((s-113.7)/.45)*(1-pg(s,121.4,122)),pa=pg(s,.3,.8)*(1-clamp(th)),sel=pg(s,28.5,29)*(1-pg(s,32.5,33)),buy=Math.max(pg(s,33,33.5)*(1-pg(s,37.5,38)),pg(s,68.5,69)*(1-pg(s,73,73.5))),py=H*.885;
+  p4pill(W/2-4*k,py,"BUY",UPG,pa*(.5+.5*buy),k);p4pill(W/2+58*k,py,"SELL",DNR,pa*(.5+.5*sel),k);
+  /* confirmation tags sit inside the empty green target box, then leave before the rally */
+  const tf=1-pg(s,107.2,107.9);p4lab("Strong bullish candle",X(73),Y(E+R*1.1),"#facc15",pg(s,102.8,103.3)*tf,k,"center");p4lab("bos on lower timeframe",X(73),Y(E+R*1.7),"#facc15",pg(s,104.6,105.1)*tf,k,"center");
+  if(th>0.01){ctx.save();ctx.translate(W/2,py);ctx.scale(Math.max(.01,th),Math.max(.01,th));ctx.fillStyle="rgba(21,128,61,.95)";ctx.shadowColor=UPG;ctx.shadowBlur=14*k;rr(-W*.27,-15*k,W*.54,30*k,15*k);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle="#fff";ctx.font="900 "+Math.round(13.5*k)+"px"+FN;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("TARGET ACHIEVED  +3R",0,1);ctx.restore()}
+  /* camera-style overlay: corners + 4K label at the bottom so it never sits behind the caption */
+  const ov=pg(s,.15,.6)*(1-pg(ct,P4C1+.4,P4C1+1.2));
+  if(ov>0){ctx.save();ctx.globalAlpha=ov;ctx.strokeStyle="#fff";ctx.lineWidth=3*k;ctx.lineCap="square";const m=12*k,L=22*k;
+    [[m,m,1,1],[W-m,m,-1,1],[m,H-m,1,-1],[W-m,H-m,-1,-1]].forEach(([x,y,dx,dy])=>{ctx.beginPath();ctx.moveTo(x+dx*L,y);ctx.lineTo(x,y);ctx.lineTo(x,y+dy*L);ctx.stroke()});
+    const by=H-m-30*k;ctx.lineWidth=1.4*k;rr(W-m-40*k,by,24*k,11*k,2.5*k);ctx.stroke();ctx.fillStyle="#fff";ctx.fillRect(W-m-38*k,by+2*k,16*k,7*k);ctx.fillRect(W-m-16*k,by+3.5*k,2*k,4*k);
+    ctx.fillStyle="#fff";ctx.font="800 "+Math.round(10*k)+"px"+FN;ctx.textAlign="left";ctx.textBaseline="middle";ctx.fillText("4K  60FPS",m+8*k,by+5.5*k);ctx.restore()}
+  /* 3-2-1 ring: parked in the empty top-left of the chart so the candles stay readable */
+  const ck=pg(ct,P4C0-.3,P4C0)*(1-pg(ct,P4C1,P4C1+.4));
+  if(ck>0){const sec=clamp(ct-P4C0,0,2.999),n=3-Math.floor(sec),fr=sec%1,cx=W*.27,cy=H*.32,r=W*.11;ctx.save();ctx.globalAlpha=ck;ctx.shadowColor="#fff";ctx.shadowBlur=12*k;ctx.strokeStyle="rgba(255,255,255,.22)";ctx.lineWidth=6*k;ctx.beginPath();ctx.arc(cx,cy,r,0,6.283);ctx.stroke();
+    ctx.strokeStyle="#fff";ctx.lineCap="round";ctx.beginPath();ctx.arc(cx,cy,r,-1.5708,-1.5708+6.283*(1-fr));ctx.stroke();ctx.restore();gtxt(String(n),cx,cy+2,"#fff","900 "+Math.round(r*1.2)+"px"+FN,ck,10*k)}
+  ltxt($("hd").textContent,W/2,H-12*k,"#7d828c","600 "+Math.round(11*k)+"px"+FN,.75,"center");
+}
+function frameP4(t){drawP4(P4U(t),t);let ci=-1;for(let i=0;i<P4T.length;i++)if(P4T[i][0]<=t)ci=i;
+  const want=capsOn&&ci>=0?P4T[ci][1]:"";if(cap.textContent!==want){cap.textContent=want;cap.className=want?"pop":""}
+  $("end").classList.toggle("on",t>=122+SH4);$("sc").value=Math.round(t*10)}
+LS.push({n:"Candle patterns, Part 4",d:"Liquidity grab: sweep, rejection, long with 3R",end:126+SH4,start:0,mode:"c"});
+const P4=LS.length-1;
+const _fr4=frame;frame=function(t){if(L===P4){frameP4(t);return}_fr4(t)};
+const _cl4=capList;capList=function(){if(L!==P4)return _cl4();
+  const a=P4T.map(c=>({t:c[0],who:"t",text:c[2]}));a.splice(1,0,{t:P4C0,who:"t",text:"",silent:true,delay:350});return a};   /* gate: no countdown until "three seconds" has been said */
+
+/* ================= PARTS 5-9: engaging hook + volume profile / candle teaching (data driven) ================= */
+function vpCalc(g,i0,i1){const key=i0+"-"+i1;g._vp=g._vp||{};if(g._vp[key])return g._vp[key];
+  const c=g.c,nb=26;let lo=1e9,hi=-1e9;for(let i=i0;i<=i1;i++){lo=Math.min(lo,c[i].l);hi=Math.max(hi,c[i].h)}
+  const bs=(hi-lo)/nb,vol=Array(nb).fill(0);
+  for(let i=i0;i<=i1;i++){const q=c[i],bt=Math.max(q.o,q.c),bb=Math.min(q.o,q.c),rg=(q.h-q.l)||1;
+    for(let j=0;j<nb;j++){const a=lo+j*bs,b=a+bs;vol[j]+=q.v*(Math.max(0,Math.min(b,q.h)-Math.max(a,q.l))+2*Math.max(0,Math.min(b,bt)-Math.max(a,bb)))/rg}}
+  let pj=0,tot=0;vol.forEach((v,j)=>{tot+=v;if(v>vol[pj])pj=j});
+  let l=pj,r=pj,cum=vol[pj];while(cum<.7*tot&&(l>0||r<nb-1)){const up=r<nb-1?vol[r+1]:-1,dn=l>0?vol[l-1]:-1;if(up>=dn){r++;cum+=vol[r]}else{l--;cum+=vol[l]}}
+  return g._vp[key]={lo,hi,bs,nb,vol,pj,l,r,poc:lo+(pj+.5)*bs,vah:lo+(r+1)*bs,val:lo+l*bs,mx:vol[pj]}}
+function rvX(g,v){if(typeof v!=="string")return v+B;
+  const q=v.split(":"),kd=q[0],rg=q[1].split("-").map(Number),i0=rg[0],i1=rg.length>1?rg[1]:rg[0],off=q[2]?+q[2]:0;let val;
+  if(kd==="poc"||kd==="vah"||kd==="val")val=vpCalc(g,i0,i1)[kd];
+  else if(kd==="lvn"){const m=vpCalc(g,i0,i1),a=Math.round(m.nb*.3),b=Math.round(m.nb*.7);let j=a;for(let t=a;t<=b;t++)if(m.vol[t]<m.vol[j])j=t;val=m.lo+(j+.5)*m.bs}
+  else if(kd==="cl")val=g.c[i0].c;
+  else if(kd==="hi"){val=-1e9;for(let i=i0;i<=i1;i++)val=Math.max(val,g.c[i].h)}
+  else if(kd==="lo"){val=1e9;for(let i=i0;i<=i1;i++)val=Math.min(val,g.c[i].l)}
+  return val+off}
+const XD=[
+{n:"Bullish engulfing",dsc:"Buy or sell hook, support, engulfing candle, long",part:"PART 5",tf:"15M",seed:101,N:44,noise:1.3,
+ path:[[0,80],[5,71],[8,73],[13,57],[15,51],[17,55],[22,48],[26,43],[28,47],[31,44],[33,42],[34,48],[38,57],[43,72]],
+ set:[[33,45,41.4,45.6,39.6],[34,40.8,47.2,48,40.2]],fix:[[26,"l",40.2],[31,"l",40.4]],
+ hook:{to:34,sec:5,say:"Price has been falling for a long time. Buy or sell? You have five seconds."},
+ steps:[
+  {to:35,sec:1.6,cap:"The answer: BUY",say:"The answer is buy. A powerful candle just formed at support. Let me show you.",ann:[{k:"ring",i0:34,i1:34,col:CUP}],hold:.6},
+  {cap:"Falling market",say:"First, price has been falling. Sellers are in control.",ann:[{k:"ln",a:[2,82],b:[32,47],col:"#f87171",w:2.4,dash:[7,5]},{k:"txt",pt:[9,72],dy:-14,lab:"downtrend",col:"#f87171"}],hold:1.2},
+  {cap:"Support level",say:"Then it reaches a support level that price already bounced from, twice.",ann:[{k:"hl",p:40.2,i:24,col:"#fbbf24",w:2.4},{k:"dot",pt:[26,40.2],col:"#fbbf24"},{k:"dot",pt:[31,40.4],col:"#fbbf24"},{k:"txt",pt:[36,40.2],dy:14,lab:"support",col:"#fbbf24"}]},
+  {cap:"Weak sellers",say:"Now look at this small red candle. The sellers are running out of strength.",ann:[{k:"ring",i0:33,i1:33,col:CDN},{k:"chip",pt:[33,45.6],dy:-26,dx:-34,lab:"weak sellers",col:"#fca5a5"}]},
+  {cap:"Bullish engulfing",say:"Then a big green candle completely swallows the red one. This is a bullish engulfing candle.",more:[[3.4,"Buyers beat the sellers in a single candle."]],ann:[{k:"ring",i0:33,i1:34,col:CUP},{k:"chip",pt:[34,48],dy:-34,dx:34,lab:"BULLISH ENGULFING",col:"#86efac"}]},
+  {cap:"Enter long",say:"Enter long when the green candle closes. Put the stop under its low. Target two and a half times your risk.",ann:[{k:"pos",i:35,e:47.2,s:39.2,tg:67.2,dir:1,w:12}]},
+  {to:44,sec:5,cap:"Target hit",say:"Now let it play out. Price rallies, and the target is hit.",ann:[{k:"pill",lab:"TARGET HIT"}]},
+  {cap:"Follow for more",say:"Follow for more candle patterns like this.",ann:[{k:"cta"}],hold:2}]},
+
+{n:"Value area",dsc:"Volume profile: POC, value area, back-inside trade",part:"PART 6",tf:"15M",seed:202,N:46,noise:1.5,
+ path:[[0,56],[2,62],[5,50],[8,60],[10,52],[13,64],[16,50],[19,59],[22,48],[25,58],[27,51],[29,56],[31,52],[33,50],[34,49],[35,52],[40,60],[45,70]],
+ set:[[34,50,49.2,50.4,48.4],[35,49.4,52.2,52.8,49]],
+ hook:{to:36,sec:4,say:"Price fell out of the range, then jumped back inside. Buy or sell? You have four seconds."},
+ steps:[
+  {to:37,sec:1.4,cap:"The answer: BUY",say:"The answer is buy, and the target is the other side of the range. Here is why.",ann:[{k:"arr",pt:[35,"cl:35"],dx:-30,dy:34,col:CUP}],hold:.5},
+  {cap:"Volume profile",say:"First, put a volume profile on this range. It shows where the most trading happened.",ann:[{k:"zone",i0:0,i1:29,p0:"lo:0-29",p1:"hi:0-29",col:"rgba(96,165,250,.07)"},{k:"vp",i0:0,i1:29,w:.36,d:2.2}]},
+  {cap:"Point of control",say:"The longest bar is the point of control. It is the price accepted by the most traders.",ann:[{k:"vpl",lv:"poc",i0:0,i1:29,lab:"POC",col:"#fbbf24"}]},
+  {cap:"The value area",say:"About seventy percent of the volume traded between these two lines. That is the value area.",ann:[{k:"zone",i0:0,i1:45,p0:"val:0-29",p1:"vah:0-29",col:"rgba(96,165,250,.10)"},{k:"vpl",lv:"vah",i0:0,i1:29,lab:"VAH",col:"#fff"},{k:"vpl",lv:"val",i0:0,i1:29,lab:"VAL",col:"#fff"}]},
+  {cap:"Back inside",say:"Price dropped below the value area, then closed back inside it.",ann:[{k:"ring",i0:34,i1:35,col:"#fbbf24"},{k:"chip",pt:[35,"cl:35"],dx:-48,dy:34,lab:"back inside",col:"#fde68a"}]},
+  {cap:"The other side",say:"When price re-enters the value area, it often travels all the way to the other side.",ann:[{k:"cur",a:[36,"cl:35"],c:[38,"vah:0-29:+4"],b:[43,"vah:0-29"],col:CUP}]},
+  {cap:"Long setup",say:"Buy here. Stop under the low. Target the top of the value area.",ann:[{k:"pos",i:36,e:"cl:35",s:"lo:35:-0.8",tg:"vah:0-29",dir:1,w:10}]},
+  {to:46,sec:5,cap:"Target hit",say:"Price climbs, and the target is hit.",ann:[{k:"pill",lab:"TARGET HIT"}]},
+  {cap:"Follow for more",say:"Follow for more volume profile strategies.",ann:[{k:"cta"}],hold:2}]},
+
+{n:"High and low volume nodes",dsc:"Volume profile: price flies through thin zones, stalls at fat ones",part:"PART 7",tf:"5M",seed:303,N:46,noise:1.2,
+ path:[[0,40],[3,43],[6,38],[9,42],[12,39],[14,41],[16,50],[17,58],[18,66],[19,72],[22,74],[25,70],[28,75],[31,71],[34,73],[35,70],[36,66],[37,60],[38,53],[39,47],[40,42],[42,40],[45,41]],
+ vol:[[0,14,1.3],[15,19,.2],[20,34,1.3],[35,45,.7]],
+ hook:{to:37,sec:5,say:"Price just broke out of the bottom of this range. Where does it go next? Buy or sell? You have five seconds."},
+ steps:[
+  {to:38,sec:1.2,cap:"The answer: SELL",say:"The answer is sell. Price is about to fly through a low volume zone.",ann:[{k:"arr",pt:[36,"cl:36"],dx:34,dy:-30,col:CDN}],hold:.4},
+  {cap:"Volume profile",say:"Put a volume profile on both ranges.",ann:[{k:"vp",i0:0,i1:34,w:.42,d:2.4}]},
+  {cap:"High volume nodes",say:"These two fat bars are high volume nodes. Lots of trading happened here, so price moves slowly and gets stuck.",ann:[{k:"vpl",lv:"poc",i0:0,i1:14,lab:"HVN",col:"#fbbf24"},{k:"vpl",lv:"poc",i0:20,i1:34,lab:"HVN",col:"#fbbf24"}]},
+  {cap:"Low volume node",say:"Between them is a thin bar, a low volume node. Almost nobody traded here, so nothing stops price. It moves fast.",ann:[{k:"zone",i0:12,i1:45,p0:"lvn:0-34:-4",p1:"lvn:0-34:+4",col:"rgba(248,113,113,.14)"},{k:"vpl",lv:"lvn",i0:0,i1:34,lab:"LVN",col:"#f87171"}]},
+  {cap:"Entering the gap",say:"Now price is leaving the top node and entering the low volume zone.",ann:[{k:"ring",i0:36,i1:37,col:CDN}]},
+  {cap:"Short setup",say:"Sell here. Stop above the top node. Target the next high volume node below.",ann:[{k:"pos",i:37,e:"cl:36",s:"hi:20-34:+1.5",tg:"poc:0-14",dir:-1,w:10}]},
+  {to:46,sec:5,cap:"Target hit",say:"Price drops straight through the gap, and stops at the next node. Target hit.",ann:[{k:"pill",lab:"TARGET HIT"}]},
+  {cap:"Follow for more",say:"Follow for more volume profile strategies.",ann:[{k:"cta"}],hold:2}]},
+
+{n:"Shooting star at the POC",dsc:"Volume profile + shooting star: short at old point of control",part:"PART 8",tf:"15M",seed:404,N:50,noise:1.3,
+ path:[[0,60],[3,64],[6,57],[9,62],[12,58],[15,63],[18,57],[21,61],[22,60],[25,52],[28,44],[30,40],[33,45],[36,50],[40,55],[42,58],[44,55],[47,47],[49,41]],
+ set:[[43,58.4,57.2,66,56.8]],
+ hook:{to:44,sec:4,say:"Price rallied back up to this level, and just printed this candle. Buy or sell? You have four seconds."},
+ steps:[
+  {to:45,sec:1.2,cap:"The answer: SELL",say:"The answer is sell. This level is resistance, and this candle shows why.",ann:[{k:"ring",i0:43,i1:43,col:CDN}],hold:.4},
+  {cap:"Volume profile",say:"Earlier, price spent a long time in this range. Here is its volume profile.",ann:[{k:"vp",i0:0,i1:22,w:.3,d:2.2}]},
+  {cap:"Old point of control",say:"The longest bar is the point of control. Many traders bought and sold here.",ann:[{k:"vpl",lv:"poc",i0:0,i1:22,lab:"POC",col:"#fbbf24"}]},
+  {cap:"Price returns",say:"Price dropped away, then rallied all the way back up to that old point of control.",ann:[{k:"arr",pt:[41,"cl:41"],dx:-36,dy:32,col:"#fff"},{k:"zone",i0:30,i1:49,p0:"poc:0-22:-1.5",p1:"poc:0-22:+1.5",col:"rgba(251,191,36,.14)"}]},
+  {cap:"A wall of sellers",say:"Traders who bought here earlier are waiting to get out at breakeven. So selling pressure shows up at this level.",hold:1.6,ann:[{k:"chip",pt:[30,"poc:0-22"],dy:-24,lab:"sellers waiting",col:"#fde68a"}]},
+  {cap:"Shooting star",say:"Look at this candle. A small body at the bottom, and a long wick on top. Buyers pushed up, but sellers slammed it back down.",ann:[{k:"ring",i0:43,i1:43,col:"#fff"},{k:"chip",pt:[43,66],dx:-54,dy:-6,lab:"long upper wick",col:"#fde68a"},{k:"chip",pt:[43,57],dx:-46,dy:34,lab:"small body",col:"#e8ebf0"}]},
+  {cap:"Short setup",say:"Sell when the star closes. Stop above the wick. Target the recent low.",ann:[{k:"pos",i:44,e:"cl:43",s:"hi:43:+0.8",tg:"lo:28-32:+1",dir:-1,w:10}]},
+  {to:50,sec:5,cap:"Target hit",say:"Price falls away from the level, and the target is hit.",ann:[{k:"pill",lab:"TARGET HIT"}]},
+  {cap:"Follow for more",say:"Follow for more candle patterns like this.",ann:[{k:"cta"}],hold:2}]},
+
+{n:"Volume climax",dsc:"Volume bars + long wick: panic selling marks the bottom",part:"PART 9",tf:"5M",seed:505,N:44,noise:1.3,vbars:true,
+ path:[[0,85],[6,78],[10,80],[16,68],[20,70],[26,58],[29,52],[30,44],[31,50],[34,56],[38,66],[43,78]],
+ set:[[30,52,44,52.6,38],[31,44.4,50.5,51.2,43.8]],vol:[[0,29,.8]],vs:[[30,5.5],[31,2.6],[29,1.8],[28,1.4]],
+ hook:{to:31,sec:3,say:"Price just crashed on huge volume. Buy or sell? You have three seconds."},
+ steps:[
+  {to:32,sec:1.2,cap:"The answer: BUY",say:"The answer is buy. This is called a volume climax.",ann:[{k:"ring",i0:30,i1:30,col:CUP}],hold:.4},
+  {cap:"Look at the volume",say:"Look at the volume bars at the bottom. Small, small, small, then one giant bar.",ann:[{k:"vbhl",i:30,lab:"HUGE VOLUME",col:"#fbbf24"}]},
+  {cap:"Panic selling",say:"That is panic selling. Everyone who wanted out sold at once.",ann:[{k:"ring",i0:30,i1:30,col:CDN},{k:"chip",pt:[30,52.6],dx:-52,dy:-8,lab:"panic selling",col:"#fca5a5"}]},
+  {cap:"Long lower wick",say:"But look at the long lower wick. Buyers stepped in and pushed price back up. The sellers are exhausted.",ann:[{k:"chip",pt:[30,38],dx:-54,dy:12,lab:"buyers step in",col:"#86efac"},{k:"arr",pt:[30,39],dx:34,dy:28,col:CUP}]},
+  {cap:"Confirmation",say:"The next candle is green and closes higher. That confirms the buyers are in control.",ann:[{k:"ring",i0:31,i1:31,col:CUP}]},
+  {cap:"Long setup",say:"Buy after the green candle closes. Stop under the wick. Target two times your risk.",ann:[{k:"pos",i:32,e:50.5,s:37,tg:77.5,dir:1,w:11}]},
+  {to:44,sec:5,cap:"Target hit",say:"Price recovers step by step, and the target is hit.",ann:[{k:"pill",lab:"TARGET HIT"}]},
+  {cap:"Follow for more",say:"Follow for more volume strategies.",ann:[{k:"cta"}],hold:2}]}
+];
+const XSFX={zone:"zone",hl:"hl",ln:"ln",vp:"poly",vpl:"hl",ring:"dot",chip:"txt",txt:"txt",dot:"dot",arr:"arr",cur:"cur",pos:"pos",pill:"pill",cta:"pill",vbhl:"arr"};
+function compileX(d){
+  const r=rng(d.seed),N=d.N,vf=i=>{let m=1;(d.vol||[]).forEach(a=>{if(i>=a[0]&&i<=a[1])m*=a[2]});return m};
+  const c=mk(r,d.path.map(([i,p])=>[i,B+p]),0,N-1,d.noise||1.5,B+d.path[0][1],vf),ss=new Set((d.set||[]).map(a=>a[0]));
+  (d.set||[]).forEach(([i,o,cl,h,l])=>{const q=c[i];q.o=B+o;q.c=B+cl;q.h=B+h;q.l=B+l;if(i>0&&!ss.has(i-1))c[i-1].c=B+o;if(i<N-1&&!ss.has(i+1))c[i+1].o=B+cl});
+  (d.vs||[]).forEach(([i,m])=>{c[i].v*=m});
+  (d.fix||[]).forEach(([i,k,p])=>{const q=c[i];if(k==="h")q.h=Math.max(B+p,q.o,q.c);else q.l=Math.min(B+p,q.o,q.c)});
+  c.forEach(q=>{q.h=Math.max(q.h,q.o,q.c);q.l=Math.min(q.l,q.o,q.c)});
+  const g={d,c,N},hk=d.hook,C0=3.6,cd=hk.sec,C1=C0+cd,SH=cd,mp=v=>v<C0?v:v+SH;
+  const rev=[[0,0],[Math.min(C0-.6,2.6),hk.to]],ann=[],caps=[[0,"BUY OR SELL?",hk.say]],vx=[];let pn=hk.to,t=C0,R=0;
+  d.steps.forEach(s=>{caps.push([t,s.cap,s.say]);(s.more||[]).forEach(m=>vx.push([t+m[0],m[1]]));const sec=s.sec||0;
+    if(s.to!=null){rev.push([t,pn]);pn=s.to;rev.push([t+sec,pn])}t+=sec;
+    (s.ann||[]).forEach((a0,k)=>{const a=Object.assign({},a0);a.t=t+(a.at!=null?a.at:k*.9);a.d=a.d||1.1;
+      ["p","p0","p1","e","s","tg"].forEach(q=>{if(a[q]!==undefined)a[q]=rvX(g,a[q])});
+      ["a","b","c","pt"].forEach(q=>{if(a[q])a[q]=[a[q][0],rvX(g,a[q][1])]});
+      if(a.k==="pos")R=Math.abs(a.tg-a.e)/Math.abs(a.e-a.s);ann.push(a)});
+    t+=s.hold!=null?s.hold:(s.ann||[]).length*.9+1.4});
+  ann.forEach(a=>{if(a.k==="pill")a.R=R});
+  let lo=Math.min(...c.map(q=>q.l)),hi=Math.max(...c.map(q=>q.h));
+  ann.forEach(a=>{["p","p0","p1","e","s","tg"].forEach(q=>{if(typeof a[q]==="number"){lo=Math.min(lo,a[q]);hi=Math.max(hi,a[q])}})});
+  const pad=(hi-lo)*.08,CP=caps.map(a=>[mp(a[0]),a[1]]);
+  const CL=caps.map(a=>({t:mp(a[0]),who:"t",text:a[2]||a[1]})).concat(vx.map(v=>({t:mp(v[0]),who:"t",text:v[1]})));
+  CL.sort((x,y)=>x.t-y.t);CL.splice(1,0,{t:C0,who:"t",text:"",silent:true,delay:350});
+  const ev=[[.5,"dot"],[.6,"dot"],[C1+.05,"pill"]].concat(ann.map(a=>[mp(a.t),XSFX[a.k]||"txt"]));
+  return Object.assign(g,{n:d.n,dsc:d.dsc,part:d.part,rev:rev.concat([[t,pn]]),ann,CP,CL,ev,lo:lo-pad,hi:hi+pad,C0,C1,SH,cd,R,endS:t+.3,END:Math.ceil(t+SH+4.5)})}
+const XG=XD.map(compileX),PX0=LS.length;
+XG.forEach(g=>LS.push({n:g.part.replace("PART","Part")+": "+g.n,d:g.dsc,end:g.END,start:0,mode:"c"}));
+const xU=(g,t)=>t<g.C0?t:(t<g.C1?g.C0:t-g.SH);
+function drawX(g,u,ct){
+  const c=g.c,N=g.N,k=W/360,FN=" -apple-system,Arial,sans-serif",vb=!!g.d.vbars,AX=46,pr=W-AX,bw=(pr-12)/(N+4),X=i=>8+(i+.5)*bw,top=H*.17,bot=vb?H*.66:H*.83,Y=p=>top+(g.hi-p)/(g.hi-g.lo)*(bot-top),body=Math.max(2,Math.round(bw*.64)),pa=a=>ease(pg(u,a.t,a.t+a.d)),fd=a=>1-pg(u,a.t+(a.dur||7),a.t+(a.dur||7)+.6);
+  const vy0=H*.70,vy1=H*.865,vm=Math.max(...c.map(q=>q.v));
+  bgFill();
+  const st=ns((g.hi-g.lo)/6);ctx.font="11px"+FN;ctx.textAlign="left";ctx.textBaseline="middle";
+  for(let p=Math.ceil(g.lo/st)*st;p<=g.hi;p+=st){const y=Math.round(Y(p))+.5;ctx.strokeStyle="rgba(255,255,255,.05)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(pr,y);ctx.stroke();ctx.fillStyle="#6b7385";ctx.fillText(p.toFixed(0),pr+5,y)}
+  ltxt(g.part,12*k,H*.04,"#8b93a1","800 "+Math.round(11*k)+"px"+FN,.9,"left");ltxt(g.d.tf,W-12*k,H*.04,"#e8ebf0","800 "+Math.round(18*k)+"px"+FN,1,"right");
+  /* under the candles */
+  g.ann.forEach(a=>{const p=pa(a);if(p<=0)return;
+    if(a.k==="zone"){const x0=X(a.i0)-bw/2,x1=X(a.i1)+bw/2;ctx.globalAlpha=p;ctx.fillStyle=a.col;ctx.fillRect(x0,Y(a.p1),x1-x0,Y(a.p0)-Y(a.p1));ctx.globalAlpha=1}
+    else if(a.k==="hl"){const y=Math.round(Y(a.p))+.5,x0=X(a.i);ctx.save();ctx.strokeStyle=a.col||"#fff";ctx.lineWidth=(a.w||1.6)*k;ctx.setLineDash(a.dash||[]);ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(lerp(x0,pr,p),y);ctx.stroke();ctx.restore()}
+    else if(a.k==="ln"){const x0=X(a.a[0]),y0=Y(a.a[1]),x1=X(a.b[0]),y1=Y(a.b[1]);ctx.save();ctx.strokeStyle=a.col||"#fff";ctx.lineWidth=(a.w||2)*k;ctx.lineCap="round";ctx.setLineDash(a.dash||[]);ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(lerp(x0,x1,p),lerp(y0,y1,p));ctx.stroke();ctx.restore()}
+    else if(a.k==="vp"){const m=vpCalc(g,a.i0,a.i1),x0=X(a.i0)-bw/2,mw=(a.w||.34)*pr;
+      for(let j=0;j<m.nb;j++){const y1=Y(m.lo+(j+1)*m.bs),y0=Y(m.lo+j*m.bs),Lw=m.vol[j]/m.mx*mw*p,inVA=j>=m.l&&j<=m.r;ctx.fillStyle=j===m.pj?"rgba(251,191,36,.85)":(inVA?"rgba(96,165,250,.55)":"rgba(96,165,250,.32)");ctx.fillRect(x0,y1+.5,Lw,y0-y1-1)}}
+    else if(a.k==="vpl"){const lv=rvX(g,a.lv+":"+a.i0+"-"+a.i1),y=Math.round(Y(lv))+.5,x0=X(a.i0)-bw/2,poc=a.lv==="poc";ctx.save();ctx.strokeStyle=a.col||"#fff";ctx.lineWidth=(poc?2.4:1.6)*k;ctx.setLineDash(poc?[]:[6*k,5*k]);ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(lerp(x0,pr,p),y);ctx.stroke();ctx.restore();p4lab(a.lab,pr-2,y-12*k,a.col||"#fff",pg(p,.5,1),k,"right")}});
+  /* candles */
+  const n=interp(g.rev,u);
+  for(let i=0;i<Math.ceil(n)&&i<N;i++){const q=c[i],f=clamp(n-i);let{o,c:cl,h,l}=q;
+    if(f<1){const c2=o+(cl-o)*f;h=Math.max(o,c2)+(h-Math.max(o,cl))*f;l=Math.min(o,c2)-(Math.min(o,cl)-l)*f;cl=c2}
+    const x=Math.round(X(i))+.5,col=cl>=o?CUP:CDN,tp=Math.min(Y(o),Y(cl)),hg=Math.max(1.5,Math.abs(Y(cl)-Y(o)));
+    ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(x,Y(h));ctx.lineTo(x,Y(l));ctx.stroke();ctx.fillRect(Math.round(x-body/2),tp,body,hg)}
+  if(vb){ctx.strokeStyle="rgba(255,255,255,.12)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,vy1+.5);ctx.lineTo(pr,vy1+.5);ctx.stroke();ltxt("VOLUME",8*k,vy0-6*k,"#6b7385","700 "+Math.round(9.5*k)+"px"+FN,1,"left");
+    for(let i=0;i<Math.ceil(n)&&i<N;i++){const q=c[i],f=clamp(n-i),hh=q.v/vm*(vy1-vy0)*f;ctx.fillStyle=q.c>=q.o?"rgba(34,197,94,.7)":"rgba(239,68,68,.7)";ctx.fillRect(Math.round(X(i)-body/2),vy1-hh,body,hh)}}
+  /* over the candles */
+  g.ann.forEach(a=>{const p=pa(a);if(p<=0)return;const al=fd(a);
+    if(a.k==="dot"){ctx.fillStyle=a.col||"#fff";ctx.beginPath();ctx.arc(X(a.pt[0]),Y(a.pt[1]),5*k*p,0,7);ctx.fill()}
+    else if(a.k==="arr"){const tx=X(a.pt[0]),ty=Y(a.pt[1]);ctx.save();ctx.globalAlpha=p*al;ctx.shadowColor=a.col||"#fff";ctx.shadowBlur=8*k;arrow(tx+a.dx*k,ty+a.dy*k,tx,ty,a.col||"#fff",3*k);ctx.restore()}
+    else if(a.k==="cur"){curve([X(a.a[0]),Y(a.a[1])],[X(a.c[0]),Y(a.c[1])],[X(a.b[0]),Y(a.b[1])],p,a.col||"#fff",3.2*k)}
+    else if(a.k==="txt"){ctx.globalAlpha=p;halo(a.lab,X(a.pt[0])+(a.dx||0)*k,Y(a.pt[1])+(a.dy||0)*k,a.col||"#fff","800 "+Math.round(13*k)+"px"+FN,a.al||"left");ctx.globalAlpha=1}
+    else if(a.k==="chip"){p4lab(a.lab,X(a.pt[0])+(a.dx||0)*k,Y(a.pt[1])+(a.dy||0)*k,a.col||"#fff",p*al,k,"center")}
+    else if(a.k==="ring"){let h2=-1e9,l2=1e9;for(let i=a.i0;i<=a.i1;i++){h2=Math.max(h2,c[i].h);l2=Math.min(l2,c[i].l)}
+      const cx=(X(a.i0)+X(a.i1))/2,cy=(Y(h2)+Y(l2))/2,rx=(X(a.i1)-X(a.i0))/2+bw*1.1+5*k,ry=Math.abs(Y(l2)-Y(h2))/2+8*k;ctx.save();ctx.globalAlpha=p*al;ctx.strokeStyle=a.col;ctx.shadowColor=a.col;ctx.shadowBlur=10*k;ctx.lineWidth=2.4*k;ctx.beginPath();ctx.ellipse(cx,cy,rx*(.6+.4*p),ry*(.6+.4*p),0,0,6.283);ctx.stroke();ctx.restore()}
+    else if(a.k==="vbhl"){const q=c[a.i],x=X(a.i),hh=q.v/vm*(vy1-vy0);ctx.save();ctx.globalAlpha=p*al;ctx.strokeStyle=a.col;ctx.shadowColor=a.col;ctx.shadowBlur=10*k;ctx.lineWidth=2.2*k;ctx.strokeRect(x-body/2-4*k,vy1-hh-4*k,body+8*k,hh+8*k);ctx.restore();p4lab(a.lab,x-44*k,vy1-hh+4*k,a.col,p*al,k,"center")}
+    else if(a.k==="pos"){const x0=X(a.i),w=Math.min(bw*(a.w||12),W-12-x0),yE=Y(a.e),yT=lerp(yE,Y(a.tg),p),yS=lerp(yE,Y(a.s),p),GN=CUP,RR=CDN;
+      ctx.fillStyle="rgba(34,197,94,.24)";ctx.fillRect(x0,Math.min(yE,yT),w,Math.abs(yT-yE));ctx.fillStyle="rgba(239,68,68,.24)";ctx.fillRect(x0,Math.min(yE,yS),w,Math.abs(yS-yE));
+      ctx.lineWidth=1.5;ctx.strokeStyle=GN;ctx.strokeRect(x0,Math.min(yE,yT),w,Math.abs(yT-yE));ctx.strokeStyle=RR;ctx.strokeRect(x0,Math.min(yE,yS),w,Math.abs(yS-yE));
+      if(p>.8)halo((a.dir>0?"LONG":"SHORT")+"  target +"+g.R.toFixed(1)+"R",x0+5,yT+(a.dir>0?13:-13),GN,"700 "+Math.round(11.5*k)+"px"+FN)}
+    else if(a.k==="pill"){ctx.save();ctx.translate(W*.5,H*.105);ctx.scale(p,p);ctx.fillStyle=CUP;ctx.shadowColor=CUP;ctx.shadowBlur=14*k;ctx.beginPath();ctx.roundRect(-84,-16,168,32,16);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle="#fff";ctx.font="800 "+Math.round(15*k)+"px"+FN;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(a.lab+"  +"+g.R.toFixed(1)+"R",0,1);ctx.restore()}
+    else if(a.k==="cta"){const s=bk((u-a.t)/.45);if(s>.01){ctx.save();ctx.translate(W/2,H*.9);ctx.scale(s,s);ctx.shadowColor=CUP;ctx.shadowBlur=14*k;ctx.fillStyle="rgba(8,40,20,.92)";ctx.strokeStyle=CUP;ctx.lineWidth=3*k;rr(-W*.3,-17*k,W*.6,34*k,17*k);ctx.fill();ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle="#bbf7d0";ctx.font="900 "+Math.round(15*k)+"px"+FN;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("FOLLOW FOR MORE",0,1);ctx.restore()}}});
+  /* the hook: arrows, BUY / SELL, countdown, alarm, answer */
+  const hk=g.d.hook,li=hk.to-1,hkA=(1-pg(ct,g.C1+.3,g.C1+.8)),px=X(li)+body/2+6*k,py=Y(c[li].c),aw=pg(ct,1,1.8)*hkA;
+  if(aw>0&&ct<g.C1+.8){ctx.save();ctx.globalAlpha=aw;ctx.shadowColor="#fff";ctx.shadowBlur=8*k;arrow(px,py,px+bw*1.3,py-H*.12*aw,"#fff",3*k);arrow(px,py,px+bw*1.3,py+H*.12*aw,"#fff",3*k);ctx.restore()}
+  const ans=ease(pg(ct,g.C1+.05,g.C1+.5)),pl=bk((ct-.45)/.4)*(1-pg(ct,g.C1+4.4,g.C1+5)),by=H*.91,bwid=W*.31,bh=H*.062;
+  const buyAns=g.R>=0&&g.ann.some(a=>a.k==="pos"&&a.dir>0);
+  if(pl>.01){gloss(W*.22,by,bwid,bh,"#4ade80","#15803d","BUY",pl*(buyAns?1+.14*ans:1),buyAns?1:1-.72*ans);gloss(W*.78,by,bwid,bh,"#f87171","#b91c1c","SELL",pl*(buyAns?1:1+.14*ans),buyAns?1-.72*ans:1)}
+  const ck=pg(ct,g.C0-.3,g.C0)*(1-pg(ct,g.C1,g.C1+.4));
+  if(ck>0){const sec=clamp(ct-g.C0,0,g.cd-.001),nn=g.cd-Math.floor(sec),fr=sec%1,cx=W/2,cy=H*.095,r=W*.07;
+    ctx.save();ctx.globalAlpha=ck;ctx.shadowColor="#fff";ctx.shadowBlur=10*k;ctx.strokeStyle="rgba(255,255,255,.22)";ctx.lineWidth=5*k;ctx.beginPath();ctx.arc(cx,cy,r,0,6.283);ctx.stroke();
+    ctx.strokeStyle="#fff";ctx.lineCap="round";ctx.beginPath();ctx.arc(cx,cy,r,-1.5708,-1.5708+6.283*(1-fr));ctx.stroke();ctx.restore();gtxt(String(nn),cx,cy+1,"#fff","900 "+Math.round(r*1.15)+"px"+FN,ck,8*k)}
+  const fl=pg(ct,g.C1,g.C1+.05)*(1-pg(ct,g.C1+.05,g.C1+.6));if(fl>0){ctx.fillStyle="rgba(255,60,60,"+(.3*fl)+")";ctx.fillRect(0,0,W,H)}
+  ltxt($("hd").textContent,W/2,H-10*k,"#7d828c","600 "+Math.round(11*k)+"px"+FN,.75,"center")}
+function frameX(t,g){drawX(g,xU(g,t),t);let ci=-1;for(let i=0;i<g.CP.length;i++)if(g.CP[i][0]<=t)ci=i;
+  const want=capsOn&&ci>=0?g.CP[ci][1]:"";if(cap.textContent!==want){cap.textContent=want;cap.className=want?"pop":""}
+  $("end").classList.toggle("on",t>=g.endS+g.SH);$("sc").value=Math.round(t*10)}
+const _frX=frame;frame=function(t){if(L>=PX0&&L<PX0+XG.length){frameX(t,XG[L-PX0]);return}_frX(t)};
+const _clX=capList;capList=function(){if(L<PX0||L>=PX0+XG.length)return _clX();return XG[L-PX0].CL.map(o=>Object.assign({},o))};
+
+/* ===== countdown sounds: a tick per number, an alarm at zero ===== */
+var SPDOV=0,CATCH=0;let AC=null,lastCD=-1;
+function beep(f,d,type,vol,when){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();
+  const t0=AC.currentTime+(when||0),o=AC.createOscillator(),g=AC.createGain();o.type=type||"sine";o.frequency.value=f;
+  g.gain.setValueAtTime(vol||.25,t0);g.gain.exponentialRampToValueAtTime(.001,t0+d);o.connect(g);g.connect(AC.destination);o.start(t0);o.stop(t0+d+.02)}catch(e){}}
+let cdL=-1;
+function cdLoop(){
+  if(cdL!==L){cdL=L;lastCD=-1}
+  const xg=(L>=PX0&&L<PX0+XG.length)?XG[L-PX0]:null;const cfg=xg?[xg.C0,xg.C1,xg.cd]:L===P1?[CD0,CD1,5]:(L===P2?[D0,D1,4]:(L===P3?[P3C0,P3C1,5]:(L===P4?[P4C0,P4C1,3]:null)));
+  let inCd=false;
+  if(cfg){const c0=cfg[0],c1=cfg[1],N=cfg[2];inCd=T>=c0-.001&&T<c1;
+    const key=T<c0?-1:(T>=c1?N:Math.floor(T-c0));
+    if(key!==lastCD){
+      if(playing){
+        if(key>=0&&key<N&&key===lastCD+1){beep(620+key*70,.14,"sine",.3);beep(310+key*35,.14,"triangle",.18)}        /* tick, rising */
+        if(key===N&&lastCD===N-1){[0,.2,.4].forEach(w=>beep(880,.15,"square",.22,w));beep(440,.5,"sawtooth",.12,.6)}}   /* alarm */
+      lastCD=key}}
+  SPDOV=inCd?1:(CATCH?Math.max(5,speed*3):0);        /* voice idle: skip the silent stretch quickly, never wait in silence */
+  requestAnimationFrame(cdLoop)}
+requestAnimationFrame(cdLoop);
+
+/* ===== draw sounds: a swish for lines and zones, a pop for arrows, a chime for the trade box, a tick for every new candle ===== */
+function noiseBurst(dur,f0,f1,vol,when){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();
+  const n=Math.floor(AC.sampleRate*dur),buf=AC.createBuffer(1,n,AC.sampleRate),d=buf.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.sin(Math.PI*i/n);
+  const s=AC.createBufferSource();s.buffer=buf;const f=AC.createBiquadFilter();f.type="bandpass";f.Q.value=2.5;const t0=AC.currentTime+(when||0);
+  f.frequency.setValueAtTime(f0,t0);f.frequency.exponentialRampToValueAtTime(f1,t0+dur);const g=AC.createGain();g.gain.value=vol;s.connect(f);f.connect(g);g.connect(AC.destination);s.start(t0)}catch(e){}}
+const SFX={hl:()=>noiseBurst(.45,400,3200,.5),ln:()=>noiseBurst(.4,500,2800,.45),poly:()=>noiseBurst(.6,300,1800,.4),zone:()=>noiseBurst(.5,300,1600,.45),cur:()=>noiseBurst(.5,600,2600,.45),
+  arr:()=>{beep(520,.1,"triangle",.35);beep(780,.14,"triangle",.3,.08)},dot:()=>beep(900,.1,"sine",.35),txt:()=>beep(1400,.06,"sine",.18),
+  pos:()=>{[523,659,784].forEach((f,i)=>beep(f,.25,"sine",.3,i*.09))},pill:()=>{[523,659,784,1047].forEach((f,i)=>beep(f,.32,"triangle",.32,i*.1))}};
+const P4EV=[[8.8,"arr"],[13.5,"ln"],[17.8,"hl"],[21,"txt"],[21,"arr"],[25.2,"arr"],[33.2,"arr"],[40,"zone"],[44,"hl"],[44.4,"dot"],[48,"txt"],[52.5,"zone"],[57.2,"cur"],[64.6,"arr"],[68.6,"dot"],[73,"arr"],[77,"txt"],[81,"txt"],[85,"txt"],[90,"zone"],[94,"ln"],[98,"zone"],[102.8,"txt"],[104.6,"txt"],[113.7,"pill"]].map(e=>[e[0]+SH4,e[1]]);
+const sy=(v,c0,sh)=>v<c0?v:v+sh,EVC={};
+function buildEv(){const e=[],a=(t,k)=>e.push([t,k]);
+  if(L===0){const A=S[0],B2=S[1],o=B2.t0;
+    a(A.sh,"hl");a(A.sh,"arr");a(A.sl,"hl");a(A.sl,"arr");a(A.sent,"ln");a(A.buy,"dot");a(A.m0,"txt");a(A.hl,"dot");a(A.vp0,"zone");a(A.vp0+1.4,"poly");a(A.poc0,"hl");a(A.pos,"pos");a(A.res,"pill");
+    a(o+B2.sent,"ln");a(o+B2.buy,"dot");a(o+B2.m0,"txt");a(o+B2.hl,"dot");a(o+B2.vp0,"zone");a(o+B2.vp0+1.4,"poly");a(o+B2.poc0,"hl");a(o+B2.pos,"pos");a(o+B2.res,"pill")}
+  else if(L===1){const c=S2;a(c.quiz[0],"arr");a(c.lnH,"hl");a(c.dot,"ln");a(c.lnL,"hl");a(c.sm,"arr");a(c.cv[0],"cur");a(c.ent,"hl");a(c.zone,"zone");a(c.pos,"pos");a(c.res,"pill")}
+  else if(L===2){[[2.2,"txt"],[3,"txt"],[3.2,"cur"],[8.8,"txt"],[9,"dot"],[9.5,"dot"],[10,"dot"],[10.5,"dot"],[12.2,"txt"],[12.8,"dot"],[13.3,"dot"],[13.8,"dot"],[14.3,"dot"],[16.4,"ln"],[21.8,"ln"],[30,"hl"],[33.8,"cur"],[36.4,"dot"],[38,"ln"],[38.6,"dot"],[44.6,"hl"],[56,"pos"],[60.3,"pill"]].forEach(x=>a(x[0],x[1]))}
+  else if(L>=3&&L<P1)G[L-3].ann.forEach(x=>a(x.t,x.k));
+  else if(L===P1){[[.9,"dot"],[1.2,"arr"],[6.3,"txt"],[12.6,"zone"],[16.8,"cur"],[18.2,"dot"],[18.6,"arr"],[22.3,"dot"],[22.8,"dot"],[23.3,"dot"],[23.8,"dot"],[24.3,"dot"],[28.2,"zone"],[33.8,"dot"],[35,"arr"],[39.2,"hl"],[41,"pos"],[43,"pill"]].forEach(x=>a(sy(x[0],CD0,SH),x[1]))}
+  else if(L===P2){[[.3,"dot"],[1.4,"arr"],[5.2,"arr"],[10.2,"pill"],[10.8,"arr"],[15.8,"zone"],[17,"txt"],[21,"arr"],[22.3,"arr"],[27,"dot"],[27.4,"ln"],[29.4,"pos"]].forEach(x=>a(sy(x[0],D0,SH2),x[1]))}
+  else if(L===P3){[[3,"arr"],[4.5,"arr"],[9.5,"hl"],[14.5,"hl"],[19.5,"hl"],[24,"arr"],[32.2,"ln"],[34.6,"dot"],[38,"dot"],[38.5,"hl"],[42.5,"zone"],[47,"zone"],[53.4,"pill"],[56.6,"pos"]].forEach(x=>a(sy(x[0],P3C0,SH3),x[1]))}
+  else if(L>=PX0&&L<PX0+XG.length)return XG[L-PX0].ev;
+  else if(L===P4)return P4EV;
+  return e}
+function sfxEvents(){if(!EVC[L])EVC[L]=buildEv();return EVC[L]}
+function candleCount(){
+  if(L===0){const sc=T>=56?S[1]:S[0];return(T>=56?1000:0)+Math.floor(interp(sc.rev,T-sc.t0))}
+  if(L===1)return Math.floor(interp(S2.rev,T));
+  if(L>=3&&L<P1)return Math.floor(interp(G[L-3].rev,T));
+  if(L===P1){const u=P1U(T);return P1R.filter(x=>x<=u).length}
+  if(L===P2){const u=P2U(T);return P2R.filter(x=>x<=u).length}
+  if(L===P3){const u=P3U(T);let n=0;for(let i=0;i<P3D.c.length;i++)if(P3R(i)<=u)n++;return n}
+  if(L===P4){const u=P4U(T);let n=0;for(let i=0;i<=80;i++)if(P4R(i)<=u)n++;return n}
+  if(L>=PX0&&L<PX0+XG.length){const g=XG[L-PX0];return Math.floor(interp(g.rev,xU(g,T)))}
+  return 0}
+let sfxPT=0,sfxL=-1,sfxN=0;
+function sfxLoop(){if(sfxL!==L){sfxL=L;sfxPT=T;sfxN=candleCount()}
+  const dt=T-sfxPT;
+  if(playing&&dt>0&&dt<1.2){sfxEvents().forEach(e=>{if(e[0]>sfxPT&&e[0]<=T&&SFX[e[1]])SFX[e[1]]()});
+    const cn=candleCount();if(cn>sfxN&&cn-sfxN<4)beep(1700+(cn*53)%400,.03,"square",.07);sfxN=cn}
+  else sfxN=candleCount();
+  sfxPT=T;requestAnimationFrame(sfxLoop)}
+requestAnimationFrame(sfxLoop);
+
+/* ===== phone audio unlock: browsers keep sound locked until a real tap, and iPhones also mute it in silent mode ===== */
+let AUNL=false;
+function unlockAudio(){
+  try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state!=="running")AC.resume();
+    const b=AC.createBuffer(1,1,22050),q=AC.createBufferSource();q.buffer=b;q.connect(AC.destination);q.start(0)}catch(e){}
+  if(!window.__sil){try{const n=8000,u=new Uint8Array(44+n),dv=new DataView(u.buffer),w=(o,t)=>{for(let i=0;i<t.length;i++)u[o+i]=t.charCodeAt(i)};
+      w(0,"RIFF");dv.setUint32(4,36+n,true);w(8,"WAVEfmt ");dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,1,true);dv.setUint32(24,8000,true);dv.setUint32(28,8000,true);dv.setUint16(32,1,true);dv.setUint16(34,8,true);w(36,"data");dv.setUint32(40,n,true);u.fill(128,44);
+      const a=document.createElement("audio");a.src=URL.createObjectURL(new Blob([u],{type:"audio/wav"}));a.loop=true;a.setAttribute("playsinline","");a.play().then(()=>{window.__sil=a}).catch(()=>{})}catch(e){}}
+  if(!AUNL){AUNL=true;if(SS){try{const q=new SpeechSynthesisUtterance(" ");q.volume=0;SS.speak(q)}catch(e){}}}
+}
+["pointerdown","touchstart","touchend","click","keydown"].forEach(ev=>document.addEventListener(ev,unlockAudio,true));
+setInterval(()=>{try{if(SS&&SS.paused)SS.resume();if(AC&&AC.state==="suspended"&&playing)AC.resume()}catch(e){}},3000);
+$("ts").onclick=()=>{unlockAudio();[523,659,784].forEach((f,i)=>beep(f,.3,"sine",.4,i*.12));
+  if(SS){try{SS["cancel"]();const u=new SpeechSynthesisUtterance("Sound check. If you can hear this, the voice works.");if(VT){u.voice=VT;u.lang=VT.lang}else u.lang="en-US";u.volume=1;SS.speak(u)}catch(e){}$("tsm").textContent=SS.getVoices().length?"If you heard the beeps but no voice, your phone has no speech voice installed. If you heard nothing, check silent mode and volume.":"This browser has no speech voices, so only the sound effects will play."}
+  else $("tsm").textContent="This browser has no speech support, so only the sound effects will play."};
+</script>
+</body>
+</html>
