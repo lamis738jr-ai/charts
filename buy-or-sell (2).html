@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Buy or Sell? Trading Lessons</title>
+<style>
+:root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;margin:0;background:#000;font-family:system-ui,sans-serif;color:#eee;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center}
+#wrap{position:relative;width:min(92vw,calc(92vh*9/16));aspect-ratio:9/16;box-shadow:0 0 0 14px #000,0 0 60px 30px #000}
+canvas{width:100%;height:100%;border-radius:14px;display:block;background:#111}
+#menu{position:absolute;inset:0;background:rgba(0,0,0,.72);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+#menu h1{margin:0 0 10px;font-size:28px;text-align:center}
+button{background:#1d1d1d;color:#eee;border:1px solid #333;border-radius:24px;padding:12px 26px;font-size:16px;cursor:pointer;min-width:200px}
+button.main{background:#2fd88a;color:#021;border:0;font-weight:700;font-size:18px}
+#settings{display:none;position:fixed;inset:0;background:#0b0b0d;overflow:auto;padding:24px 20px;box-sizing:border-box;z-index:5}
+#settings .in{max-width:420px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+label{display:flex;flex-direction:column;gap:6px;font-size:14px;color:#bbb}
+select,input[type=range]{width:100%;padding:8px;background:#1a1a1a;color:#eee;border:1px solid #333;border-radius:8px;box-sizing:border-box}
+.row{display:flex;justify-content:space-between;align-items:center}
+.vid{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;border-radius:14px;padding:14px 16px;min-width:0}
+.vid.on{border-color:#2fd88a;background:#12301f}
+#note{font-size:13px;color:#ffd54a;min-height:16px}
+</style></head><body>
+<div id="wrap"><canvas id="c" width="1080" height="1920"></canvas>
+<div id="menu"><h1>Buy or Sell?</h1>
+<div id="cur" style="margin:-4px 0 6px;color:#9fd;font-size:15px;text-align:center"></div>
+<button class="main" id="play">▶ Play lesson</button>
+<button id="st">⚙ Settings</button></div></div>
+
+<div id="settings"><div class="in">
+<div class="row"><h2 style="margin:0">Settings</h2><button id="back" style="min-width:0;padding:8px 18px">← Back</button></div>
+<div><div style="font-size:14px;color:#bbb;margin-bottom:8px">Choose your video</div><div id="vids" style="display:flex;flex-direction:column;gap:8px"></div></div>
+<label>Voice<select id="voice"></select></label>
+<label>Voice speed<input type="range" id="rate" min="0.7" max="1.3" step="0.05" value="0.95"></label>
+<label>Volume<input type="range" id="vol" min="0" max="1" step="0.05" value="0.8"></label>
+<div class="row"><span>Voice narration</span><input type="checkbox" id="vo" checked></div>
+<div class="row"><span>Tick and chime sounds</span><input type="checkbox" id="sn" checked></div>
+<button id="test">🔊 Test sound and voice</button>
+<div id="note"></div>
+<button id="rp" class="main">▶ Play selected video</button>
+</div></div>
+
+<script>
+(function(){
+const GREEN="#2fd88a",RED="#ff4d55",GOLD="#ffd54a",BLUE="#4aa3ff";
+const RISK={cap:"Risk only 1% per trade",badge:"RISK MANAGEMENT",say:"Finally, risk management. Never risk more than one percent of your account on a single trade. Even a great setup can fail, so protect your capital first. Survive first, profit second.",tools:[{t:"pop",l:"THE 1% RULE",at:.3,c:GOLD},{t:"pop",l:"PROTECT CAPITAL",at:5.5,c:GREEN,y:520},{t:"pop",l:"SURVIVE FIRST",at:9,c:BLUE}]};
+const dd=s=>Math.ceil((s.split(" ").length/2.4+.7)*10)/10,pp=(l,at,c,y)=>y?{t:"pop",l,at,c,y}:{t:"pop",l,at,c},stp=(cap,badge,say,tools)=>({cap,badge,say,dur:dd(say),tools}),
+nl=o=>{const c=o.cd||5;o.cd=c;o.cdAt=c==3?3:3.3;o.revGap=c==3?1.4:1.5;o.introSay="Buy or sell? You have "+(c==3?"three":"five")+" seconds.";o.endSay="Follow for more.";o.T=Math.ceil(o.cdAt+c+o.revGap+o.steps.reduce((a,x)=>a+x.dur,0)+1.4);return o},
+shift=(R,d)=>R.forEach(c=>{c.o+=d;c.c+=d;c.h+=d;c.l+=d});
+const LESSONS=[
+{name:"Overextended spike",seed:7,dir:"short",hook:[[14,-1.2,1.6],[10,0,1.4],[12,1.5,1.6],[1,6,.5]],rev:[[3,-2.5,1.5],[2,-1.5,1]],ans:"SELL",
+ steps:[
+ {cap:"Read the trend first",badge:"TREND",say:"First, read the trend. Price dropped hard, built a base at the bottom, then climbed steadily. Buyers are in control, but remember, the steeper a move gets, the more fragile it becomes.",tools:[{t:"tr",i1:"low1Idx",p1:"low1",i2:"lastIdx",p2:"last",l:"Uptrend line",c:GREEN,at:.1},{t:"pop",l:"BUYERS IN CONTROL",at:2.2,c:GREEN},{t:"circ",i:"lastIdx",l:"Too steep?",c:RED,at:8},{t:"pop",l:"FRAGILE MOVE",at:9,c:RED,y:520}]},
+ {cap:"Huge candle = overextended",badge:"CANDLE SIZE",say:"Now look at the last candle. It is about three times bigger than the average candle before it. We call this an overextended move, or a spike. Big spikes often come from emotional, late buying.",tools:[{t:"circ",i:"lastIdx",l:"3x bigger",at:.1},{t:"pop",l:"SPIKE!",at:1.8,c:GOLD},{t:"tag",p:"last",at:3.5,c:GOLD},{t:"pop",l:"EMOTIONAL BUYING",at:7,c:RED,y:520}]},
+ {cap:"Price is far from the average",badge:"MOVING AVERAGE",say:"Add the ten period moving average. Price is stretched far above it, like a rubber band pulled tight. When price gets this far from its average, it often snaps back toward it.",tools:[{t:"ma",l:"10 MA",u:"lastIdx",at:.1},{t:"gap",l:"Stretched",at:2.5},{t:"tag",p:"ma",at:3,c:BLUE},{t:"pop",l:"RUBBER BAND!",at:5,c:BLUE},{t:"pop",l:"SNAPS BACK",at:9,c:RED,y:520}]},
+ {cap:"Resistance at the spike top",badge:"RESISTANCE",say:"Mark resistance at the top of the spike. Traders who bought late are now sitting near this level. If price falls back, they panic and sell to escape, which pushes price down even faster.",tools:[{t:"zone",p:["top",.6],q:["top",-1],l:"Resistance zone",c:RED,keep:1,at:.1},{t:"tag",p:"top",at:1.2,c:RED},{t:"pop",l:"TRAPPED BUYERS",at:4,c:RED},{t:"pop",l:"PANIC SELLING",at:8.5,c:RED,y:520}]},
+ {cap:"Wait for a rejection candle",badge:"CONFIRMATION",say:"We never sell just because price is high. We wait for confirmation, like this red rejection candle that closes back below the spike. That tells us sellers have taken over.",tools:[{t:"circ",i:"n",l:"Rejection",c:RED,at:.2},{t:"pop",l:"NO GUESSING",at:2,c:GOLD},{t:"pop",l:"SELLERS TAKE OVER",at:7,c:RED,y:520}]},
+ {cap:"Entry, stop and target",badge:"TRADE PLAN",say:"Here is the trade plan. Sell after the rejection candle closes. Place your stop loss just above the top of the spike. Then set your target at least twice the distance of your risk.",tools:[{t:"rr",i:"n",at:.2},{t:"pop",l:"SELL",at:1.5,c:RED},{t:"pop",l:"RISK 1 : REWARD 2",at:8,c:GOLD,y:520}]},
+ RISK]},
+{name:"Double bottom",seed:21,dir:"long",hook:[[12,-1.3,1.5],[8,.5,1.2],[6,-1.1,1.4],[8,.4,1.2],[6,.25,1.2]],rev:[[4,2,1.4]],ans:"BUY",
+ steps:[
+ {cap:"Start with the trend",badge:"DOWNTREND",say:"First, the trend. Price was falling for a long time, making lower lows. Sellers were clearly in control.",tools:[{t:"tr",i1:0,p1:"first",i2:"low1Idx",p2:"low1",l:"Downtrend",c:RED,at:.1},{t:"pop",l:"LOWER LOWS",at:1.8,c:RED},{t:"pop",l:"SELLERS IN CONTROL",at:4.5,c:RED,y:520}]},
+ {cap:"First low = support",badge:"SUPPORT",say:"Then price found a floor and bounced. This first low marks a support zone, an area where buyers stepped in and stopped the fall.",tools:[{t:"circ",i:"low1Idx",l:"Low 1",c:GREEN,at:.2},{t:"zone",p:["low",.4],q:["low",-.8],l:"Support zone",c:GREEN,keep:1,at:2},{t:"tag",p:"low1",at:3,c:GREEN},{t:"pop",l:"BUYERS STEP IN",at:5,c:GREEN}]},
+ {cap:"The second test fails",badge:"DOUBLE BOTTOM",say:"Price rose, then fell back and tested the same area again. Sellers tried twice and failed to break lower. That second touch makes support much stronger, and this pattern is called a double bottom.",tools:[{t:"circ",i:"low2Idx",l:"Low 2",c:GREEN,at:.2},{t:"tag",p:"low2",at:1.5,c:GREEN},{t:"pop",l:"SAME LEVEL AGAIN",at:3,c:GOLD},{t:"pop",l:"SELLERS FAILED",at:7,c:RED,y:520},{t:"pop",l:"DOUBLE BOTTOM",at:10,c:GREEN}]},
+ {cap:"Neckline = level to break",badge:"NECKLINE",say:"Now draw the neckline across the highest point between the two lows. This is the key level. The pattern is only confirmed when price closes above it.",tools:[{t:"h",p:"neck",d:1,l:"Neckline",c:GOLD,keep:1,at:.1},{t:"tag",p:"neck",at:1,c:GOLD,keep:1},{t:"pop",l:"KEY LEVEL",at:3,c:GOLD},{t:"pop",l:"CLOSE ABOVE = CONFIRMED",at:7,c:GREEN,y:520}]},
+ {cap:"Momentum is building",badge:"MOMENTUM",say:"Look at momentum. Candles are growing larger and greener, and price is climbing above the moving average. Buyers are getting stronger.",tools:[{t:"ma",l:"10 MA",u:"lastIdx",at:.1},{t:"arrow",i:"lastIdx",p:["lastLow",-1],dir:"up",l:"Buyers gaining",c:GREEN,at:2.5},{t:"pop",l:"BIGGER GREEN CANDLES",at:5,c:GREEN}]},
+ {cap:"Breakout above the neckline",badge:"BREAKOUT",say:"And here is the confirmation. A strong green candle closes above the neckline. That is the breakout, and the reason this one was a buy.",tools:[{t:"circ",i:"n",l:"Breakout",c:GREEN,at:.2},{t:"pop",l:"BREAKOUT!",at:1.5,c:GREEN},{t:"pop",l:"CONFIRMED",at:6,c:GOLD,y:520}]},
+ {cap:"Entry, stop and target",badge:"TRADE PLAN",say:"The plan: buy as price breaks the neckline, put your stop loss just under the two lows, and aim for a target at least twice your risk.",tools:[{t:"rr",i:"n",at:.2},{t:"pop",l:"BUY",at:1.5,c:GREEN},{t:"pop",l:"RISK 1 : REWARD 2",at:7,c:GOLD,y:520}]},
+ RISK]},
+{name:"Double top",T:13,cd:3,cdAt:3,revGap:1.4,introSay:"Buy or sell? You have three seconds.",seed:33,dir:"short",hook:[[12,1.3,1.5],[8,-.5,1.2],[6,1.1,1.4],[8,-.4,1.2],[6,-.25,1.2]],rev:[[4,-2,1.4]],ans:"SELL",
+ calc:(C,R,v)=>{const n=C.length,h=Math.floor(n*.5),a=Math.max(...C.slice(0,h).map(c=>c.h)),b=Math.max(...C.slice(h).map(c=>c.h)),i1=C.findIndex(c=>c.h===a),i2=C.findIndex((c,i)=>i>=h&&c.h===b);v.hiTop=Math.max(a,b);v.hi1Idx=i1;v.hi2Idx=i2;v.hiNeck=Math.min(...C.slice(i1,i2+1).map(c=>c.l));v.entry=v.hiNeck-.3;v.stop=v.hiTop+.4},
+ steps:[{cap:"Failed twice at the high",badge:"DOUBLE TOP",say:"Failed twice at the same high. Sell.",dur:4.2,tools:[{t:"zone",p:["hiTop",.5],q:["hiTop",-.8],l:"Resistance",c:RED,at:.1},{t:"circ",i:"hi2Idx",l:"Failed twice",c:RED,at:1.2},{t:"pop",l:"SELL THE BREAK",at:2.4,c:RED}]}]},
+{name:"Pullback to the average",T:16,cd:3,cdAt:3,revGap:1.2,introSay:"Buy or sell? You have three seconds.",endSay:"Follow for more.",seed:5,dir:"long",hook:[[16,1,1.2],[5,-1,1]],rev:[[4,1.8,1.2]],ans:"BUY",
+ calc:(C,R,v)=>{const n=C.length,seg=C.slice(-6),m=Math.min(...seg.map(c=>c.l));v.pbLow=m;v.pbIdx=C.findIndex((c,i)=>i>=n-6&&c.l===m);v.entry=R[0].c;v.stop=m-.4},
+ steps:[{cap:"Strong uptrend",badge:"UPTREND",say:"Strong uptrend, then a small dip.",dur:3.4,tools:[{t:"ma",l:"10 MA",u:"lastIdx",at:.1,keep:1},{t:"pop",l:"UPTREND",at:1.2,c:GREEN}]},
+ {cap:"Bounce off the average",badge:"PULLBACK",say:"Dips to the average, then bounces. Buy.",dur:3.4,tools:[{t:"circ",i:"pbIdx",l:"Pullback low",c:GREEN,at:.1},{t:"rr",i:"n",at:1},{t:"pop",l:"BUY",at:1.7,c:GREEN}]}]},
+{name:"Bull flag",T:21,cd:5,cdAt:3.3,revGap:1.6,introSay:"Buy or sell? You have five seconds.",seed:12,dir:"long",hook:[[6,0,1],[8,1.8,1.2],[7,-.3,.9]],rev:[[4,2.2,1.4]],ans:"BUY",
+ calc:(C,R,v)=>{const n=C.length,seg=C.slice(-7);v.flagHigh=Math.max(...seg.map(c=>c.h));v.flagLow=Math.min(...seg.map(c=>c.l));v.poleTop=Math.max(...C.map(c=>c.h));v.poleIdx=C.findIndex(c=>c.h===v.poleTop);v.base=C[6].l;v.entry=v.flagHigh+.2;v.stop=v.flagLow-.3},
+ steps:[{cap:"Sharp rally = the pole",badge:"BULL FLAG",say:"A sharp rally. That's the pole.",dur:3.4,tools:[{t:"tr",i1:6,p1:"base",i2:"poleIdx",p2:"poleTop",l:"The pole",c:GREEN,at:.1},{t:"pop",l:"THE POLE",at:1.2,c:GREEN}]},
+ {cap:"Tight pullback = the flag",badge:"BULL FLAG",say:"Then a quiet pullback. That's the flag.",dur:3.4,tools:[{t:"zone",p:["flagHigh",.2],q:["flagLow",-.2],l:"The flag",c:GOLD,keep:1,at:.1},{t:"pop",l:"THE FLAG",at:1.2,c:GOLD}]},
+ {cap:"Break above the flag",badge:"BREAKOUT",say:"Breakout! Buy, stop under the flag.",dur:3.4,tools:[{t:"circ",i:"n",l:"Breakout",c:GREEN,at:.1},{t:"rr",i:"n",at:.9},{t:"pop",l:"BUY",at:1.8,c:GREEN}]}]},
+{name:"Engulfing candle",T:24,cd:5,cdAt:3.3,revGap:1.6,introSay:"Buy or sell? You have five seconds.",seed:44,dir:"short",hook:[[18,.9,1.2],[1,.8,.3],[1,-3.2,.2]],rev:[[4,-1.6,1.2]],ans:"SELL",
+ calc:(C,R,v)=>{const n=C.length;v.prevIdx=n-2;v.prevC=C[n-2].c;v.entry=R[0].c;v.stop=Math.max(C[n-1].h,C[n-2].h)+.4},
+ steps:[{cap:"Price keeps rising",badge:"UPTREND",say:"Price has been rising for a while.",dur:3.3,tools:[{t:"tr",i1:0,p1:"first",i2:"prevIdx",p2:"prevC",l:"Uptrend",c:GREEN,at:.1},{t:"pop",l:"RISING",at:1.2,c:GREEN}]},
+ {cap:"Small green candle",badge:"SLOWING",say:"Then a small green candle. Buyers slow.",dur:3.3,tools:[{t:"circ",i:"prevIdx",l:"Buyers slow",c:GOLD,at:.1},{t:"pop",l:"SLOWING",at:1.4,c:GOLD}]},
+ {cap:"Big red candle engulfs it",badge:"ENGULFING",say:"A big red candle swallows it. Engulfing.",dur:3.3,tools:[{t:"circ",i:"prevIdx",j:"lastIdx",l:"Engulfing",c:RED,at:.1},{t:"pop",l:"ENGULFING!",at:1.4,c:RED}]},
+ {cap:"Sell, stop above it",badge:"TRADE PLAN",say:"Sell below. Stop above the pattern.",dur:3.3,tools:[{t:"rr",i:"n",at:.1},{t:"pop",l:"SELL",at:1.5,c:RED}]}]},
+{name:"Fake breakout",T:27,cd:5,cdAt:3.3,revGap:1.6,introSay:"Buy or sell? You have five seconds.",seed:9,dir:"short",hook:[[15,0,1.6]],rev:[[4,-1.5,1.2]],ans:"SELL",
+ fix:(C,R)=>{const n=C.length,rt=Math.max(...C.slice(0,n-1).map(c=>c.h)),p=C[n-2].c;C[n-1]={o:p,c:p+.3,h:rt+2.2,l:p-.2}},
+ calc:(C,R,v)=>{const n=C.length;v.rt=Math.max(...C.slice(0,n-1).map(c=>c.h));v.rb=Math.min(...C.slice(0,n-1).map(c=>c.l));v.entry=R[0].c;v.stop=C[n-1].h+.3},
+ steps:[{cap:"Price is stuck in a range",badge:"RANGE",say:"Price is stuck in a range.",dur:3.2,tools:[{t:"zone",p:["rt",.2],q:["rb",-.2],l:"Range",c:GOLD,keep:1,at:.1},{t:"pop",l:"RANGE",at:1.2,c:GOLD}]},
+ {cap:"Stops sit above the high",badge:"LIQUIDITY",say:"Traders put stops above the high.",dur:3.2,tools:[{t:"tag",p:"rt",at:.2,c:RED},{t:"pop",l:"STOPS HERE",at:1.2,c:RED}]},
+ {cap:"Spike grabs the stops",badge:"STOP HUNT",say:"A spike grabs those stops.",dur:3.2,tools:[{t:"circ",i:"lastIdx",l:"Stop hunt",c:RED,at:.1},{t:"pop",l:"STOP HUNT!",at:1.2,c:RED}]},
+ {cap:"Fast rejection",badge:"REJECTION",say:"Then it drops back into the range.",dur:3.2,tools:[{t:"circ",i:"n",l:"Rejected",c:RED,at:.1},{t:"pop",l:"FAKE BREAKOUT",at:1.2,c:RED}]},
+ {cap:"Sell, stop above the wick",badge:"TRADE PLAN",say:"Sell now. Stop above the wick.",dur:3.2,tools:[{t:"rr",i:"n",at:.1},{t:"pop",l:"SELL",at:1.5,c:RED}]}]},
+nl({name:"Head and shoulders",cd:3,seed:51,dir:"short",ans:"SELL",hook:[[8,.9,1],[4,-1,.8],[6,1.5,1],[6,-1.5,1],[4,1,.9],[3,-1.2,.6]],rev:[[4,-2.8,1]],
+ calc:(C,R,v)=>{const mx=a=>Math.max(...a.map(c=>c.h)),mn=a=>Math.min(...a.map(c=>c.l)),hh=mx(C),hi=C.findIndex(c=>c.h===hh),lh=mx(C.slice(0,hi-3)),rh=mx(C.slice(hi+4));v.headIdx=hi;v.lsIdx=C.findIndex(c=>c.h===lh);v.rsIdx=C.findIndex((c,i)=>i>hi&&c.h===rh);v.neck=(mn(C.slice(v.lsIdx,hi+1))+mn(C.slice(hi,v.rsIdx+1)))/2;v.entry=R[0].c;v.stop=rh+.5},
+ steps:[stp("Left shoulder, then the head","HEAD & SHOULDERS","Price peaks and dips, then pushes to a higher peak.",[{t:"circ",i:"lsIdx",l:"Left shoulder",c:GOLD,at:.1},{t:"circ",i:"headIdx",l:"The head",c:RED,at:2.4},pp("HIGHEST HIGH",3.4,RED,520)]),
+ stp("Right shoulder fails","RIGHT SHOULDER","Buyers try again, but fail to beat the head.",[{t:"circ",i:"rsIdx",l:"Right shoulder",c:RED,at:.1},pp("LOWER HIGH",1.8,RED),pp("BUYERS WEAKER",3.4,RED,520)]),
+ stp("Neckline is the trigger","NECKLINE","Draw a neckline under both dips. A close below confirms.",[{t:"h",p:"neck",d:1,l:"Neckline",c:GOLD,keep:1,at:.1},{t:"tag",p:"neck",at:.8,c:GOLD},pp("KEY LEVEL",2.2,GOLD),pp("CLOSE BELOW = SELL",3.6,RED,520)]),
+ stp("Sell the break","TRADE PLAN","Sell below. Stop above the shoulder. Target twice your risk.",[{t:"circ",i:"n",l:"Break",c:RED,at:.1},{t:"rr",i:"n",at:.9},pp("SELL",2,RED)])]}),
+nl({name:"Inverse head and shoulders",cd:5,seed:52,dir:"long",ans:"BUY",hook:[[8,-.9,1],[4,1,.8],[6,-1.5,1],[6,1.5,1],[4,-1,.9],[3,1.2,.6]],rev:[[4,2.8,1]],
+ calc:(C,R,v)=>{const mn=a=>Math.min(...a.map(c=>c.l)),mx=a=>Math.max(...a.map(c=>c.h)),lo=mn(C),hi=C.findIndex(c=>c.l===lo),ll=mn(C.slice(0,hi-3)),rl=mn(C.slice(hi+4));v.headIdx=hi;v.lsIdx=C.findIndex(c=>c.l===ll);v.rsIdx=C.findIndex((c,i)=>i>hi&&c.l===rl);v.neck=(mx(C.slice(v.lsIdx,hi+1))+mx(C.slice(hi,v.rsIdx+1)))/2;v.entry=R[0].c;v.stop=rl-.5},
+ steps:[stp("Three lows, middle is deepest","INVERSE H&S","Price makes a low, bounces, then drops to a deeper low.",[{t:"circ",i:"lsIdx",l:"Left shoulder",c:GREEN,at:.1},{t:"circ",i:"headIdx",l:"The head",c:GREEN,at:2.6},pp("DEEPEST LOW",4,GOLD,520)]),
+ stp("Higher low, then the neckline","NECKLINE","Then a higher low forms. Draw the neckline across both bounces.",[{t:"circ",i:"rsIdx",l:"Right shoulder",c:GREEN,at:.1},{t:"h",p:"neck",d:1,l:"Neckline",c:GOLD,keep:1,at:2.4},pp("SELLERS FADING",1.8,RED),pp("KEY LEVEL",4.2,GOLD,520)]),
+ stp("Buy the neckline break","TRADE PLAN","Buy the neckline break. Stop under the shoulder, target twice your risk.",[{t:"circ",i:"n",l:"Breakout",c:GREEN,at:.1},{t:"rr",i:"n",at:.9},pp("BUY",2,GREEN),pp("RISK 1 : REWARD 2",4,GOLD,520)])]}),
+nl({name:"Bear flag",cd:3,seed:61,dir:"short",ans:"SELL",hook:[[6,0,1],[8,-1.8,1.2],[7,.3,.9]],rev:[[4,-2.2,1.4]],
+ calc:(C,R,v)=>{const s=C.slice(-7);v.flagHigh=Math.max(...s.map(c=>c.h));v.flagLow=Math.min(...s.map(c=>c.l));v.poleBot=Math.min(...C.map(c=>c.l));v.poleIdx=C.findIndex(c=>c.l===v.poleBot);v.base=C[6].h;v.entry=R[0].c;v.stop=v.flagHigh+.3},
+ steps:[stp("Sharp drop = the pole","BEAR FLAG","A sharp, fast drop. That steep fall is the pole.",[{t:"tr",i1:6,p1:"base",i2:"poleIdx",p2:"poleBot",l:"The pole",c:RED,at:.1},pp("THE POLE",2.2,RED),pp("SELLERS DOMINATE",3.6,RED,520)]),
+ stp("Weak bounce = the flag","THE FLAG","Then a slow, weak bounce. That drift is the flag.",[{t:"zone",p:["flagHigh",.2],q:["flagLow",-.2],l:"The flag",c:GOLD,keep:1,at:.1},pp("THE FLAG",2.2,GOLD),pp("WEAK BOUNCE",3.6,RED,520)]),
+ stp("A pause, not a reversal","PAUSE","Buyers are weak. This is a pause, not a reversal.",[pp("JUST A PAUSE",.3,GOLD),pp("NOT A REVERSAL",2.4,RED),{t:"tag",p:"flagHigh",at:.5,c:RED}]),
+ stp("Sell the break below","TRADE PLAN","Sell below. Stop above the flag. Target twice your risk.",[{t:"circ",i:"n",l:"Breakdown",c:RED,at:.1},{t:"rr",i:"n",at:.9},pp("SELL",2,RED)])]}),
+nl({name:"Hammer at support",cd:5,seed:71,dir:"long",ans:"BUY",hook:[[9,-1.1,1.1],[4,.7,.9],[5,-.7,1],[1,0,.2]],rev:[[4,1.8,1.2]],
+ fix:(C,R)=>{const n=C.length,p=C[n-2].c,o=C[n-1].c;C[n-1]={o:p-.2,c:p+.5,h:p+.7,l:p-3.4};shift(R,p+.5-o)},
+ calc:(C,R,v)=>{const n=C.length;v.sup=Math.min(...C.slice(0,n-5).map(c=>c.l));v.hamLow=C[n-1].l;v.entry=R[0].c;v.stop=v.hamLow-.3},
+ steps:[stp("Price falls into support","SUPPORT ZONE","Price falls into a support zone, where buyers stepped in before.",[{t:"tr",i1:0,p1:"first",i2:8,p2:["sup",.5],l:"Downtrend",c:RED,at:.1},{t:"zone",p:["sup",.6],q:["sup",-.6],l:"Support",c:GREEN,keep:1,at:2},pp("BUYERS STEPPED IN",3.8,GREEN,520)]),
+ stp("Hammer: long lower wick","HAMMER","A long wick dips below support, then price closes back up. Hammer.",[{t:"circ",i:"lastIdx",l:"Hammer",c:GOLD,at:.1},pp("LONG LOWER WICK",2,GOLD),pp("SELLERS REJECTED",4,RED,520)]),
+ stp("Buy, stop under the wick","TRADE PLAN","Buy after the hammer. Stop under the wick. Target twice your risk.",[{t:"rr",i:"n",at:.1},pp("BUY",1.6,GREEN),pp("RISK 1 : REWARD 2",3.8,GOLD,520)])]}),
+nl({name:"Shooting star",cd:3,seed:81,dir:"short",ans:"SELL",hook:[[8,1.1,1.1],[3,-.8,.8],[5,.7,1],[1,0,.2]],rev:[[4,-1.8,1.2]],
+ fix:(C,R)=>{const n=C.length,p=C[n-2].c,o=C[n-1].c;C[n-1]={o:p+.1,c:p-.4,h:p+3.2,l:p-.6};shift(R,p-.4-o)},
+ calc:(C,R,v)=>{const n=C.length;v.res=Math.max(...C.slice(0,n-1).map(c=>c.h));v.starHigh=C[n-1].h;v.entry=R[0].c;v.stop=v.starHigh+.3},
+ steps:[stp("Rally into resistance","RESISTANCE","Price rallies up to an old high where sellers appeared before.",[{t:"zone",p:["res",.5],q:["res",-1],l:"Resistance",c:RED,keep:1,at:.2},{t:"tag",p:"res",at:1.4,c:RED},pp("OLD SELLERS",3.2,RED,520)]),
+ stp("Long upper wick","SHOOTING STAR","One candle spikes up but closes back near its open.",[{t:"circ",i:"lastIdx",l:"Shooting star",c:RED,at:.1},pp("LONG UPPER WICK",2.2,GOLD)]),
+ stp("Buyers got rejected","REJECTION","The long wick shows sellers rejected the higher prices.",[pp("BUYERS REJECTED",.3,RED),pp("SELLERS WON",3,RED,520)]),
+ stp("Sell, stop above the wick","TRADE PLAN","Sell below. Stop above the wick. Target twice your risk.",[{t:"rr",i:"n",at:.1},pp("SELL",1.6,RED)])]}),
+nl({name:"Bullish engulfing",cd:3,seed:66,dir:"long",ans:"BUY",hook:[[18,-.9,1.2],[1,-.8,.3],[1,3.2,.2]],rev:[[4,1.6,1.2]],
+ calc:(C,R,v)=>{const n=C.length;v.prevIdx=n-2;v.prevC=C[n-2].c;v.entry=R[0].c;v.stop=Math.min(C[n-1].l,C[n-2].l)-.4},
+ steps:[stp("Price keeps falling","DOWNTREND","Price falls for a long time. Sellers control the trend.",[{t:"tr",i1:0,p1:"first",i2:"prevIdx",p2:"prevC",l:"Downtrend",c:RED,at:.1},pp("LOWER LOWS",2.2,RED),pp("SELLERS IN CONTROL",3.6,RED,520)]),
+ stp("Tiny red candle","SLOWING","A tiny red candle shows sellers running out of energy.",[{t:"circ",i:"prevIdx",l:"Sellers slow",c:GOLD,at:.1},pp("SLOWING DOWN",1.6,GOLD),pp("SMALL BODY",3.2,GOLD,520)]),
+ stp("Big green candle engulfs it","BULLISH ENGULFING","A big green candle swallows it. Buyers take over.",[{t:"circ",i:"prevIdx",j:"lastIdx",l:"Engulfing",c:GREEN,at:.1},pp("ENGULFING!",1.4,GREEN),pp("BUYERS TAKE OVER",3.2,GREEN,520)]),
+ stp("Buy, stop below the pattern","TRADE PLAN","Buy now. Stop below the pattern. Target twice your risk.",[{t:"rr",i:"n",at:.1},pp("BUY",1.6,GREEN)])]}),
+nl({name:"Ascending triangle",cd:5,seed:91,dir:"long",ans:"BUY",hook:[[3,1,.6],[3,-1,.6],[3,1,.6],[3,-.75,.5],[3,.7,.5],[3,-.45,.4],[3,.5,.4]],rev:[[4,2,1.2]],
+ calc:(C,R,v)=>{const m=(a,b)=>{const s=Math.min(...C.slice(a,b).map(c=>c.l));return[s,C.findIndex((c,i)=>i>=a&&c.l===s)]};[v.l1,v.l1i]=m(0,8);[v.l3,v.l3i]=m(14,19);v.entry=R[0].c;v.stop=v.l3-.3},
+ steps:[stp("Flat ceiling = resistance","FLAT RESISTANCE","Price keeps hitting the same ceiling. Sellers defend it every time.",[{t:"h",p:"top",d:1,l:"Resistance",c:RED,keep:1,at:.1},{t:"tag",p:"top",at:1,c:RED},pp("SAME CEILING",2.4,RED),pp("SELLERS DEFEND",4,RED,520)]),
+ stp("Higher lows squeeze price","HIGHER LOWS","Each dip is shallower. Buyers step in earlier and squeeze the price.",[{t:"tr",i1:"l1i",p1:"l1",i2:"l3i",p2:"l3",l:"Rising lows",c:GREEN,at:.1},pp("HIGHER LOWS",2.2,GREEN),pp("BUYERS SQUEEZE",4.2,GREEN,520)]),
+ stp("Breakout and trade plan","TRADE PLAN","Buy the breakout. Stop under the last low. Target twice your risk.",[{t:"circ",i:"n",l:"Breakout",c:GREEN,at:.1},{t:"rr",i:"n",at:.9},pp("BUY",2,GREEN),pp("BREAKOUT!",4,GOLD,520)])]}),
+nl({name:"Descending triangle",cd:3,seed:92,dir:"short",ans:"SELL",hook:[[3,-1,.6],[3,1,.6],[3,-1,.6],[3,.75,.5],[3,-.7,.5],[3,.45,.4],[3,-.5,.4]],rev:[[4,-2,1.2]],
+ calc:(C,R,v)=>{const m=(a,b)=>{const s=Math.max(...C.slice(a,b).map(c=>c.h));return[s,C.findIndex((c,i)=>i>=a&&c.h===s)]};[v.h1,v.h1i]=m(3,8);[v.h3,v.h3i]=m(15,19);v.entry=R[0].c;v.stop=v.h3+.3},
+ steps:[stp("Flat floor = support","FLAT SUPPORT","Price keeps bouncing off the same floor. Buyers defend it.",[{t:"h",p:"low",d:1,l:"Support",c:GREEN,keep:1,at:.1},{t:"tag",p:"low",at:1,c:GREEN},pp("SAME FLOOR",2.2,GREEN),pp("BUYERS DEFEND",3.6,GREEN,520)]),
+ stp("Lower highs push price down","LOWER HIGHS","But each bounce is weaker. Sellers push price down sooner.",[{t:"tr",i1:"h1i",p1:"h1",i2:"h3i",p2:"h3",l:"Falling highs",c:RED,at:.1},pp("LOWER HIGHS",2,RED),pp("WEAKER BOUNCES",3.6,RED,520)]),
+ stp("Floor cracks = breakdown","BREAKDOWN","At last the floor cracks. A close below confirms it.",[{t:"circ",i:"n",l:"Breakdown",c:RED,at:.1},pp("FLOOR BREAKS",1.6,RED),pp("CONFIRMED",3.4,GOLD,520)]),
+ stp("Sell, stop above the high","TRADE PLAN","Sell the break. Stop above the high. Target twice your risk.",[{t:"rr",i:"n",at:.1},pp("SELL",1.6,RED)])]}),
+nl({name:"Break and retest",cd:3,seed:93,dir:"long",ans:"BUY",hook:[[7,.9,.9],[3,-.8,.6],[3,.85,.6],[3,1.5,.8],[4,-1.1,.7]],rev:[[4,1.7,1]],
+ calc:(C,R,v)=>{const n=C.length;v.res=Math.max(...C.slice(0,13).map(c=>c.h));v.brkIdx=C.findIndex(c=>c.c>v.res);v.brk2=v.brkIdx+2;const m=Math.min(...C.slice(-4).map(c=>c.l));v.pbIdx=C.findIndex((c,i)=>i>=n-4&&c.l===m);v.entry=R[0].c;v.stop=m-.4},
+ steps:[stp("Price is blocked at resistance","RESISTANCE","Price tests the same ceiling twice. Sellers defend it.",[{t:"zone",p:["res",.5],q:["res",-.6],l:"Resistance",c:GOLD,keep:1,at:.1},{t:"tag",p:"res",at:1.2,c:GOLD},pp("BLOCKED TWICE",2.4,RED)]),
+ stp("Breakout above the level","BREAKOUT","Then buyers break through with strong green candles. Breakout!",[{t:"circ",i:"brkIdx",j:"brk2",l:"Breakout",c:GREEN,at:.1},pp("BREAKOUT!",1.6,GREEN),pp("LEVEL BROKEN",3.4,GREEN,520)]),
+ stp("Retest: old resistance, new support","RETEST","Price retests the level. Old resistance is now support.",[{t:"circ",i:"pbIdx",l:"Retest",c:GOLD,at:.1},pp("OLD CEILING",1.6,GOLD),pp("NEW FLOOR",3.2,GREEN,520)]),
+ stp("Buy the bounce","TRADE PLAN","Buy the bounce. Stop below the level. Target twice your risk.",[{t:"rr",i:"n",at:.1},pp("BUY",1.6,GREEN)])]}),
+nl({name:"Support turns resistance",cd:5,seed:94,dir:"short",ans:"SELL",hook:[[7,-.9,.9],[3,.8,.6],[3,-.85,.6],[3,-1.5,.8],[4,1.1,.7]],rev:[[4,-1.7,1]],
+ calc:(C,R,v)=>{const n=C.length;v.sup=Math.min(...C.slice(0,13).map(c=>c.l));v.brkIdx=C.findIndex(c=>c.c<v.sup);v.brk2=v.brkIdx+2;const m=Math.max(...C.slice(-4).map(c=>c.h));v.pbIdx=C.findIndex((c,i)=>i>=n-4&&c.h===m);v.entry=R[0].c;v.stop=m+.4},
+ steps:[stp("Support holds twice","SUPPORT","Price touches the same floor twice and bounces. Buyers defend that level.",[{t:"zone",p:["sup",.6],q:["sup",-.6],l:"Support",c:GOLD,keep:1,at:.1},{t:"tag",p:"sup",at:1.2,c:GOLD},pp("SAME FLOOR",2.4,GOLD),pp("BUYERS DEFEND",4.4,GREEN,520)]),
+ stp("Floor breaks, then retest","BREAKDOWN","Strong red candles break the floor. Price climbs back to retest it.",[{t:"circ",i:"brkIdx",j:"brk2",l:"Breakdown",c:RED,at:.1},pp("FLOOR BREAKS",1.5,RED),{t:"circ",i:"pbIdx",l:"Retest",c:GOLD,at:3.4}]),
+ stp("Old support is now resistance","TRADE PLAN","Old support is now resistance. Sell the rejection. Stop above it.",[{t:"rr",i:"n",at:.2},pp("SELL",1.6,RED),pp("OLD FLOOR = NEW CEILING",3.6,RED,520)])]})
+];
+const $=id=>document.getElementById(id),cv=$("c"),g=cv.getContext("2d");
+let CD=Infinity,RV=Infinity,ST=Infinity,stepIdx=-1,stepAt=0,stepDone=false,introDone=false,revDone=false,endDone=false,endAt=0,spk=0;
+let L=0,C=[],R=[],lv={},vmin=0,vmax=1,init=false,t=0,playing=false,last=performance.now(),done={},ac=null;
+const S={vo:true,sn:true,vol:.8,rate:.95,voice:""};
+const hasSpeech=!!(window.speechSynthesis&&window.SpeechSynthesisUtterance);
+const AC=window.AudioContext||window.webkitAudioContext;
+function buildList(){const box=$("vids");box.innerHTML="";LESSONS.forEach((l,i)=>{const b=document.createElement("button");b.className="vid"+(i===L?" on":"");b.innerHTML="<span>"+(i+1)+". "+l.name+"</span><span style=\"color:#9a9\">"+(l.T?l.T+"s":"long")+"</span>";b.onclick=()=>{load(i);buildList()};box.appendChild(b)});$("cur").textContent=(L+1)+". "+LESSONS[L].name+(LESSONS[L].T?" ("+LESSONS[L].T+"s)":"")}
+
+function gen(seed,segs,p){let s=seed;const r=()=>(s=s*16807%2147483647)/2147483647,o=[];for(const[n,d,v]of segs)for(let i=0;i<n;i++){const a=p,c=a+d+(r()-.5)*v;o.push({o:a,c,h:Math.max(a,c)+r()*v*.5,l:Math.min(a,c)-r()*v*.5});p=c}return o}
+function mkLv(l){const n=C.length,v={};v.n=n;v.lastIdx=n-1;v.last=C[n-1].c;v.lastLow=C[n-1].l;v.first=C[0].c;v.top=Math.max(...C.map(c=>c.h));
+ const half=Math.floor(n*.5);v.low1=Math.min(...C.slice(0,half).map(c=>c.l));v.low1Idx=C.findIndex(c=>c.l===v.low1);
+ v.low2=Math.min(...C.slice(half).map(c=>c.l));v.low2Idx=C.findIndex((c,i)=>i>=half&&c.l===v.low2);v.low=Math.min(v.low1,v.low2);
+ v.neck=Math.max(...C.slice(v.low1Idx,v.low2Idx+1).map(c=>c.h));
+ if(l.dir==="short"){v.entry=R[0].c;v.stop=v.top+.5}else{v.entry=v.neck+.3;v.stop=v.low-.4}
+ if(l.calc)l.calc(C,R,v);v.target=v.entry+2*(v.entry-v.stop);v.ma=C.slice(-10).reduce((a,c)=>a+c.c,0)/10;return v}
+function stopSpeech(){spk++;try{if(hasSpeech)speechSynthesis.cancel()}catch(e){}}
+function load(i){L=((i%LESSONS.length)+LESSONS.length)%LESSONS.length;const l=LESSONS[L];C=gen(l.seed,l.hook,100);R=gen(l.seed+5,l.rev,C[C.length-1].c);if(l.fix)l.fix(C,R);lv=mkLv(l);t=0;init=false;done={};CD=RV=ST=Infinity;stepIdx=-1;stepDone=introDone=revDone=endDone=false;if(l.T){CD=l.cdAt;RV=CD+l.cd;ST=RV+l.revGap;let a=ST;l.stT=l.steps.map(q=>{const x=a;a+=q.dur;return x});l.endAt=a}stopSpeech()}
+
+// audio (all guarded so a failure can never stop the video)
+function getAC(){try{if(!ac&&AC)ac=new AC();if(ac&&ac.state==="suspended")ac.resume();}catch(e){ac=null}return ac}
+function beep(f,d,v){try{if(!S.sn||!getAC())return;d=d||.15;v=v||.5;const o=ac.createOscillator(),gn=ac.createGain(),n=ac.currentTime;o.type="sine";o.frequency.value=f;gn.gain.setValueAtTime(Math.max(.001,v*S.vol),n);gn.gain.exponentialRampToValueAtTime(.001,n+d);o.connect(gn);gn.connect(ac.destination);o.start(n);o.stop(n+d+.02)}catch(e){}}
+function say(s,cb,fb){const id=++spk;let fin=false;fb=fb||3;const end=()=>{if(fin||id!==spk)return;fin=true;if(cb)cb()};try{if(!S.vo||!hasSpeech){setTimeout(end,fb*1000);return}speechSynthesis.cancel();speechSynthesis.resume();let started=false;setTimeout(()=>{try{const u=new SpeechSynthesisUtterance(s);const v=speechSynthesis.getVoices().find(x=>x.name===S.voice);if(v){u.voice=v;u.lang=v.lang}else u.lang="en-US";u.rate=S.rate;u.volume=S.vol;u.onstart=()=>{started=true};u.onend=end;u.onerror=end;speechSynthesis.speak(u)}catch(e){end()}},60);setTimeout(()=>{if(!started)setTimeout(end,fb*1000)},3000);setTimeout(end,40000)}catch(e){setTimeout(end,fb*1000)}}
+function fillVoices(){try{if(!hasSpeech)return;const vs=speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.toLowerCase().startsWith("en")),sel=$("voice");if(!vs.length)return;sel.innerHTML="";vs.forEach(v=>sel.add(new Option(v.name,v.name)));if(!S.voice||!vs.some(v=>v.name===S.voice))S.voice=vs[0].name;sel.value=S.voice}catch(e){}}
+if(hasSpeech){fillVoices();try{speechSynthesis.onvoiceschanged=fillVoices}catch(e){}}else $("note").textContent="Voice narration is not supported in this browser. Sounds still work. Try Chrome or Safari.";
+
+function once(k,fn){if(!done[k]){done[k]=1;fn()}}
+function beginStep(){const l=LESSONS[L];stepAt=t;stepDone=false;beep(440,.08,.3);say(l.steps[stepIdx].say,()=>{stepDone=true},Math.max(6,l.steps[stepIdx].say.split(" ").length/2.4))}
+function timed(l){
+ if(t>(l.cd===3?.4:.9))once("q",()=>say(l.introSay));
+ for(let k=0;k<l.cd;k++)if(t>=CD+k)once("tk"+k,()=>beep(k==l.cd-1?1320:880,k==l.cd-1?.35:.12,.5));
+ if(t>=RV)once("rv",()=>{beep(660,.2,.5);setTimeout(()=>beep(l.ans==="BUY"?990:330,.35,.5),160);say("It was a "+l.ans.toLowerCase()+".")});
+ for(let i=0;i<l.stT.length;i++)if(t>=l.stT[i]&&stepIdx<i){stepIdx=i;stepAt=l.stT[i];beep(440,.08,.3);say(l.steps[i].say)}
+ if(t>=l.endAt&&stepIdx<l.steps.length){stepIdx=l.steps.length;if(l.endSay)say(l.endSay)}
+ if(stepIdx>=0&&stepIdx<l.steps.length)l.steps[stepIdx].tools.forEach((tl,k)=>{if(t>=stepAt+AT(tl))once("tl"+stepIdx+"_"+k,()=>beep(tl.t==="pop"?520:900,.07,.3))});
+ if(t>=l.T)pause(true)}
+function triggers(){const l=LESSONS[L];if(l.T){timed(l);return}
+ if(t>1.3)once("q",()=>say("Buy or sell? You have five seconds.",()=>{introDone=true},3));
+ if(introDone&&t>=2.4&&CD===Infinity){CD=t+.15;RV=CD+5}
+ for(let k=0;k<5;k++)if(t>=CD+k)once("tk"+k,()=>beep(k==4?1320:880,k==4?.35:.12,.5));
+ if(t>=RV)once("rv",()=>{beep(660,.2,.5);setTimeout(()=>beep(l.ans==="BUY"?990:330,.35,.5),160);say("It was a "+l.ans.toLowerCase()+". Now let's learn why.",()=>{revDone=true},3)});
+ if(revDone&&t>=RV+1.0&&ST===Infinity)ST=t;
+ if(t>=ST&&stepIdx<0){stepIdx=0;beginStep()}
+ if(stepIdx>=0&&stepIdx<l.steps.length&&stepDone&&t>=stepAt+.6){stepIdx++;if(stepIdx<l.steps.length)beginStep();else{endAt=t;say("Follow for more lessons.",()=>{endDone=true},3)}}
+ if(stepIdx>=0&&stepIdx<l.steps.length)l.steps[stepIdx].tools.forEach((tl,k)=>{if(t>=stepAt+AT(tl))once("tl"+stepIdx+"_"+k,()=>beep(tl.t==="pop"?520:900,.07,.3))});
+ if(endDone&&t>=endAt+1.5)pause(true)}
+
+// drawing helpers
+const ease=x=>1-Math.pow(1-Math.min(1,Math.max(0,x)),3);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const P=x=>Array.isArray(x)?lv[x[0]]+x[1]:(typeof x==="number"?x:lv[x]);
+const I=x=>typeof x==="number"?x:lv[x];
+function txt(s,x,y,size,col){g.font=`900 ${size}px "Arial Black",system-ui,sans-serif`;g.textAlign="center";g.lineJoin="round";g.lineWidth=size/5;g.strokeStyle="#000";g.strokeText(s,x,y);g.fillStyle=col;g.fillText(s,x,y)}
+function lab(s,x,y,col,al){g.font='900 17px "Arial Black",system-ui,sans-serif';g.textAlign=al||"center";g.lineJoin="round";g.lineWidth=5;g.strokeStyle="#000";g.strokeText(s,x,y);g.fillStyle=col||"#fff";g.fillText(s,x,y)}
+function wrap(s,x,y,size,col){g.font=`900 ${size}px "Arial Black",system-ui,sans-serif`;let line="",ls=[];for(const a of s.split(" ")){if(g.measureText(line+a).width>480&&line){ls.push(line);line=a+" "}else line+=a+" "}ls.push(line);ls.forEach((q,i)=>txt(q.trim(),x,y+i*size*1.2,size,col))}
+function maAt(all,k){let s=0,c=0;for(let j=Math.max(0,k-9);j<=k;j++){s+=all[j].c;c++}return s/c}
+function head(x1,y1,x2,y2,col){const an=Math.atan2(y2-y1,x2-x1);g.fillStyle=col;g.beginPath();g.moveTo(x2,y2);g.lineTo(x2-16*Math.cos(an-.45),y2-16*Math.sin(an-.45));g.lineTo(x2-16*Math.cos(an+.45),y2-16*Math.sin(an+.45));g.fill()}
+function AT(tl){return tl.at===undefined?.2:tl.at}
+function tool(tl,age,X,Y,all,slot){const a=ease(age/.35),col=tl.c||GOLD;
+ if(tl.t==="pop"){if(age<0||age>1.8)return;g.font='900 44px "Arial Black",system-ui,sans-serif';const fit=Math.min(1,480/Math.max(1,g.measureText(tl.l).width)),sc=(.6+.4*ease(age/.25))*fit;g.save();g.globalAlpha=Math.max(0,age>1.4?1-(age-1.4)/.4:1);g.translate(270,tl.y||430);g.scale(sc,sc);txt(tl.l,0,0,44,col);g.restore();return}
+ if(age<0)return;
+ g.save();g.globalAlpha=clamp(a,0,1);g.lineCap="round";
+ if(tl.t==="h"){const y=Y(P(tl.p));g.strokeStyle=col;g.lineWidth=3;if(tl.d)g.setLineDash([10,8]);g.beginPath();g.moveTo(0,y);g.lineTo(540*a,y);g.stroke();g.setLineDash([]);lab(tl.l,460,y-8,col,"right")}
+ else if(tl.t==="tag"){const y=Y(P(tl.p));g.fillStyle=col;g.fillRect(470,y-11,68,22);g.fillStyle="#111";g.font='900 14px "Arial Black",sans-serif';g.textAlign="center";g.fillText(P(tl.p).toFixed(1),504,y+5)}
+ else if(tl.t==="zone"){const y1=Y(P(tl.p)),y2=Y(P(tl.q));g.fillStyle=col;g.globalAlpha=.22*clamp(a,0,1);g.fillRect(0,Math.min(y1,y2),540,Math.abs(y2-y1));g.globalAlpha=clamp(a,0,1);g.strokeStyle=col;g.lineWidth=2;g.strokeRect(0,Math.min(y1,y2),540,Math.abs(y2-y1));lab(tl.l,10,Math.min(y1,y2)-7,col,"left")}
+ else if(tl.t==="circ"){const i1=I(tl.i),i2=tl.j===undefined?i1:I(tl.j),seg=all.slice(i1,i2+1),hi=Math.max(...seg.map(c=>c.h)),lo=Math.min(...seg.map(c=>c.l)),cx=(X(i1)+X(i2))/2,cy=(Y(hi)+Y(lo))/2,rx=(X(i2)-X(i1))/2+20,ry=Math.abs(Y(lo)-Y(hi))/2+18;g.strokeStyle=col;g.lineWidth=3.5;g.beginPath();g.ellipse(cx,cy,Math.max(1,rx*a),Math.max(1,ry*a),0,0,7);g.stroke();if(a>=1){const f=(t*1.4)%1;g.globalAlpha=(1-f)*.6;g.lineWidth=2.5;g.beginPath();g.ellipse(cx,cy,rx*(1+f*.45),ry*(1+f*.45),0,0,7);g.stroke();g.globalAlpha=1}lab(tl.l,clamp(cx,70,470),cy-ry-10,col)}
+ else if(tl.t==="arrow"){const x=X(I(tl.i)),tipY=Y(P(tl.p)),up=tl.dir==="up",len=75*clamp(a,0,1),tailY=up?tipY+len:tipY-len;g.strokeStyle=col;g.lineWidth=6;g.beginPath();g.moveTo(x,tailY);g.lineTo(x,tipY);g.stroke();head(x,tailY,x,tipY,col);lab(tl.l,clamp(x,70,470),up?tailY+24:tailY-12,col)}
+ else if(tl.t==="tr"){const x1=X(I(tl.i1)),y1=Y(P(tl.p1)),x2=X(I(tl.i2)),y2=Y(P(tl.p2)),ex=x1+(x2-x1)*a,ey=y1+(y2-y1)*a;g.strokeStyle=col;g.lineWidth=4;g.setLineDash([12,8]);g.beginPath();g.moveTo(x1,y1);g.lineTo(ex,ey);g.stroke();g.setLineDash([]);lab(tl.l,clamp((x1+x2)/2+50,70,470),(y1+y2)/2+(y2<y1?30:-12),col)}
+ else if(tl.t==="rr"){const x=X(I(tl.i))-slot/2,w=520-x,e=Y(lv.entry),s=Y(lv.stop),tg=Y(lv.target);g.globalAlpha=.25*clamp(a,0,1);g.fillStyle=RED;g.fillRect(x,Math.min(e,s),w,Math.abs(s-e));g.fillStyle=GREEN;g.fillRect(x,Math.min(e,tg),w,Math.abs(tg-e));g.globalAlpha=clamp(a,0,1);g.lineWidth=3;[[e,"#fff","ENTRY",lv.entry],[s,RED,"STOP LOSS",lv.stop],[tg,GREEN,"TARGET (2R)",lv.target]].forEach(([y,c,s2,pv])=>{g.strokeStyle=c;g.beginPath();g.moveTo(x,y);g.lineTo(520,y);g.stroke();lab(s2,x+6,y-7,c,"left");g.fillStyle=c;g.fillRect(470,y-11,68,22);g.fillStyle="#111";g.font='900 14px "Arial Black",sans-serif';g.textAlign="center";g.fillText(pv.toFixed(1),504,y+5)});lab("RISK 1R",460,(e+s)/2+6,RED,"right");lab("REWARD 2R",460,(e+tg)/2+6,GREEN,"right")}
+ else if(tl.t==="ma"){const u=Math.min(all.length-1,I(tl.u)),end=Math.max(1,Math.floor(u*clamp(a,0,1)));g.strokeStyle=BLUE;g.lineWidth=4;g.beginPath();for(let k=0;k<=end;k++){const x=X(k),y=Y(maAt(all,k));k?g.lineTo(x,y):g.moveTo(x,y)}g.stroke();lab(tl.l,clamp(X(end),50,500),Y(maAt(all,end))+26,BLUE)}
+ else if(tl.t==="gap"){const k=lv.lastIdx,x=X(k)-10,y1=Y(maAt(all,k)),y2=Y(lv.last);g.strokeStyle=GOLD;g.lineWidth=3;g.setLineDash([6,6]);g.beginPath();g.moveTo(x,y1);g.lineTo(x,y1+(y2-y1)*clamp(a,0,1));g.stroke();g.setLineDash([]);lab(tl.l,x-8,(y1+y2)/2,GOLD,"right")}
+ g.restore()}
+
+function draw(now){
+ const dt=Math.min(.1,Math.max(0,(now-last)/1000));last=now;if(playing){t+=dt;triggers()}
+ g.setTransform(2,0,0,2,0,0);
+ const l=LESSONS[L],TA=l.T?.7:1.2,cdn=l.cd||5,n=C.length,all=C.concat(R),slot=400/all.length,x0=16,top=240,H=560;
+ const step=stepIdx>=0&&stepIdx<l.steps.length?l.steps[stepIdx]:null;
+ const bg=g.createLinearGradient(0,0,0,960);bg.addColorStop(0,"#050505");bg.addColorStop(1,"#222");g.fillStyle=bg;g.fillRect(0,0,540,960);
+ let vis=n*ease(t/TA);if(t>RV)vis=n+R.length*Math.min(1,(t-RV)/1.5);
+ const sh=all.slice(0,Math.min(all.length,Math.max(2,Math.ceil(vis))));
+ let tmin=Math.min(...sh.map(c=>c.l)),tmax=Math.max(...sh.map(c=>c.h));
+ if(step&&step.tools.some(q=>q.t==="rr")){tmin=Math.min(tmin,lv.stop,lv.target,lv.entry)-.5;tmax=Math.max(tmax,lv.stop,lv.target,lv.entry)+.5}
+ if(!init||!isFinite(vmin)||!isFinite(vmax)){vmin=tmin;vmax=tmax;init=true}else{vmin+=(tmin-vmin)*.12;vmax+=(tmax-vmax)*.12}
+ if(vmax-vmin<.01)vmax=vmin+.01;
+ const Y=p=>top+H-(p-vmin)/(vmax-vmin)*H*.9-H*.05,X=i=>x0+i*slot+slot/2;
+ const shown=(t<=TA)?sh.slice(0,Math.max(0,Math.ceil(vis))):sh;
+ g.font='13px system-ui,sans-serif';g.textAlign="right";for(let k=0;k<5;k++){const p=vmin+(vmax-vmin)*(.12+k*.19),y=Y(p);g.strokeStyle="rgba(255,255,255,.06)";g.lineWidth=1;g.beginPath();g.moveTo(0,y);g.lineTo(540,y);g.stroke();g.fillStyle="rgba(255,255,255,.35)";g.fillText(p.toFixed(1),536,y-3)}
+ shown.forEach((c,i)=>{const x=X(i),col=c.c>=c.o?GREEN:RED,w=Math.max(3,slot*.62);g.strokeStyle=col;g.fillStyle=col;g.lineWidth=1.5;g.beginPath();g.moveTo(x,Y(c.h));g.lineTo(x,Y(c.l));g.stroke();g.fillRect(x-w/2,Math.min(Y(c.o),Y(c.c)),w,Math.max(2,Math.abs(Y(c.o)-Y(c.c))))});
+ if(shown.length){const c=shown[shown.length-1],y=Y(c.c);g.fillStyle=c.c>=c.o?GREEN:RED;g.fillRect(476,y-11,62,22);g.fillStyle="#111";g.font='900 13px "Arial Black",sans-serif';g.textAlign="center";g.fillText(c.c.toFixed(1),507,y+5)}
+ // teaching tools
+ if(stepIdx>=0&&stepIdx<l.steps.length){for(let j=0;j<=stepIdx;j++)l.steps[j].tools.forEach(tl=>{if(j===stepIdx)tool(tl,t-stepAt-AT(tl),X,Y,all,slot);else if(tl.keep)tool(tl,99,X,Y,all,slot)})}
+ if(t<RV){g.font='900 64px "Arial Black",sans-serif';const a=g.measureText("Buy ").width,b=g.measureText("or ").width,c2=g.measureText("Sell ?").width,s=(540-(a+b+c2))/2;g.textAlign="left";g.lineWidth=12;g.lineJoin="round";[["Buy ",GREEN,s],["or ","#fff",s+a],["Sell ?",RED,s+a+b]].forEach(([q,col,x])=>{g.strokeStyle="#000";g.strokeText(q,x,215);g.fillStyle=col;g.fillText(q,x,215)})}
+ else txt(l.ans==="BUY"?"It was a BUY":"It was a SELL",270,215,60,l.ans==="BUY"?GREEN:RED);
+ if(step&&step.badge){g.font='900 19px "Arial Black",sans-serif';const w=g.measureText(step.badge).width+30;g.fillStyle="rgba(255,213,74,.95)";g.beginPath();g.roundRect?g.roundRect(20,246,w,34,17):g.rect(20,246,w,34);g.fill();g.fillStyle="#111";g.textAlign="left";g.fillText(step.badge,35,270)}
+ if(t>TA&&t<RV){const lc=C[n-1],ax=x0+n*slot+10,ay=Y(lc.c)+30,pl=.6+.4*Math.sin(t*5),a=Math.min(1,(t-TA)*2);
+  [[GREEN,-1],[RED,1]].forEach(([col,d])=>{g.strokeStyle=col;g.fillStyle=col;g.lineWidth=7;g.lineCap="round";const ex=ax+75,ey=ay+d*55;const sv=(Math.sin(t*5)+1)/2,al=.2+.8*(d<0?sv:1-sv);g.globalAlpha=Math.max(0,Math.min(1,a*al));g.shadowColor=col;g.shadowBlur=22*al;g.beginPath();g.moveTo(ax,ay);g.lineTo(ex,ey);g.stroke();const an=Math.atan2(ey-ay,ex-ax);g.beginPath();g.moveTo(ex+10*Math.cos(an),ey+10*Math.sin(an));g.lineTo(ex-16*Math.cos(an-.5),ey-16*Math.sin(an-.5));g.lineTo(ex-16*Math.cos(an+.5),ey-16*Math.sin(an+.5));g.fill()});g.globalAlpha=1;g.shadowBlur=0}
+ if(t>TA&&t<CD-.2)txt("you have "+cdn+" seconds",270,540,46,"#fff");
+ if(t>=CD&&t<RV){const e=t-CD,num=Math.max(1,Math.ceil(cdn-e));g.fillStyle="rgba(10,10,12,.88)";g.beginPath();g.arc(270,480,150,0,7);g.fill();g.strokeStyle="#fff";g.lineWidth=9;g.shadowColor="#fff";g.shadowBlur=14;g.beginPath();g.arc(270,480,150,-Math.PI/2+.04,-Math.PI/2+(Math.PI*2-.08)*(1-e/cdn)+.04);g.stroke();g.shadowBlur=0;txt(String(num),270,535,150,"#fff")}
+ if(step)wrap(step.cap,270,862,32,"#fff");
+ if(t>=RV&&stepIdx<0)txt("Now let's learn why...",270,880,34,GOLD);
+ if(stepIdx>=l.steps.length){txt("Follow for more",270,850,44,"#fff");txt("Educational only. Not financial advice.",270,890,20,"#aaa")}
+ g.save();const vg=g.createRadialGradient(270,480,300,270,480,620);vg.addColorStop(0,"rgba(0,0,0,0)");vg.addColorStop(1,"rgba(0,0,0,.85)");g.fillStyle=vg;g.fillRect(0,0,540,960);g.restore();
+}
+function loop(now){try{draw(now)}catch(e){console.error(e)}requestAnimationFrame(loop)}
+
+// ui
+function pause(showMenu){playing=false;stopSpeech();if(showMenu)$("menu").style.display="flex"}
+function start(){getAC();try{if(hasSpeech){const u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u)}}catch(e){}load(L);playing=true;$("menu").style.display="none";last=performance.now()}
+function showSettings(on){$("settings").style.display=on?"block":"none";if(on)pause(true)}
+function openSettings(){showSettings(true);try{location.hash="settings"}catch(e){}}
+function closeSettings(){showSettings(false);try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}}
+$("play").onclick=start;
+$("st").onclick=openSettings;
+$("back").onclick=closeSettings;
+$("rp").onclick=()=>{closeSettings();start()};
+$("voice").onchange=e=>{S.voice=e.target.value};
+$("rate").oninput=e=>{S.rate=+e.target.value};
+$("vol").oninput=e=>{S.vol=+e.target.value};
+$("vo").onchange=e=>{S.vo=e.target.checked};
+$("sn").onchange=e=>{S.sn=e.target.checked};
+$("test").onclick=()=>{getAC();beep(880,.2,.5);say("Buy or sell? You have five seconds.")};
+cv.onclick=()=>{if(playing)pause(true)};
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&playing)pause(true)});
+window.addEventListener("hashchange",()=>{showSettings(location.hash==="#settings")});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&playing)pause(true)});
+load(0);buildList();showSettings(location.hash==="#settings");requestAnimationFrame(loop);
+})();
+</script></body></html>
